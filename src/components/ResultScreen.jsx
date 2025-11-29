@@ -270,9 +270,9 @@ const ResultScreen = ({
         '황소 머리': 'picasso-bullhead',
         
         // 프리다 칼로
-        'The Two Fridas': 'frida-twofridas',
-        '두 명의 프리다': 'frida-twofridas',
-        'Two Fridas': 'frida-twofridas',
+        'Me and My Parrots': 'frida-parrots',
+        '나와 내 앵무새들': 'frida-parrots',
+        'My Parrots': 'frida-parrots',
         'The Broken Column': 'frida-brokencolumn',
         '부러진 기둥': 'frida-brokencolumn',
         'Broken Column': 'frida-brokencolumn',
