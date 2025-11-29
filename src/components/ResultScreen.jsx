@@ -759,30 +759,18 @@ const ResultScreen = ({
       const response = await fetch(resultImage);
       const blob = await response.blob();
       const fileName = `picoart-${selectedStyle.id}-${Date.now()}.jpg`;
-      const file = new File([blob], fileName, { type: 'image/jpeg' });
       
-      // 모바일: Share API로 저장 메뉴 열기
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: '이미지 저장',
-        });
-      } else {
-        // PC: 기존 다운로드 방식
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      }
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
-      if (error.name !== 'AbortError') {
-        console.error('Download failed:', error);
-        alert('저장에 실패했습니다.');
-      }
+      console.error('Download failed:', error);
+      alert('저장에 실패했습니다.');
     }
   };
 
