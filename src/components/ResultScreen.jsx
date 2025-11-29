@@ -774,21 +774,36 @@ const ResultScreen = ({
   };
 
 
-  // ========== 공유 ==========
+  // ========== 공유 (이미지 파일) ==========
   const handleShare = async () => {
-    if (navigator.share) {
-      try {
+    try {
+      const response = await fetch(resultImage);
+      const blob = await response.blob();
+      const fileName = `picoart-${selectedStyle.id}-${Date.now()}.jpg`;
+      const file = new File([blob], fileName, { type: 'image/jpeg' });
+      
+      // 이미지 파일 공유 시도
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'PicoArt 작품',
+          text: `${selectedStyle.name} 스타일로 변환한 작품`,
+        });
+      } else if (navigator.share) {
+        // 파일 공유 미지원 시 URL 공유
         await navigator.share({
           title: 'PicoArt - AI 예술 변환',
           text: `${selectedStyle.name}로 변환한 작품`,
           url: window.location.href
         });
-      } catch (error) {
-        console.log('Share cancelled or failed');
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('링크가 클립보드에 복사되었습니다!');
       }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert('링크가 클립보드에 복사되었습니다!');
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.log('Share failed:', error);
+      }
     }
   };
 
@@ -903,16 +918,16 @@ const ResultScreen = ({
             className="btn btn-download" 
             onClick={handleDownload}
           >
-            <span className="btn-icon">📥</span>
-            다운로드
+            <span className="btn-icon">💾</span>
+            저장
           </button>
           
           <button 
             className="btn btn-share" 
             onClick={handleShare}
           >
-            <span className="btn-icon">🔗</span>
-            공유하기
+            <span className="btn-icon">📤</span>
+            공유
           </button>
           
           <button 
