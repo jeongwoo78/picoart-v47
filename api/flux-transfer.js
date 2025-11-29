@@ -1319,7 +1319,7 @@ const fallbackPrompts = {
   // ========================================
   korean: {
     name: '한국 전통화',
-    prompt: 'Korean traditional painting in authentic Joseon Dynasty style. CRITICAL INSTRUCTIONS: 1) GENDER PRESERVATION - carefully preserve exact gender and facial features from original photo (male stays male with masculine face, female stays female with feminine features), 2) TRANSFORM modern clothing to Joseon Dynasty traditional costume (hanbok, durumagi, gat hat, daenggi ribbon for women, traditional Korean attire), 3) Choose appropriate Korean style: [Minhwa folk art for animals/flowers: light subtle Obangsaek colors NOT overly saturated, soft gentle pigments, cheerful but restrained palette] [Pungsokdo genre painting for people/daily life: LIGHT INK WASH technique (damchae), subtle delicate colors over ink lines, refined elegant brushwork, realistic but understated, Kim Hong-do and Shin Yun-bok style NOT animation NOT cartoon, restrained muted tones] [Jingyeong landscape for nature/mountains: expressive ink with minimal color], 4) SINGLE UNIFIED COMPOSITION - all figures together in one cohesive scene. 🚨 CRITICAL: ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or ANY Japanese text whatsoever, NO vertical Japanese writing, NO Japanese ukiyo-e style elements, REMOVE ALL Japanese visual elements, NO text NO characters on painting, this is 100% PURE KOREAN TRADITIONAL ART not Japanese ukiyo-e at all.'
+    prompt: 'Korean traditional painting in authentic Joseon Dynasty style. CRITICAL INSTRUCTIONS: 1) GENDER PRESERVATION - carefully preserve exact gender and facial features from original photo (male stays male with masculine face, female stays female with feminine features), 3) Choose appropriate Korean style: [Minhwa folk art for animals/flowers: light subtle Obangsaek colors NOT overly saturated, soft gentle pigments, cheerful but restrained palette] [Pungsokdo genre painting for people/daily life: LIGHT INK WASH technique (damchae), subtle delicate colors over ink lines, refined elegant brushwork, realistic but understated, Kim Hong-do and Shin Yun-bok style NOT animation NOT cartoon, restrained muted tones] [Jingyeong landscape for nature/mountains: expressive ink with minimal color], 4) SINGLE UNIFIED COMPOSITION - all figures together in one cohesive scene. 🚨 CRITICAL: ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or ANY Japanese text whatsoever, NO vertical Japanese writing, NO Japanese ukiyo-e style elements, REMOVE ALL Japanese visual elements, NO text NO characters on painting, this is 100% PURE KOREAN TRADITIONAL ART not Japanese ukiyo-e at all.'
   },
   
   chinese: {
@@ -1487,11 +1487,6 @@ CRITICAL INSTRUCTIONS FOR PROMPT GENERATION:
    - Korean Pungsokdo: ROUGH hanji paper, spontaneous loose brushwork, 90% ink 10% color
    - NOT Chinese Gongbi: Chinese is meticulous/tight, Korean is loose/spontaneous
    - Korean uses MORE INK LESS COLOR than Chinese
-
-2. CLOTHING TRANSFORMATION (MANDATORY):
-   - TRANSFORM modern clothing (t-shirts, jeans, sneakers) to Joseon Dynasty traditional costume
-   - Hanbok, durumagi, gat hat for men, daenggi ribbon for women
-   - Period-appropriate Korean traditional attire
 
 2. GENDER PRESERVATION (MANDATORY IN PROMPT):
    - FIRST identify if photo has person(s) and their gender
@@ -1694,18 +1689,13 @@ Instructions - PRIORITY ORDER:
 4. FOURTH: Portrait without landscape → CLASSICAL SCULPTURE
 5. Follow RECOMMENDATIONS (80% weight)
 6. Preserve subject identity
-7. 🎭 CRITICAL: Transform modern clothing to ancient Greek-Roman style
-   - Modern clothes → togas, tunics, chitons, himations
-   - Sneakers → sandals or barefoot
-   - T-shirts/jeans → draped garments
-   - Keep facial features, change costume to historical accuracy
 
 Return JSON only:
 {
   "analysis": "brief - note if animals/dynamic/static (1 sentence)",
   "selected_artist": "Classical Sculpture" or "Roman Mosaic",
   "reason": "why this style fits, mention animals/dynamic/static (1 sentence)",
-  "prompt": "Ancient Greek-Roman art in [chosen style], [style characteristics - for Sculpture mention material choice, for Mosaic mention tesserae tiles], TRANSFORM modern clothing to ancient Greek-Roman costume (togas, tunics, chitons, draped garments), depicting subject while preserving original facial features"
+  "prompt": "Ancient Greek-Roman art in [chosen style], [style characteristics - for Sculpture mention material choice, for Mosaic mention tesserae tiles], depicting subject while preserving original facial features"
 }`;
         } else if (categoryType === 'medieval') {
           // 중세 미술만 동물 체크 (Islamic Miniature)
@@ -1817,7 +1807,6 @@ Return JSON only:
     return {
       success: true,
       artist: result.selected_artist,
-      selectedWork: result.selected_work,  // 거장 선택 작품명 추가
       reason: result.reason,
       prompt: result.prompt,
       analysis: result.analysis
@@ -1965,8 +1954,7 @@ export default async function handler(req, res) {
         selectionMethod = 'ai_auto';
         selectionDetails = {
           analysis: aiResult.analysis,
-          reason: aiResult.reason,
-          selected_work: aiResult.selectedWork  // 거장 선택 작품명 추가
+          reason: aiResult.reason
         };
         console.log('✅✅✅ [V41-TEST-SUCCESS] AI selected:', selectedArtist);
         
@@ -2699,6 +2687,10 @@ export default async function handler(req, res) {
                           finalPrompt.toLowerCase().includes('signac') ||
                           finalPrompt.toLowerCase().includes('pointillist');
     
+    // 모자이크는 타일(tesserae)로 만드는 것이므로 brushstrokes 제외
+    const isMosaic = finalPrompt.toLowerCase().includes('mosaic') || 
+                     finalPrompt.toLowerCase().includes('tesserae');
+    
     let paintingEnforcement;
     
     // 한국 민화 특별 처리
@@ -2707,7 +2699,7 @@ export default async function handler(req, res) {
     
     if (isKoreanMinhwa) {
       // 한국 민화: 두꺼운 한지 질감과 투박한 민속화
-      paintingEnforcement = ', CRITICAL: NOT photographic, Authentic Joseon folk painting on THICK ROUGH HANJI PAPER with PROMINENT FIBER TEXTURE throughout, UNEVEN PATCHY pigment absorption creating irregular color areas, genuinely FADED WEATHERED colors like 200-year museum piece, TREMBLING WOBBLY folk brushlines (amateur quality), thick black outlines but IRREGULAR, colors pooling in paper fibers, PRESERVE faces, PRESERVE GENDER, transform to Joseon costume, primitive naive artifact NOT digital NOT smooth, 🚨 NO Japanese';
+      paintingEnforcement = ', CRITICAL: NOT photographic, Authentic Joseon folk painting on THICK ROUGH HANJI PAPER with PROMINENT FIBER TEXTURE throughout, UNEVEN PATCHY pigment absorption creating irregular color areas, genuinely FADED WEATHERED colors like 200-year museum piece, TREMBLING WOBBLY folk brushlines (amateur quality), thick black outlines but IRREGULAR, colors pooling in paper fibers, PRESERVE faces, PRESERVE GENDER, primitive naive artifact NOT digital NOT smooth, 🚨 NO Japanese';
       console.log('ℹ️ Korean Minhwa mode: thick hanji texture + wobbly folk brushwork');
     } else if (isKoreanPungsokdo) {
       // 한국 풍속도: 수묵 위주 + 극소량 담채
@@ -2715,15 +2707,19 @@ export default async function handler(req, res) {
       console.log('ℹ️ Korean Pungsokdo mode: 70% ink 30% pale color on textured hanji');
     } else if (isPointillism) {
       // 점묘법: brushstrokes 제외
-      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, PRESERVE facial features expressions and identity of people in photo, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), TRANSFORM modern clothing and accessories to period-appropriate historical costume and style, unified composition all figures together';
+      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, PRESERVE facial features expressions and identity of people in photo, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), unified composition all figures together';
       console.log('ℹ️ Pointillism mode: paintingEnforcement WITHOUT brushstrokes');
+    } else if (isMosaic) {
+      // 모자이크: brushstrokes 제외, 타일 느낌 강조
+      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, MOSAIC ART made of small stone or glass TESSERAE tiles, visible grid pattern of square tiles, NO brushstrokes NO oil painting texture, PRESERVE facial features expressions and identity of people in photo, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), unified composition all figures together';
+      console.log('ℹ️ Mosaic mode: tesserae tiles WITHOUT brushstrokes');
     } else if (isOrientalArt) {
       // 동양 미술: brushstrokes 포함 + 일본어 금지 극강화
-      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, fully oil painting with thick visible brushstrokes and canvas texture, PRESERVE facial features expressions and identity of people in photo, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), TRANSFORM modern clothing and accessories to period-appropriate historical costume and style, unified composition all figures together, 🚨 ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or ANY Japanese text, NO vertical Japanese writing, NO Japanese ukiyo-e style elements, REMOVE ALL Japanese visual elements, NO text NO characters on painting, this is 100% PURE KOREAN or CHINESE TRADITIONAL ART not Japanese';
+      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, fully oil painting with thick visible brushstrokes and canvas texture, PRESERVE facial features expressions and identity of people in photo, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), unified composition all figures together, 🚨 ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or ANY Japanese text, NO vertical Japanese writing, NO Japanese ukiyo-e style elements, REMOVE ALL Japanese visual elements, NO text NO characters on painting, this is 100% PURE KOREAN or CHINESE TRADITIONAL ART not Japanese';
       console.log('ℹ️ Oriental art mode: paintingEnforcement WITH STRONG Japanese prohibition');
     } else {
       // 일반: brushstrokes 포함
-      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, fully oil painting with thick visible brushstrokes and canvas texture, PRESERVE facial features expressions and identity of people in photo, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), TRANSFORM modern clothing and accessories to period-appropriate historical costume and style, unified composition all figures together';
+      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, fully oil painting with thick visible brushstrokes and canvas texture, PRESERVE facial features expressions and identity of people in photo, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), unified composition all figures together';
     }
     
     // ========================================
