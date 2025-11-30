@@ -1899,7 +1899,9 @@ export default async function handler(req, res) {
       
       // 붓터치/기하학 변형 시작 (0.65)
       'post-impressionism': 0.65,
-      'pointillism': 0.65,
+      
+      // 점묘법 (0.60 - 점으로 형태 구성)
+      'pointillism': 0.60,
       
       // 색채/감정 폭발 (0.55~0.60)
       'fauvism': 0.60,
@@ -2682,14 +2684,14 @@ export default async function handler(req, res) {
                           finalPrompt.toLowerCase().includes('chinese') ||
                           categoryType === 'oriental';
     
-    // 시냐크/쇠라 점묘법은 brushstrokes와 충돌하므로 제외
-    const isPointillism = finalPrompt.toLowerCase().includes('seurat') || 
-                          finalPrompt.toLowerCase().includes('signac') ||
-                          finalPrompt.toLowerCase().includes('pointillist');
-    
     // 모자이크는 타일(tesserae)로 만드는 것이므로 brushstrokes 제외
     const isMosaic = finalPrompt.toLowerCase().includes('mosaic') || 
                      finalPrompt.toLowerCase().includes('tesserae');
+    
+    // 점묘법은 점(dots)으로 만드는 것이므로 brushstrokes 완전 금지
+    const isPointillism = finalPrompt.toLowerCase().includes('signac') || 
+                          finalPrompt.toLowerCase().includes('pointillist') ||
+                          finalPrompt.toLowerCase().includes('pointillism');
     
     let paintingEnforcement;
     
@@ -2705,21 +2707,21 @@ export default async function handler(req, res) {
       // 한국 풍속도: 수묵 위주 + 극소량 담채
       paintingEnforcement = ', CRITICAL: NOT photographic, Authentic Korean Pungsokdo on ROUGH TEXTURED HANJI with visible fibers, BLACK INK DOMINATES 70-80% (confident spontaneous brushwork), then MINIMAL PALE washes 20-30% ONLY, earth tones EXCLUSIVELY (pale brown grey-green faint ochre), NO bright NO saturated colors, Kim Hong-do elegant restraint, distinctly different from colorful Chinese gongbi, PRESERVE faces, PRESERVE GENDER, simple everyday hanbok, historical painting NOT illustration, 🚨 NO Japanese';
       console.log('ℹ️ Korean Pungsokdo mode: 70% ink 30% pale color on textured hanji');
-    } else if (isPointillism) {
-      // 점묘법: brushstrokes 제외
-      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, PRESERVE facial features expressions and identity of people in photo, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), unified composition all figures together';
-      console.log('ℹ️ Pointillism mode: paintingEnforcement WITHOUT brushstrokes');
     } else if (isMosaic) {
-      // 모자이크: brushstrokes 제외, 타일 느낌 강조
-      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, MOSAIC ART made of small stone or glass TESSERAE tiles, visible grid pattern of square tiles, NO brushstrokes NO oil painting texture, PRESERVE facial features expressions and identity of people in photo, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), unified composition all figures together';
-      console.log('ℹ️ Mosaic mode: tesserae tiles WITHOUT brushstrokes');
+      // 모자이크: brushstrokes 제외, 타일 느낌 강조, 인물도 스타일 적용
+      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, MOSAIC ART made of small stone or glass TESSERAE tiles, visible grid pattern of square tiles, NO brushstrokes NO oil painting texture, APPLY MOSAIC STYLE TO ENTIRE IMAGE INCLUDING THE PERSON (person must also look like mosaic tiles NOT photographic), preserve facial IDENTITY but render in mosaic tile style, PRESERVE GENDER accurately, unified composition all figures together';
+      console.log('ℹ️ Mosaic mode: tesserae tiles WITHOUT brushstrokes, style applied to person too');
+    } else if (isPointillism) {
+      // 점묘법: brushstrokes 완전 금지, 작은 점들로만 구성
+      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, POINTILLIST painting style with TINY COLORED DOTS only, ABSOLUTELY NO brushstrokes NO brush texture NO oil painting strokes, entire image composed of small distinct points of pure unmixed color placed side by side, visible dot pattern throughout like Signac or Seurat, APPLY POINTILLIST DOT STYLE TO ENTIRE IMAGE INCLUDING ALL PEOPLE (people must also be rendered in dots NOT photographic), preserve facial IDENTITY but render entirely in colored dots, PRESERVE GENDER accurately, unified composition all figures together';
+      console.log('ℹ️ Pointillism mode: tiny dots only, NO brushstrokes');
     } else if (isOrientalArt) {
       // 동양 미술: brushstrokes 포함 + 일본어 금지 극강화
-      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, fully oil painting with thick visible brushstrokes and canvas texture, PRESERVE facial features expressions and identity of people in photo, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), unified composition all figures together, 🚨 ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or ANY Japanese text, NO vertical Japanese writing, NO Japanese ukiyo-e style elements, REMOVE ALL Japanese visual elements, NO text NO characters on painting, this is 100% PURE KOREAN or CHINESE TRADITIONAL ART not Japanese';
+      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, APPLY PAINTING STYLE TO ENTIRE IMAGE INCLUDING ALL PEOPLE (people must look painted NOT photographic), fully oil painting with thick visible brushstrokes and canvas texture, preserve facial IDENTITY but render in painting style, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), unified composition all figures together, 🚨 ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or ANY Japanese text, NO vertical Japanese writing, NO Japanese ukiyo-e style elements, REMOVE ALL Japanese visual elements, NO text NO characters on painting, this is 100% PURE KOREAN or CHINESE TRADITIONAL ART not Japanese';
       console.log('ℹ️ Oriental art mode: paintingEnforcement WITH STRONG Japanese prohibition');
     } else {
       // 일반: brushstrokes 포함
-      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, fully oil painting with thick visible brushstrokes and canvas texture, PRESERVE facial features expressions and identity of people in photo, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), unified composition all figures together';
+      paintingEnforcement = ', CRITICAL: NOT photographic NOT photo-realistic, APPLY PAINTING STYLE TO ENTIRE IMAGE INCLUDING ALL PEOPLE (people must look painted NOT photographic), fully oil painting with thick visible brushstrokes and canvas texture, preserve facial IDENTITY but render in painting style, PRESERVE GENDER accurately (male stays male with masculine features, female stays female with feminine features), unified composition all figures together';
     }
     
     // ========================================
