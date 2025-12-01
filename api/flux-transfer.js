@@ -1734,6 +1734,7 @@ Return JSON only:
     return {
       success: true,
       artist: result.selected_artist,
+      work: result.selected_work,  // 거장 모드: 선택된 대표작
       reason: result.reason,
       prompt: result.prompt,
       analysis: result.analysis
@@ -1800,6 +1801,7 @@ export default async function handler(req, res) {
 
     let finalPrompt;
     let selectedArtist;
+    let selectedWork;  // 거장 모드: 선택된 대표작
     let selectionMethod;
     let selectionDetails = {};
     let controlStrength = 0.80; // 기본값
@@ -1880,12 +1882,14 @@ export default async function handler(req, res) {
         // AI 성공!
         finalPrompt = aiResult.prompt;
         selectedArtist = aiResult.artist;
+        selectedWork = aiResult.work;  // 거장 모드: 선택된 대표작
         selectionMethod = 'ai_auto';
         selectionDetails = {
           analysis: aiResult.analysis,
           reason: aiResult.reason
         };
         console.log('✅✅✅ [V41-TEST-SUCCESS] AI selected:', selectedArtist);
+        console.log('✅✅✅ [V48] Selected work:', selectedWork);
         
         // ===== 디버그 시작 =====
         console.log('DEBUG: selectedArtist raw value:', selectedArtist);
@@ -2705,6 +2709,7 @@ export default async function handler(req, res) {
     res.status(200).json({
       ...data,
       selected_artist: selectedArtist,
+      selected_work: selectedWork,  // 거장 모드: 선택된 대표작
       selection_method: selectionMethod,
       selection_details: selectionDetails
     });

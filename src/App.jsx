@@ -35,9 +35,9 @@ const App = () => {
     }
     
     // 거장 선택 작품 저장 (2차 교육자료용)
-    if (result && result.selectionDetails && result.selectionDetails.selected_work) {
-      setAiSelectedWork(result.selectionDetails.selected_work);
-      console.log('✅ App.jsx received selected_work:', result.selectionDetails.selected_work);
+    if (result && result.selected_work) {
+      setAiSelectedWork(result.selected_work);
+      console.log('✅ App.jsx received selected_work:', result.selected_work);
     } else {
       setAiSelectedWork(null);
       console.log('ℹ️ No selected_work in result (not masters category)');
