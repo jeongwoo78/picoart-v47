@@ -841,101 +841,29 @@ Warm sunlit people, festive scenes.
 `;
 }
 
-// 후기인상주의 (4명)
+// 후기인상주의 (5명) - v48 간소화
 function getPostImpressionismGuidelines() {
   return `
-Available Post-Impressionism Artists (4명):
+Available Post-Impressionism Artists (5명):
 
-1. VAN GOGH (반 고흐) ⭐⭐⭐ BALANCED CHOICE (30%)
-   - Specialty: Swirling expressive brushstrokes, intense emotional colors, turbulent energy
-   - Best for: Emotional portraits, dramatic scenes, starry night-like atmospheres
-   - Signature: "Starry Night", "Self-Portraits", "Bedroom in Arles"
-   - When to prioritize: Emotional/dramatic portraits (30%)
-   - Note: Also available in Masters collection
+1. VAN GOGH (30%) - Swirling impasto brushstrokes, intense emotional colors, turbulent energy
+2. GAUGUIN (22%) - Flat bold colors, primitive exotic Tahitian style, decorative patterns
+3. SIGNAC (18%) - Pointillist tiny dots, harbor/sea/coastal scenes, bright sunlight (The Port of Saint-Tropez, Portrait of Félix Fénéon)
+4. CÉZANNE (18%) - Geometric structured forms, analytical approach, solid volumes
+5. ROUSSEAU (12%) - Naive art, lush jungle foliage, dreamlike primitive childlike style
 
-2. GAUGUIN (고갱) ⭐⭐⭐ (25%)
-   - Specialty: Flat bold colors, decorative patterns, primitive simplicity
-   - Best for: Outdoor portraits, tropical/exotic themes, decorative aesthetic
-   - Signature: Tahitian paintings - flat bold primitivism
-   - When to prioritize: Outdoor people scenes, exotic mood (25%)
-
-3. CÉZANNE (세잔) ⭐⭐⭐ (20%)
-   - Specialty: Geometric structured forms, solid volumes, analytical approach
-   - Best for: Still life, structured landscapes, geometric compositions
-   - Signature: Still Life with Apples, Mont Sainte-Victoire - geometric analysis
-   - When to prioritize: Still life, structured scenes (20%)
-
-4. HENRI ROUSSEAU (앙리 루소) ⭐⭐⭐ (25%)
-   - Specialty: NAIVE ART - Jungle scenes, dreamlike primitive style, bold flat colors
-   - Best for: Animals, nature, portraits with lush background, fantasy scenes
-   - Signature: "The Dream" (꿈), "The Sleeping Gypsy" (잠자는 집시), "Surprised!" (호랑이) - EXOTIC JUNGLE FOLIAGE
-   - When to prioritize: Animals, nature scenes, portraits (25%)
-   - CRITICAL: Lush green jungle leaves, simplified childlike forms, vivid colors!
-
-🎯 CRITICAL DECISION LOGIC - BALANCED DISTRIBUTION:
-- Emotional/dramatic portraits → VAN GOGH (30%)
-- Animals/nature/jungle → HENRI ROUSSEAU (25%) with LUSH FOLIAGE
-- Outdoor people/exotic → GAUGUIN (25%)
-- Still life/structured → CÉZANNE (20%)
-- Dreamlike fantasy scenes → HENRI ROUSSEAU (25%)
+Choose the BEST artist based on photo mood, subject, and composition.
+Respect approximate percentages for balanced distribution.
+AI decides freely - no rigid rules.
 `;
 }
 
 function getPostImpressionismHints(photoAnalysis) {
-  const { subject, mood, composition, shot_type, location } = photoAnalysis;
-  
-  // 동물/자연/정글 → 앙리 루소 (25%)
-  if (subject.includes('animal') || subject.includes('pet') || subject.includes('dog') ||
-      subject.includes('cat') || subject.includes('jungle') || subject.includes('forest') ||
-      subject.includes('nature') || subject.includes('wildlife')) {
-    return `
-🎯 STRONG RECOMMENDATION: HENRI ROUSSEAU (25%)
-Animals/nature scene - PERFECT for Rousseau's NAIVE ART!
-"The Dream", "Surprised!", "The Sleeping Gypsy" style.
-LUSH JUNGLE FOLIAGE with simplified childlike forms!
-Ideal for: animals, nature, fantasy scenes, dreamlike portraits.
-`;
-  }
-  
-  // 인물 사진 (실외 + 이국적) → 고갱 (25%)
-  if ((shot_type === 'portrait' || shot_type === 'upper_body' || shot_type === 'full_body') &&
-      location === 'outdoor' && (mood === 'exotic' || mood === 'tropical')) {
-    return `
-🎯 STRONG RECOMMENDATION: GAUGUIN (25%)
-Outdoor exotic portrait - Gauguin's specialty!
-Flat bold colors with primitive decorative patterns.
-Tahitian style perfect for tropical/exotic atmosphere.
-`;
-  }
-  
-  // 정물 → 세잔 (20%)
-  if (subject === 'still_life' || subject.includes('object') || subject.includes('fruit')) {
-    return `
-🎯 RECOMMENDATION: CÉZANNE (20%)
-Still life = Cézanne specialty!
-His geometric analysis creates powerful structured beauty.
-`;
-  }
-  
-  // 감정적/극적 인물 → 반 고흐 (30%)
-  if ((mood === 'emotional' || mood === 'intense' || mood === 'dramatic') &&
-      (shot_type === 'portrait' || shot_type === 'upper_body')) {
-    return `
-🎯 RECOMMENDATION: VAN GOGH (30%)
-Emotional/dramatic portrait - Van Gogh's expressive power!
-Swirling brushstrokes convey intense feelings.
-Van Gogh also available in Masters collection.
-`;
-  }
-  
-  // 기본값 → 균등 배분
+  // v48: AI가 사진 분석 결과를 보고 자유롭게 판단하도록 간소화
   return `
-🎯 BALANCED DISTRIBUTION - Choose based on photo type:
-- Emotional/dramatic portraits → VAN GOGH (30%)
-- Animals/nature/jungle → HENRI ROUSSEAU (25%) with LUSH FOLIAGE
-- Outdoor exotic people → GAUGUIN (25%)
-- Still life/structured → CÉZANNE (20%)
-All four artists have distinct equal value!
+Analyze the photo and choose the best Post-Impressionist artist.
+Consider mood, subject, colors, and composition.
+Trust your judgment within the approximate percentage guidelines.
 `;
 }
 
@@ -1241,7 +1169,7 @@ const fallbackPrompts = {
   
   postImpressionism: {
     name: '후기인상주의',
-    prompt: 'Post-Impressionist painting style by Vincent van Gogh, bold expressive colors, geometric structured forms, emotional symbolic content, innovative personal vision, swirling passionate brushstrokes, painted in Post-Impressionist masterpiece quality'
+    prompt: 'Post-Impressionist painting style, bold expressive colors, geometric structured forms, emotional symbolic content, innovative personal vision, visible distinctive brushwork, painted in Post-Impressionist masterpiece quality'
   },
   
   fauvism: {
@@ -2115,11 +2043,9 @@ export default async function handler(req, res) {
           }
         }
         
-        // 앙리 루소 선택시 나이브 아트/정글 강화
+        // 앙리 루소 선택시 나이브 아트/정글 강화 (HENRI 제거 - 마티스와 충돌 방지)
         if (selectedArtist.toUpperCase().trim().includes('ROUSSEAU') ||
-            selectedArtist.toUpperCase().trim().includes('HENRI') ||
-            selectedArtist.includes('루소') ||
-            selectedArtist.includes('앙리')) {
+            selectedArtist.includes('루소')) {
           console.log('🎯 Henri Rousseau detected');
           if (!finalPrompt.includes('jungle') && !finalPrompt.includes('naive')) {
             finalPrompt = finalPrompt + ', painting by Henri Rousseau, NAIVE ART style with LUSH EXOTIC JUNGLE FOLIAGE filling background, large detailed tropical leaves and plants, simplified childlike forms with bold flat colors, dreamlike primitive atmosphere, The Dream and Surprised! style, vivid greens and rich saturated colors, mysterious enchanted forest feeling, animals and figures in dense vegetation, NOT realistic NOT photographic, Rousseau jungle masterpiece quality';
@@ -2127,6 +2053,19 @@ export default async function handler(req, res) {
             console.log('✅ Enhanced Henri Rousseau jungle naive art added (control_strength 0.50)');
           } else {
             console.log('ℹ️ Rousseau naive art already in prompt (AI included it)');
+          }
+        }
+        
+        // 시냐크 선택시 점묘법 강화 (v48 추가)
+        if (selectedArtist.toUpperCase().trim().includes('SIGNAC') ||
+            selectedArtist.includes('시냐크')) {
+          console.log('🎯 Signac detected');
+          if (!finalPrompt.includes('pointillist') && !finalPrompt.includes('dots')) {
+            finalPrompt = finalPrompt + ', painting by Paul Signac, POINTILLIST Neo-Impressionist style with TINY DISTINCT DOTS of pure unmixed color placed side by side, The Port of Saint-Tropez and Portrait of Félix Fénéon style, vibrant luminous harbor and coastal scenes, brilliant Mediterranean sunlight effect, mosaic-like texture of small color points, NO blended brushstrokes only separate dots, optical color mixing creates shimmering radiant atmosphere, vivid blues greens oranges pinks';
+            controlStrength = 0.60;
+            console.log('✅ Enhanced Signac pointillism added (control_strength 0.60)');
+          } else {
+            console.log('ℹ️ Signac pointillism already in prompt (AI included it)');
           }
         }
         
@@ -2382,11 +2321,9 @@ export default async function handler(req, res) {
           }
         }
         
-        // 마티스 선택시 순수 색채 강화 (거장 + 야수파)
+        // 마티스 선택시 순수 색채 강화 (거장 + 야수파) - HENRI/앙리 제거로 루소와 충돌 방지
         if (selectedArtist.toUpperCase().trim().includes('MATISSE') || 
-            selectedArtist.toUpperCase().trim().includes('HENRI') ||
-            selectedArtist.includes('마티스') ||
-            selectedArtist.includes('앙리')) {
+            selectedArtist.includes('마티스')) {
           console.log('🎯 Matisse detected');
           if (!finalPrompt.includes('The Dance')) {
             finalPrompt = finalPrompt + ', painting by Henri Matisse, The Dance-style with PURE UNMIXED VIBRANT COLORS at maximum intensity and saturation, flat decorative patterns with bold arabesques and flowing curves, elimination of all modeling and shading for pure color planes, joyful rhythmic compositions celebrating life movement and vitality, daring color combinations of brilliant reds blues greens yellows, complete liberation of color from reality, every area a pure saturated hue singing with chromatic joy';
