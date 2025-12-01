@@ -1169,7 +1169,7 @@ const fallbackPrompts = {
   
   postImpressionism: {
     name: '후기인상주의',
-    prompt: 'Post-Impressionist painting style, bold expressive colors, geometric structured forms, emotional symbolic content, innovative personal vision, visible distinctive brushwork, painted in Post-Impressionist masterpiece quality'
+    prompt: 'Post-Impressionist painting style, bold expressive colors, personal artistic vision, emotional depth and symbolic meaning, visible distinctive brushwork, painted in Post-Impressionist masterpiece quality'
   },
   
   fauvism: {
@@ -2061,7 +2061,7 @@ export default async function handler(req, res) {
             selectedArtist.includes('시냐크')) {
           console.log('🎯 Signac detected');
           if (!finalPrompt.includes('pointillist') && !finalPrompt.includes('dots')) {
-            finalPrompt = finalPrompt + ', painting by Paul Signac, POINTILLIST Neo-Impressionist style with TINY DISTINCT DOTS of pure unmixed color placed side by side, The Port of Saint-Tropez and Portrait of Félix Fénéon style, vibrant luminous harbor and coastal scenes, brilliant Mediterranean sunlight effect, mosaic-like texture of small color points, NO blended brushstrokes only separate dots, optical color mixing creates shimmering radiant atmosphere, vivid blues greens oranges pinks';
+            finalPrompt = finalPrompt + ', painting by Paul Signac, POINTILLIST Neo-Impressionist style with TINY DISTINCT DOTS of pure unmixed color placed side by side, The Port of Saint-Tropez and Portrait of Félix Fénéon style, vibrant luminous harbor and coastal scenes, brilliant Mediterranean sunlight effect, small color DOTS NOT tiles NOT mosaic, NO blended brushstrokes only separate dots, optical color mixing creates shimmering radiant atmosphere, vivid blues greens oranges pinks';
             controlStrength = 0.60;
             console.log('✅ Enhanced Signac pointillism added (control_strength 0.60)');
           } else {
