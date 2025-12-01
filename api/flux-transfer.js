@@ -1153,7 +1153,7 @@ const fallbackPrompts = {
   
   rococo: {
     name: '로코코',
-    prompt: 'Rococo painting style, light pastel colors, playful ornate decoration, soft delicate brushwork, romantic elegant atmosphere, graceful curved lines, whimsical charm, single unified composition with all figures together in one cohesive scene NOT separated into multiple groups, painted in Rococo masterpiece quality by Watteau or Boucher'
+    prompt: 'Rococo oil painting style, VISIBLE BRUSHSTROKES with oil paint texture throughout, light pastel colors, playful ornate decoration, soft delicate brushwork, romantic elegant atmosphere, graceful curved lines, whimsical charm, single unified composition with all figures together in one cohesive scene NOT separated into multiple groups, painted on canvas with VISIBLE PAINT TEXTURE, NOT photographic, painted in Rococo masterpiece quality by Watteau or Boucher'
   },
   
   neoclassicism_vs_romanticism_vs_realism: {
@@ -1820,6 +1820,7 @@ export default async function handler(req, res) {
       'gothic': 0.80,
       'renaissance': 0.80,
       'baroque': 0.80,
+      'rococo': 0.70,  // 로코코: 회화적 붓터치 강조
       'neoclassicism': 0.80,
       'romanticism': 0.80,
       
@@ -2200,8 +2201,9 @@ export default async function handler(req, res) {
             selectedArtist.toUpperCase().trim().includes('JEAN-ANTOINE')) {
           console.log('🎯 Watteau detected');
           if (!finalPrompt.includes('fêtes galantes')) {
-            finalPrompt = finalPrompt + ', painting by Jean-Antoine Watteau, fêtes galantes-style with ELEGANT OUTDOOR LEISURE in dreamy romantic garden settings, aristocratic figures in graceful refined poses and delicate gestures, soft shimmering colors with pearly iridescent quality and silvery atmospheric haze, wistful melancholic mood beneath surface gaiety, feathery delicate brushwork with gossamer lightness, poetic nostalgia and fleeting beauty, enchanted parkland with theatrical artifice';
-            console.log('✅ Enhanced Watteau elegance added');
+            finalPrompt = finalPrompt + ', painting by Jean-Antoine Watteau, fêtes galantes-style with ELEGANT OUTDOOR LEISURE in dreamy romantic garden settings, aristocratic figures in graceful refined poses and delicate gestures, soft shimmering colors with pearly iridescent quality and silvery atmospheric haze, wistful melancholic mood beneath surface gaiety, feathery delicate brushwork with gossamer lightness, poetic nostalgia and fleeting beauty, enchanted parkland with theatrical artifice, VISIBLE OIL PAINT BRUSHSTROKES throughout, painted canvas texture NOT photographic';
+            controlStrength = 0.70;
+            console.log('✅ Enhanced Watteau elegance added (control_strength 0.70)');
           } else {
             console.log('ℹ️ Watteau elegance already in prompt (AI included it)');
           }
@@ -2213,8 +2215,9 @@ export default async function handler(req, res) {
             selectedArtist.toUpperCase().trim().includes('FRANCOIS')) {
           console.log('🎯 Boucher detected');
           if (!finalPrompt.includes('Rococo charm')) {
-            finalPrompt = finalPrompt + ', painting by François Boucher, ROCOCO SENSUAL CHARM with playful frivolous eroticism and decorative prettiness, pastel colors of soft pinks delicate blues and creamy whites, voluptuous curvaceous forms with porcelain-like skin, whimsical ornamental details and elaborate accessories, frothy confectionery atmosphere with sugary sweetness, seductive coquettish mood and courtly flirtation, luxurious textures and sumptuous fabrics';
-            console.log('✅ Enhanced Boucher Rococo charm added');
+            finalPrompt = finalPrompt + ', painting by François Boucher, ROCOCO SENSUAL CHARM with playful frivolous eroticism and decorative prettiness, pastel colors of soft pinks delicate blues and creamy whites, voluptuous curvaceous forms with porcelain-like skin, whimsical ornamental details and elaborate accessories, frothy confectionery atmosphere with sugary sweetness, seductive coquettish mood and courtly flirtation, luxurious textures and sumptuous fabrics, VISIBLE OIL PAINT BRUSHSTROKES throughout, painted canvas texture NOT photographic';
+            controlStrength = 0.70;
+            console.log('✅ Enhanced Boucher Rococo charm added (control_strength 0.70)');
           } else {
             console.log('ℹ️ Boucher charm already in prompt (AI included it)');
           }
