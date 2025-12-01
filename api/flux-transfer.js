@@ -844,26 +844,25 @@ Warm sunlit people, festive scenes.
 // 후기인상주의 (5명) - v48 간소화
 function getPostImpressionismGuidelines() {
   return `
-Available Post-Impressionism Artists (5명):
+Available Post-Impressionism Artists (4명):
 
-1. VAN GOGH (30%) - Swirling impasto brushstrokes, intense emotional colors, turbulent energy
-2. GAUGUIN (22%) - Flat bold colors, primitive exotic Tahitian style, decorative patterns
-3. SIGNAC (18%) - Pointillist tiny dots, harbor/sea/coastal scenes, bright sunlight (The Port of Saint-Tropez, Portrait of Félix Fénéon)
-4. CÉZANNE (18%) - Geometric structured forms, analytical approach, solid volumes
-5. ROUSSEAU (12%) - Naive art, lush jungle foliage, dreamlike primitive childlike style
+1. VAN GOGH (35%) - Swirling impasto brushstrokes, intense emotional colors, turbulent energy (Starry Night, Self-Portraits, Bedroom in Arles)
+2. GAUGUIN (30%) - Flat bold colors, primitive exotic Tahitian style, decorative patterns (Where Do We Come From?, Tahitian Women)
+3. CÉZANNE (20%) - Geometric structured forms, analytical approach, solid volumes (Still Life with Apples, Mont Sainte-Victoire)
+4. SIGNAC (15%) - POINTILLIST tiny dots, bright Mediterranean sunlight, vibrant colors (The Port of Saint-Tropez, Portrait of Félix Fénéon)
 
-Choose the BEST artist based on photo mood, subject, and composition.
-Respect approximate percentages for balanced distribution.
-AI decides freely - no rigid rules.
+Choose the BEST artist based on photo analysis.
+Respect approximate percentages for variety.
 `;
 }
 
 function getPostImpressionismHints(photoAnalysis) {
-  // v48: AI가 사진 분석 결과를 보고 자유롭게 판단하도록 간소화
   return `
-Analyze the photo and choose the best Post-Impressionist artist.
-Consider mood, subject, colors, and composition.
-Trust your judgment within the approximate percentage guidelines.
+Use the guidelines above. Consider:
+- Photo type (portrait, landscape, still life)
+- Mood and atmosphere
+- Respect approximate percentages for variety
+AI decides freely based on overall photo analysis.
 `;
 }
 
@@ -2043,27 +2042,14 @@ export default async function handler(req, res) {
           }
         }
         
-        // 앙리 루소 선택시 나이브 아트/정글 강화 (HENRI 제거 - 마티스와 충돌 방지)
-        if (selectedArtist.toUpperCase().trim().includes('ROUSSEAU') ||
-            selectedArtist.includes('루소')) {
-          console.log('🎯 Henri Rousseau detected');
-          if (!finalPrompt.includes('jungle') && !finalPrompt.includes('naive')) {
-            finalPrompt = finalPrompt + ', painting by Henri Rousseau, NAIVE ART style with LUSH EXOTIC JUNGLE FOLIAGE filling background, large detailed tropical leaves and plants, simplified childlike forms with bold flat colors, dreamlike primitive atmosphere, The Dream and Surprised! style, vivid greens and rich saturated colors, mysterious enchanted forest feeling, animals and figures in dense vegetation, NOT realistic NOT photographic, Rousseau jungle masterpiece quality';
-            controlStrength = 0.50;
-            console.log('✅ Enhanced Henri Rousseau jungle naive art added (control_strength 0.50)');
-          } else {
-            console.log('ℹ️ Rousseau naive art already in prompt (AI included it)');
-          }
-        }
-        
         // 시냐크 선택시 점묘법 강화 (v48 추가)
         if (selectedArtist.toUpperCase().trim().includes('SIGNAC') ||
             selectedArtist.includes('시냐크')) {
           console.log('🎯 Signac detected');
           if (!finalPrompt.includes('pointillist') && !finalPrompt.includes('dots')) {
-            finalPrompt = finalPrompt + ', painting by Paul Signac, POINTILLIST Neo-Impressionist style with TINY DISTINCT DOTS of pure unmixed color placed side by side, The Port of Saint-Tropez and Portrait of Félix Fénéon style, vibrant luminous harbor and coastal scenes, brilliant Mediterranean sunlight effect, small color DOTS NOT tiles NOT mosaic, NO blended brushstrokes only separate dots, optical color mixing creates shimmering radiant atmosphere, vivid blues greens oranges pinks';
-            controlStrength = 0.60;
-            console.log('✅ Enhanced Signac pointillism added (control_strength 0.60)');
+            finalPrompt = finalPrompt + ', painting by Paul Signac, POINTILLIST Neo-Impressionist style with TINY DISTINCT DOTS of pure unmixed color placed side by side, VISIBLE DOTS throughout entire image including sky water and all surfaces, The Port of Saint-Tropez and Portrait of Félix Fénéon style, vibrant luminous harbor and coastal scenes, brilliant Mediterranean sunlight effect, small color DOTS NOT tiles NOT mosaic, NO blended brushstrokes only separate dots, optical color mixing creates shimmering radiant atmosphere, vivid blues greens oranges pinks';
+            controlStrength = 0.55;
+            console.log('✅ Enhanced Signac pointillism added (control_strength 0.55)');
           } else {
             console.log('ℹ️ Signac pointillism already in prompt (AI included it)');
           }
@@ -2321,7 +2307,7 @@ export default async function handler(req, res) {
           }
         }
         
-        // 마티스 선택시 순수 색채 강화 (거장 + 야수파) - HENRI/앙리 제거로 루소와 충돌 방지
+        // 마티스 선택시 순수 색채 강화 (거장 + 야수파)
         if (selectedArtist.toUpperCase().trim().includes('MATISSE') || 
             selectedArtist.includes('마티스')) {
           console.log('🎯 Matisse detected');
