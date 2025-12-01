@@ -342,23 +342,29 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
         }
 
         .education-card {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          padding: 25px;
-          border-radius: 15px;
-          color: white;
+          background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+          padding: 1.5rem;
+          border-radius: 12px;
+          border-left: 4px solid #667eea;
         }
 
         .education-card h3 {
-          margin: 0 0 15px 0;
-          font-size: 20px;
+          color: #667eea;
+          font-size: 1.1rem;
+          margin: 0 0 1rem 0;
           font-weight: 600;
         }
 
         .education-card p {
-          margin: 0;
-          line-height: 1.6;
-          font-size: 14px;
-          opacity: 0.95;
+          color: #333;
+          line-height: 1.8;
+          font-size: 1rem;
+          margin: 0 0 1.26em 0;
+          white-space: pre-line;
+        }
+        
+        .education-card p:last-child {
+          margin-bottom: 0;
         }
 
         /* AI 선택 정보 */
