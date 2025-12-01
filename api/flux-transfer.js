@@ -1345,7 +1345,7 @@ PABLO PICASSO - SELECT ONE:
 
         'frida': `
 FRIDA KAHLO - SELECT ONE:
-1. "The Two Fridas" (두 명의 프리다) → dual/mirror image, doubled figure | Style: TWO IDENTICAL FIGURES, exposed hearts connected, stormy sky
+1. "Me and My Parrots" (나와 앵무새들) → person with birds/pets | Style: COLORFUL PARROTS on shoulders, lush green foliage, direct gaze
 2. "The Broken Column" (부러진 기둥) → single figure, frontal pose | Style: Cracked torso with IONIC COLUMN spine, nails in skin, tears
 3. "Self-Portrait with Thorn Necklace" (가시 목걸이 자화상) → portrait with animal | Style: THORNS with hummingbird, monkey, jungle foliage
 4. "Self-Portrait with Monkeys" (원숭이와 자화상) → person with pets/animals | Style: MONKEYS EMBRACING, lush green leaves, direct gaze

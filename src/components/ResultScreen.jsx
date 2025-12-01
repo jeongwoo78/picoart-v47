@@ -283,6 +283,7 @@ const ResultScreen = ({
         
         // 프리다 칼로
         'Me and My Parrots': 'frida-parrots',
+        '나와 앵무새들': 'frida-parrots',
         '나와 내 앵무새들': 'frida-parrots',
         'My Parrots': 'frida-parrots',
         'The Broken Column': 'frida-brokencolumn',
