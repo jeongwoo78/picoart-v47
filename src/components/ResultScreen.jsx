@@ -115,6 +115,9 @@ const ResultScreen = ({
     const words = artistName.split(/\s+/);
     const patterns = [];
     
+    // 특수문자 변환 함수 (é → e 등)
+    const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    
     // 패턴 1: 전체 이름 (소문자, 공백 제거)
     patterns.push(artistName.toLowerCase().replace(/\s+/g, ''));
     
@@ -131,6 +134,15 @@ const ResultScreen = ({
     
     // 패턴 5: 전체 소문자
     patterns.push(artistName.toLowerCase());
+    
+    // 패턴 6-10: 특수문자 제거 버전 (é → e 등)
+    patterns.push(normalize(artistName.toLowerCase().replace(/\s+/g, '')));
+    patterns.push(normalize(artistName.toLowerCase().replace(/\s+/g, '-')));
+    if (words.length > 1) {
+      patterns.push(normalize(words[words.length - 1].toLowerCase()));
+    }
+    patterns.push(normalize(words[0].toLowerCase()));
+    patterns.push(normalize(artistName.toLowerCase()));
     
     console.log('   - trying patterns:', patterns);
     console.log('');
