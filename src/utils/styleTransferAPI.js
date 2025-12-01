@@ -148,12 +148,14 @@ export const processStyleTransfer = async (photoFile, selectedStyle, apiKey, onP
     console.log('========================================');
     console.log('📦 prediction:', prediction);
     console.log('🎨 selected_artist:', prediction.selected_artist);
+    console.log('🎨 selected_work:', prediction.selected_work);
     console.log('🎨 selection_method:', prediction.selection_method);
     console.log('========================================');
     console.log('');
 
     const aiSelectionInfo = {
       artist: prediction.selected_artist || null,
+      work: prediction.selected_work || null,  // 거장 모드: 선택된 대표작
       method: prediction.selection_method || null,
       details: prediction.selection_details || null
     };
@@ -185,7 +187,7 @@ export const processStyleTransfer = async (photoFile, selectedStyle, apiKey, onP
     const blob = await imageResponse.blob();
     const localUrl = URL.createObjectURL(blob);
 
-    console.log('✅ Using AI info from FIRST response:', aiSelectionInfo.artist);
+    console.log('✅ Using AI info from FIRST response:', aiSelectionInfo.artist, aiSelectionInfo.work);
 
     return {
       success: true,
@@ -196,6 +198,7 @@ export const processStyleTransfer = async (photoFile, selectedStyle, apiKey, onP
       cost: modelConfig.cost,
       time: modelConfig.time,
       aiSelectedArtist: aiSelectionInfo.artist,
+      selected_work: aiSelectionInfo.work,  // 거장 모드: 선택된 대표작
       selectionMethod: aiSelectionInfo.method,
       selectionDetails: aiSelectionInfo.details
     };
