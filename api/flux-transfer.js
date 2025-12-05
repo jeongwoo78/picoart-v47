@@ -1307,57 +1307,41 @@ async function selectArtistWithAI(imageBase64, selectedStyle, timeoutMs = 15000)
 VINCENT VAN GOGH - SELECT ONE:
 1. "The Starry Night" (별이 빛나는 밤) → night scene, sky, landscape, evening | Style: SWIRLING SPIRAL brushstrokes, COBALT BLUE and YELLOW, cypress trees
 2. "Sunflowers" (해바라기) → flowers, still life, bouquet | Style: THICK IMPASTO, CHROME YELLOW dominates, expressive petal strokes
-3. "Bedroom in Arles" (아를의 침실) → interior, room, indoor space | Style: BOLD FLAT colors, tilted perspective, blue walls with yellow furniture
-4. "The Potato Eaters" (감자 먹는 사람들) → group at table, meal scene, dark interior | Style: DARK EARTH TONES, dramatic lamplight, somber mood
-5. "Self-Portrait" (자화상) → single portrait, face, upper body | Style: SWIRLING BACKGROUND, intense gaze, blue-green palette`,
+3. "Self-Portrait" (자화상) → single portrait, face, upper body | Style: SWIRLING BACKGROUND, intense gaze, blue-green palette`,
 
         'klimt': `
 GUSTAV KLIMT - SELECT ONE:
 1. "The Kiss" (키스) → couple, romantic, embracing | Style: GOLD LEAF patterns, geometric robes, floral meadow, Byzantine mosaic
-2. "Portrait of Adele Bloch-Bauer I" (아델레 초상) → woman portrait, elegant female | Style: GOLD BACKGROUND with spirals, ornate dress patterns
-3. "The Tree of Life" (생명의 나무) → tree, nature, landscape | Style: SPIRAL BRANCHES, gold and bronze, decorative swirls
-4. "Danae" (다나에) → reclining figure, intimate portrait | Style: FLOWING RED HAIR, gold shower, curled pose
-5. "Judith I" (유디트) → woman portrait, powerful female | Style: GOLD CHOKER, bare shoulders, fierce expression`,
+2. "The Tree of Life" (생명의 나무) → tree, nature, landscape | Style: SPIRAL BRANCHES, gold and bronze, decorative swirls
+3. "Judith I" (유디트) → woman portrait, powerful female | Style: GOLD CHOKER, bare shoulders, fierce expression`,
 
         'munch': `
 EDVARD MUNCH - SELECT ONE:
 1. "The Scream" (절규) → single figure, emotional, anxious | Style: WAVY DISTORTED lines, BLOOD RED sky, agonized figure, existential terror
 2. "Madonna" (마돈나) → woman portrait, sensual, mysterious | Style: FLOWING DARK HAIR like halo, closed eyes, red lips
-3. "The Sick Child" (병든 아이) → intimate portrait, emotional, tender | Style: PALE sickly colors, scratched texture, melancholic
-4. "The Dance of Life" (생의 춤) → group, couples dancing, celebration | Style: Contrasting figures (white/black/red), moonlit beach
-5. "Puberty" (사춘기) → young person, vulnerable, seated | Style: ANXIOUS SHADOW looming, stark bedroom, psychological tension`,
+3. "The Sick Child" (병든 아이) → intimate portrait, emotional, tender | Style: PALE sickly colors, scratched texture, melancholic`,
 
         'matisse': `
 HENRI MATISSE - SELECT ONE:
 1. "The Dance" (댄스) → group, people in motion, dancing | Style: FLAT BOLD colors (red figures, blue sky, green ground), rhythmic circular
 2. "The Red Room" (붉은 방) → interior, room, dining | Style: DOMINANT RED with blue patterns, flat decorative surface
-3. "Woman with a Hat" (모자를 쓴 여인) → woman portrait, colorful | Style: WILD FAUVE colors on face (green, purple, red), bold brushwork
-4. "Goldfish" (금붕어) → fish, pets, aquarium, still life | Style: ORANGE fish in round bowl, green plants, decorative
-5. "The Snail" (달팽이) → abstract, colorful, decorative | Style: CUT-OUT PAPER shapes, pure bright colors in spiral`,
+3. "Woman with a Hat" (모자를 쓴 여인) → woman portrait, colorful | Style: WILD FAUVE colors on face (green, purple, red), bold brushwork`,
 
         'picasso': `
 PABLO PICASSO - SELECT ONE:
 1. "Les Demoiselles d'Avignon" (아비뇽의 처녀들) → group of figures, women | Style: ANGULAR FRAGMENTED faces, African mask influence, geometric planes
 2. "Guernica" (게르니카) → dramatic scene, chaos, large group | Style: BLACK WHITE GREY only, anguished figures, fragmented bodies
-3. "Weeping Woman" (우는 여인) → emotional portrait, woman | Style: SHARP ANGULAR tears, fractured face, yellow-green-purple
-4. "Guitar" (기타) → still life, object, instrument | Style: COLLAGE-LIKE planes, brown/beige cubist fragmentation
-5. "Bull's Head" (황소 머리) → animal, simple subject | Style: FOUND OBJECT aesthetic, simplified bold form`,
+3. "Weeping Woman" (우는 여인) → emotional portrait, woman | Style: SHARP ANGULAR tears, fractured face, yellow-green-purple`,
 
         'frida': `
 FRIDA KAHLO - SELECT ONE:
 1. "Me and My Parrots" (나와 앵무새들) → person with birds/pets | Style: COLORFUL PARROTS on shoulders, lush green foliage, direct gaze
 2. "The Broken Column" (부러진 기둥) → single figure, frontal pose | Style: Cracked torso with IONIC COLUMN spine, nails in skin, tears
-3. "Self-Portrait with Thorn Necklace" (가시 목걸이 자화상) → portrait with animal | Style: THORNS with hummingbird, monkey, jungle foliage
-4. "Self-Portrait with Monkeys" (원숭이와 자화상) → person with pets/animals | Style: MONKEYS EMBRACING, lush green leaves, direct gaze
-5. "Diego and I" (디에고와 나) → emotional portrait | Style: Third eye on forehead, flowing hair wrapping neck, tears`,
+3. "Self-Portrait with Thorn Necklace" (가시 목걸이 자화상) → portrait with animal | Style: THORNS with hummingbird, monkey, jungle foliage`,
 
         'warhol': `
-ANDY WARHOL - SELECT ONE:
-1. "Marilyn Monroe" (마릴린 먼로) → woman portrait, glamorous | Style: 2x2 FOUR-PANEL GRID, DIFFERENT BOLD COLORS each panel, silkscreen
-2. "Campbell's Soup Cans" (캠벨 수프 캔) → product, packaged food, object | Style: REPEATED IDENTICAL objects in grid, clean graphic
-3. "Banana" (바나나) → fruit, simple object, food | Style: SINGLE BOLD OBJECT, yellow with spots, graphic pop
-4. "Endangered Species" (멸종 위기 종) → animal portrait, pet face | Style: BOLD POP COLORS, high contrast, 4-panel variations
-5. "Elvis" (엘비스) → man portrait, action pose | Style: REPEATED FIGURE in silver/black, silkscreen multiplied`
+ANDY WARHOL - USE THIS STYLE:
+1. "Marilyn Monroe" (마릴린 먼로) → any portrait, glamorous | Style: 2x2 FOUR-PANEL GRID, DIFFERENT BOLD COLORS each panel, silkscreen`
       };
 
       const masterWorks = masterWorksDB[masterId] || '';
