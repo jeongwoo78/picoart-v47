@@ -2691,6 +2691,21 @@ export default async function handler(req, res) {
               // 프롬프트 함수 없는 사조: 기존 방식 (화가 이름만 교체)
               finalPrompt = finalPrompt.replace(new RegExp(oldArtist, 'gi'), weightSelectedArtist);
             }
+            
+            // 🚨 성별 감지 기반 강력한 프롬프트 삽입 (맨 앞)
+            let genderPrefix = '';
+            if (photoAnalysisFromAI.gender === 'male') {
+              genderPrefix = 'ABSOLUTE REQUIREMENT: This is a MALE person - subject MUST have MASCULINE face with strong jaw, male bone structure, NO feminine features, DO NOT make female, DO NOT add makeup or feminine traits, KEEP AS MAN. ';
+              console.log('🚨 Detected MALE - Added MASCULINE enforcement');
+            } else if (photoAnalysisFromAI.gender === 'female') {
+              genderPrefix = 'ABSOLUTE REQUIREMENT: This is a FEMALE person - subject MUST have FEMININE face with soft features, female bone structure, KEEP AS WOMAN. ';
+              console.log('🚨 Detected FEMALE - Added FEMININE enforcement');
+            } else {
+              genderPrefix = 'CRITICAL: PRESERVE ORIGINAL GENDER exactly as shown in photo. ';
+              console.log('🚨 Gender unknown - Added general preservation rule');
+            }
+            finalPrompt = genderPrefix + finalPrompt;
+            
             console.log(`✅ [WEIGHT-BASED] Final artist: ${selectedArtist}`);
           }
         }
