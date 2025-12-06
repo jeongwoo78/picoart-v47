@@ -1624,7 +1624,7 @@ function getModernismArtistPrompt(artistName) {
     
     'CHAGALL': 'Dreamlike painting by Marc Chagall: FLOATING FIGURES defying gravity in romantic nocturnal sky, soft MUTED PASTEL colors (lavender pale blue rose), nostalgic village scenes with tilted houses, lovers embracing mid-air, symbolic imagery (violins roosters flowers), poetic lyrical atmosphere, Jewish folklore dreamscape, Chagall romantic masterpiece quality',
     
-    'WARHOL': 'Pop Art by Andy Warhol: MUST create 2x2 FOUR-PANEL GRID layout, SAME subject repeated 4 times with DIFFERENT BOLD COLOR schemes in each panel, Marilyn Monroe series style HIGH CONTRAST silkscreen effect, FLAT graphic colors (hot pink cyan yellow orange electric blue), commercial mass-production aesthetic, Warhol Pop Art masterpiece quality',
+    'WARHOL': 'Pop Art by Andy Warhol: MUST create 2x2 FOUR-PANEL GRID layout, the EXACT SAME PERSON or OBJECT from the ORIGINAL PHOTO repeated 4 times - once in each quadrant, each of the 4 panels with DIFFERENT BOLD COLOR scheme (hot pink cyan yellow orange electric blue lime green), HIGH CONTRAST silkscreen printing effect, FLAT graphic colors with NO gradients, DO NOT draw Marilyn Monroe - draw only the person from the original photo, Warhol Pop Art masterpiece quality',
     
     'LICHTENSTEIN': 'Pop Art by Roy Lichtenstein: comic book style with VISIBLE BEN-DAY DOTS pattern throughout entire image, THICK BLACK OUTLINES around all forms, PRIMARY COLORS (red yellow blue) with white, speech bubble aesthetic, dramatic comic panel composition, halftone printing effect, bold graphic simplification, Lichtenstein Pop Art masterpiece quality',
     
@@ -1952,7 +1952,7 @@ const fallbackPrompts = {
     name: '앤디 워홀',
     artist: 'Andy Warhol (1928-1987)',
     movement: '팝아트 (Pop Art)',
-    prompt: 'Pop Art by Andy Warhol: MUST create 2x2 FOUR-PANEL GRID layout, SAME subject repeated 4 times with DIFFERENT BOLD COLOR schemes in each panel, Marilyn Monroe series style HIGH CONTRAST silkscreen effect, FLAT graphic colors (hot pink, cyan, yellow, orange, electric blue), commercial mass-production aesthetic, iconic pop art style, NOT photographic, Warhol Pop Art masterpiece quality'
+    prompt: 'Pop Art by Andy Warhol: MUST create 2x2 FOUR-PANEL GRID layout, the EXACT SAME PERSON or OBJECT from the ORIGINAL PHOTO repeated 4 times - once in each quadrant, each of the 4 panels with DIFFERENT BOLD COLOR scheme (hot pink cyan yellow orange electric blue lime green), HIGH CONTRAST silkscreen printing effect, FLAT graphic colors with NO gradients, DO NOT draw Marilyn Monroe - draw only the person from the original photo, Warhol Pop Art masterpiece quality'
   },
   
   // ========================================
@@ -3248,7 +3248,7 @@ export default async function handler(req, res) {
             selectedArtist.includes('앤디')) {
           console.log('🎯 Warhol detected');
           // 항상 강화 프롬프트로 교체 (4분할 보장)
-          const warholEnhancement = 'CRITICAL: DIVIDE canvas into EXACTLY 4 EQUAL QUADRANTS, 2x2 FOUR-PANEL GRID layout, SAME subject repeated 4 times in each quadrant, each panel with DIFFERENT BOLD COLOR scheme (hot pink, cyan, yellow, orange, electric blue, lime green), Marilyn Monroe series style HIGH CONTRAST silkscreen effect, FLAT graphic colors with NO gradients, commercial mass-production aesthetic, NOT single image MUST be 4 separate panels, ';
+          const warholEnhancement = 'CRITICAL: DIVIDE canvas into EXACTLY 4 EQUAL QUADRANTS in 2x2 FOUR-PANEL GRID layout, the EXACT SAME PERSON or OBJECT from the ORIGINAL PHOTO must be repeated 4 times - once in each quadrant, each of the 4 panels must have DIFFERENT BOLD COLOR scheme (hot pink, cyan, yellow, orange, electric blue, lime green), HIGH CONTRAST silkscreen printing effect, FLAT graphic colors with NO gradients, DO NOT draw Marilyn Monroe - draw only the person from the original photo, NOT single image MUST be 4 separate panels with the original subject repeated, ';
           finalPrompt = warholEnhancement + finalPrompt;
           controlStrength = 0.30;
           console.log('✅ Enhanced Warhol 4-panel grid (FRONT position, control_strength 0.30)');
