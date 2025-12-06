@@ -3526,7 +3526,7 @@ export default async function handler(req, res) {
     console.log('🎯 Applied identity preservation rule (including gender)');
     
     if (shouldApplyAttractive && selectedWork) {
-      const attractiveEnhancement = ', render all people ATTRACTIVELY BEAUTIFULLY YOUTHFULLY HANDSOMELY and PRETTILY - make subject look GORGEOUS STUNNING CHARMING and ELEGANT, appealing refined features with dignified graceful appearance, ENHANCE beauty while preserving identity, vibrant healthy glowing look, idealized flattering portrayal';
+      const attractiveEnhancement = ', render all people ATTRACTIVELY BEAUTIFULLY and YOUTHFULLY with appealing refined features, CRITICAL: while strictly preserving original GENDER - if MALE make him look HANDSOME MASCULINE and DIGNIFIED, if FEMALE make her look PRETTY FEMININE and ELEGANT, idealized flattering portrayal that enhances visual appeal';
       finalPrompt = finalPrompt + attractiveEnhancement;
       console.log('✨ Applied attractive enhancement for:', selectedWork);
     } else if (selectedWork) {
