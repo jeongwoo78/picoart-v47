@@ -1615,20 +1615,21 @@ Return the artist that will create the most compelling transformation!
 // 모더니즘 화가별 개별 프롬프트 (다른 화가 언급 없음!)
 // ========================================
 function getModernismArtistPrompt(artistName) {
+  const genderRule = 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face - DO NOT convert to female. ';
   const prompts = {
-    'PICASSO': 'Cubist painting by Pablo Picasso: SINGLE UNIFIED IMAGE not divided into panels, GEOMETRIC FRAGMENTED forms broken into angular planes, MULTIPLE SIMULTANEOUS PERSPECTIVES showing different angles at once, show NOSE from SIDE PROFILE while BOTH EYES visible from FRONT VIEW, Les Demoiselles d\'Avignon style, earth tone palette (ochre sienna brown olive grey), analytical cubist dissection, VISIBLE BRUSHSTROKES, painterly NOT illustrative, Picasso Cubist masterpiece quality',
+    'PICASSO': genderRule + 'Cubist painting by Pablo Picasso: SINGLE UNIFIED IMAGE not divided into panels, GEOMETRIC FRAGMENTED forms broken into angular planes, MULTIPLE SIMULTANEOUS PERSPECTIVES showing different angles at once, show NOSE from SIDE PROFILE while BOTH EYES visible from FRONT VIEW, Les Demoiselles d\'Avignon style, earth tone palette (ochre sienna brown olive grey), analytical cubist dissection, VISIBLE BRUSHSTROKES, painterly NOT illustrative, Picasso Cubist masterpiece quality',
     
-    'MAGRITTE': 'Surrealist painting by René Magritte: philosophical visual paradox, The Son of Man style with mysterious object partially obscuring face, or Golconda style MULTIPLICATION of same figure repeated in grid pattern floating/falling through sky, bowler hat gentleman aesthetic, hyperrealistic smooth painting technique, dreamlike impossible scenarios, thought-provoking conceptual art, Belgian Surrealist masterpiece quality',
+    'MAGRITTE': genderRule + 'Surrealist painting by René Magritte: philosophical visual paradox, The Son of Man style with mysterious object partially obscuring face, or Golconda style MULTIPLICATION of same figure repeated in grid pattern floating/falling through sky, bowler hat gentleman aesthetic, hyperrealistic smooth painting technique, dreamlike impossible scenarios, thought-provoking conceptual art, Belgian Surrealist masterpiece quality',
     
-    'MIRÓ': 'Abstract painting by Joan Miró: playful BIOMORPHIC SHAPES floating on canvas, childlike symbols (stars moons eyes birds), PRIMARY COLORS (red blue yellow) on white or neutral background, spontaneous automatic drawing style, whimsical dreamlike universe, black calligraphic lines, Catalan Surrealist fantasy, joyful cosmic abstraction, Miró masterpiece quality',
+    'MIRÓ': genderRule + 'Abstract painting by Joan Miró: playful BIOMORPHIC SHAPES floating on canvas, childlike symbols (stars moons eyes birds), PRIMARY COLORS (red blue yellow) on white or neutral background, spontaneous automatic drawing style, whimsical dreamlike universe, black calligraphic lines, Catalan Surrealist fantasy, joyful cosmic abstraction, Miró masterpiece quality',
     
-    'CHAGALL': 'Dreamlike painting by Marc Chagall: FLOATING FIGURES defying gravity in romantic nocturnal sky, soft MUTED PASTEL colors (lavender pale blue rose), nostalgic village scenes with tilted houses, lovers embracing mid-air, symbolic imagery (violins roosters flowers), poetic lyrical atmosphere, Jewish folklore dreamscape, Chagall romantic masterpiece quality',
+    'CHAGALL': genderRule + 'Dreamlike painting by Marc Chagall: FLOATING FIGURES defying gravity in romantic nocturnal sky, soft MUTED PASTEL colors (lavender pale blue rose), nostalgic village scenes with tilted houses, lovers embracing mid-air, symbolic imagery (violins roosters flowers), poetic lyrical atmosphere, Jewish folklore dreamscape, Chagall romantic masterpiece quality',
     
-    'WARHOL': 'Pop Art by Andy Warhol: MUST create 2x2 FOUR-PANEL GRID layout, the EXACT SAME PERSON or OBJECT from the ORIGINAL PHOTO repeated 4 times - once in each quadrant, each of the 4 panels with DIFFERENT BOLD COLOR scheme (hot pink cyan yellow orange electric blue lime green), HIGH CONTRAST silkscreen printing effect, FLAT graphic colors with NO gradients, DO NOT draw Marilyn Monroe - draw only the person from the original photo, Warhol Pop Art masterpiece quality',
+    'WARHOL': genderRule + 'Pop Art by Andy Warhol: MUST create 2x2 FOUR-PANEL GRID layout, the EXACT SAME PERSON or OBJECT from the ORIGINAL PHOTO repeated 4 times - once in each quadrant, each of the 4 panels with DIFFERENT BOLD COLOR scheme (hot pink cyan yellow orange electric blue lime green), HIGH CONTRAST silkscreen printing effect, FLAT graphic colors with NO gradients, DO NOT draw Marilyn Monroe - draw only the person from the original photo, Warhol Pop Art masterpiece quality',
     
-    'LICHTENSTEIN': 'Pop Art by Roy Lichtenstein: comic book style with VISIBLE BEN-DAY DOTS pattern throughout entire image, THICK BLACK OUTLINES around all forms, PRIMARY COLORS (red yellow blue) with white, speech bubble aesthetic, dramatic comic panel composition, halftone printing effect, bold graphic simplification, Lichtenstein Pop Art masterpiece quality',
+    'LICHTENSTEIN': genderRule + 'Pop Art by Roy Lichtenstein: comic book style with VISIBLE BEN-DAY DOTS pattern throughout entire image, THICK BLACK OUTLINES around all forms, PRIMARY COLORS (red yellow blue) with white, speech bubble aesthetic, dramatic comic panel composition, halftone printing effect, bold graphic simplification, Lichtenstein Pop Art masterpiece quality',
     
-    'KEITH HARING': 'Street art by Keith Haring: BOLD CONTINUOUS BLACK OUTLINES, simplified dancing human figures with RADIANT ENERGY LINES emanating from bodies, flat bright colors (red yellow blue green), dynamic movement and rhythm, subway graffiti aesthetic, joyful kinetic energy, interlocking figures, Keith Haring street art masterpiece quality'
+    'KEITH HARING': genderRule + 'Street art by Keith Haring: BOLD CONTINUOUS BLACK OUTLINES, simplified dancing human figures with RADIANT ENERGY LINES emanating from bodies, flat bright colors (red yellow blue green), dynamic movement and rhythm, subway graffiti aesthetic, joyful kinetic energy, interlocking figures, Keith Haring street art masterpiece quality'
   };
   
   // 아티스트 이름 정규화
@@ -1686,14 +1687,15 @@ function getMedievalArtistPrompt(styleName) {
 
 // 르네상스 화가별 프롬프트
 function getRenaissanceArtistPrompt(artistName) {
+  const genderRule = 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. If original photo shows FEMALE person, subject MUST remain FEMALE. ';
   const prompts = {
-    'LEONARDO DA VINCI': 'painting by Leonardo da Vinci: EXTREME SFUMATO technique with ALL EDGES completely SOFT AND BLURRED like smoke or fog, ZERO SHARP LINES anywhere, every boundary DISSOLVED into hazy atmospheric mist, faces emerging from smoky darkness, Mona Lisa and Virgin of the Rocks style MYSTERIOUS HAZE, warm golden-brown Renaissance palette, SOFT FOCUS throughout like looking through gauze, oil painting with subtle glazing layers, NOT sharp NOT digital, sfumato masterpiece quality',
+    'LEONARDO DA VINCI': genderRule + 'painting by Leonardo da Vinci: EXTREME SFUMATO technique with ALL EDGES completely SOFT AND BLURRED like smoke or fog, ZERO SHARP LINES anywhere, every boundary DISSOLVED into hazy atmospheric mist, faces emerging from smoky darkness, Mona Lisa and Virgin of the Rocks style MYSTERIOUS HAZE, warm golden-brown Renaissance palette, SOFT FOCUS throughout like looking through gauze, oil painting with subtle glazing layers, NOT sharp NOT digital, sfumato masterpiece quality',
     
-    'TITIAN': 'painting by Titian Venetian Renaissance: RICH WARM COLORS with glowing golden flesh tones, loose expressive brushwork visible especially in fabrics, dramatic atmospheric backgrounds, sensuous rendering of silk velvet and skin textures, Venetian colorito tradition with color over line, Portrait of a Man style dignified poses, deep reds golds and earth tones, luminous glazing technique, Titian masterpiece quality',
+    'TITIAN': genderRule + 'painting by Titian Venetian Renaissance: RICH WARM COLORS with glowing golden flesh tones, loose expressive brushwork visible especially in fabrics, dramatic atmospheric backgrounds, sensuous rendering of silk velvet and skin textures, Venetian colorito tradition with color over line, Portrait of a Man style dignified poses, deep reds golds and earth tones, luminous glazing technique, Titian masterpiece quality',
     
-    'MICHELANGELO': 'painting by Michelangelo: HEROIC SCULPTURAL FIGURES with powerful muscular anatomy, Sistine Chapel style monumental grandeur, dramatic foreshortening and dynamic poses, strong modeling with clear light and shadow, idealized human form with classical proportions, rich saturated colors, architectural sense of space, Michelangelo masterpiece quality',
+    'MICHELANGELO': genderRule + 'painting by Michelangelo: HEROIC SCULPTURAL FIGURES with powerful muscular anatomy, Sistine Chapel style monumental grandeur, dramatic foreshortening and dynamic poses, strong modeling with clear light and shadow, idealized human form with classical proportions, rich saturated colors, architectural sense of space, Michelangelo masterpiece quality',
     
-    'RAPHAEL': 'painting by Raphael: PERFECT HARMONIOUS BEAUTY with idealized graceful figures, serene balanced compositions, sweet gentle expressions, clear luminous colors, elegant flowing drapery, School of Athens style classical perfection, soft modeling with gentle transitions, divine serenity and grace, Raphael masterpiece quality'
+    'RAPHAEL': genderRule + 'painting by Raphael: PERFECT HARMONIOUS BEAUTY with idealized graceful figures, serene balanced compositions, sweet gentle expressions, clear luminous colors, elegant flowing drapery, School of Athens style classical perfection, soft modeling with gentle transitions, divine serenity and grace, Raphael masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
@@ -1706,14 +1708,15 @@ function getRenaissanceArtistPrompt(artistName) {
 
 // 바로크 화가별 프롬프트
 function getBaroqueArtistPrompt(artistName) {
+  const genderRule = 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. If original photo shows FEMALE person, subject MUST remain FEMALE. ';
   const prompts = {
-    'CARAVAGGIO': 'painting by Caravaggio: DRAMATIC TENEBRISM with extreme light-dark contrast, single theatrical spotlight illuminating figures from darkness, deep BLACK SHADOWS engulfing most of scene, intense emotional realism, rich saturated colors emerging from darkness, dramatic diagonal composition, raw powerful naturalism, Caravaggio masterpiece quality',
+    'CARAVAGGIO': genderRule + 'painting by Caravaggio: DRAMATIC TENEBRISM with extreme light-dark contrast, single theatrical spotlight illuminating figures from darkness, deep BLACK SHADOWS engulfing most of scene, intense emotional realism, rich saturated colors emerging from darkness, dramatic diagonal composition, raw powerful naturalism, Caravaggio masterpiece quality',
     
-    'REMBRANDT': 'painting by Rembrandt: GOLDEN LUMINOUS LIGHT with warm glowing illumination, subtle light gradations revealing form from shadow, rich impasto brushwork visible in highlights, deep psychological introspection, intimate emotional depth, warm brown and gold palette, The Night Watch style dramatic lighting, Rembrandt masterpiece quality',
+    'REMBRANDT': genderRule + 'painting by Rembrandt: GOLDEN LUMINOUS LIGHT with warm glowing illumination, subtle light gradations revealing form from shadow, rich impasto brushwork visible in highlights, deep psychological introspection, intimate emotional depth, warm brown and gold palette, The Night Watch style dramatic lighting, Rembrandt masterpiece quality',
     
-    'VERMEER': 'painting by Johannes Vermeer: SOFT DIFFUSED DAYLIGHT from window illuminating interior scene, quiet contemplative domestic moment, luminous pearl-like quality to skin and fabrics, Girl with a Pearl Earring style intimate poetry, cool blue and warm yellow color harmony, exquisite rendering of light on surfaces, Vermeer masterpiece quality',
+    'VERMEER': genderRule + 'painting by Johannes Vermeer: SOFT DIFFUSED DAYLIGHT from window illuminating interior scene, quiet contemplative domestic moment, luminous pearl-like quality to skin and fabrics, Girl with a Pearl Earring style intimate poetry, cool blue and warm yellow color harmony, exquisite rendering of light on surfaces, Vermeer masterpiece quality',
     
-    'VELÁZQUEZ': 'painting by Diego Velázquez: SOPHISTICATED COURT ELEGANCE with dignified formal poses, loose confident brushwork visible up close, subtle silver-grey palette with rich blacks, atmospheric perspective creating depth, Las Meninas style complex spatial arrangement, aristocratic refinement, Velázquez masterpiece quality'
+    'VELÁZQUEZ': genderRule + 'painting by Diego Velázquez: SOPHISTICATED COURT ELEGANCE with dignified formal poses, loose confident brushwork visible up close, subtle silver-grey palette with rich blacks, atmospheric perspective creating depth, Las Meninas style complex spatial arrangement, aristocratic refinement, Velázquez masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
@@ -1725,11 +1728,13 @@ function getBaroqueArtistPrompt(artistName) {
 }
 
 // 로코코 화가별 프롬프트
+// 로코코 화가별 프롬프트
 function getRococoArtistPrompt(artistName) {
+  const genderRule = 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. If original photo shows FEMALE person, subject MUST remain FEMALE. ';
   const prompts = {
-    'WATTEAU': 'painting by Antoine Watteau: FÊTE GALANTE outdoor aristocratic gathering, elegant figures in shimmering silk costumes, soft dreamy pastoral landscape, delicate feathery brushwork, romantic melancholic atmosphere, Pilgrimage to Cythera style poetic reverie, pale pastel colors with touches of rose and gold, theatrical graceful poses, Watteau masterpiece quality',
+    'WATTEAU': genderRule + 'painting by Antoine Watteau: FÊTE GALANTE outdoor aristocratic gathering, elegant figures in shimmering silk costumes, soft dreamy pastoral landscape, delicate feathery brushwork, romantic melancholic atmosphere, Pilgrimage to Cythera style poetic reverie, pale pastel colors with touches of rose and gold, theatrical graceful poses, Watteau masterpiece quality',
     
-    'BOUCHER': 'painting by François Boucher: SENSUOUS DECORATIVE BEAUTY with soft rosy flesh tones, playful mythological or pastoral scenes, light pastel palette of pink blue and cream, fluffy clouds and lush foliage, ornate Rococo decoration, Madame de Pompadour style feminine elegance, sweet idealized figures, Boucher masterpiece quality'
+    'BOUCHER': genderRule + 'painting by François Boucher: DECORATIVE BEAUTY with soft rosy flesh tones, playful mythological or pastoral scenes, light pastel palette of pink blue and cream, fluffy clouds and lush foliage, ornate Rococo decoration, sweet idealized figures, Boucher masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
@@ -1740,16 +1745,17 @@ function getRococoArtistPrompt(artistName) {
 
 // 신고전주의/낭만주의/사실주의 화가별 프롬프트
 function getNeoclassicismArtistPrompt(artistName) {
+  const genderRule = 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. If original photo shows FEMALE person, subject MUST remain FEMALE. ';
   const prompts = {
-    'JACQUES-LOUIS DAVID': 'painting by Jacques-Louis David: NEOCLASSICAL PERFECTION with clear crisp outlines, heroic idealized figures in classical poses, cool restrained color palette, dramatic moral narratives, Oath of the Horatii style civic virtue, sculptural modeling with smooth finish, balanced symmetrical compositions, David Neoclassical masterpiece quality',
+    'JACQUES-LOUIS DAVID': genderRule + 'painting by Jacques-Louis David: NEOCLASSICAL PERFECTION with clear crisp outlines, heroic idealized figures in classical poses, cool restrained color palette, dramatic moral narratives, Oath of the Horatii style civic virtue, sculptural modeling with smooth finish, balanced symmetrical compositions, David Neoclassical masterpiece quality',
     
-    'INGRES': 'painting by Jean-Auguste-Dominique Ingres: PERFECTLY SMOOTH FLOWING CONTOURS like polished surface, porcelain-smooth skin without visible brushstrokes, elegant sinuous curves and graceful elongated forms, La Grande Odalisque style idealized beauty, cool serene color palette, meticulous precise detail, flawless enamel-like finish, Ingres masterpiece quality',
+    'INGRES': genderRule + 'painting by Jean-Auguste-Dominique Ingres: PERFECTLY SMOOTH FLOWING CONTOURS like polished surface, porcelain-smooth skin without visible brushstrokes, elegant sinuous curves and graceful elongated forms, idealized beauty, cool serene color palette, meticulous precise detail, flawless enamel-like finish, Ingres masterpiece quality',
     
-    'TURNER': 'painting by J.M.W. Turner: ATMOSPHERIC SUBLIME with swirling mist light and color, dramatic natural phenomena, luminous golden light dissolving forms, romantic awe-inspiring landscapes, The Fighting Temeraire style emotional power, loose expressive brushwork, Turner masterpiece quality',
+    'TURNER': genderRule + 'painting by J.M.W. Turner: ATMOSPHERIC SUBLIME with swirling mist light and color, dramatic natural phenomena, luminous golden light dissolving forms, romantic awe-inspiring landscapes, The Fighting Temeraire style emotional power, loose expressive brushwork, Turner masterpiece quality',
     
-    'MILLET': 'painting by Jean-François Millet: DIGNIFIED RURAL LABOR with monumental peasant figures, warm earthy palette of browns and ochres, The Gleaners style quiet nobility, soft diffused light, serene contemplative mood, honest depiction of agricultural life, Millet Realist masterpiece quality',
+    'MILLET': genderRule + 'painting by Jean-François Millet: DIGNIFIED RURAL LABOR with monumental peasant figures, warm earthy palette of browns and ochres, The Gleaners style quiet nobility, soft diffused light, serene contemplative mood, honest depiction of agricultural life, Millet Realist masterpiece quality',
     
-    'CLAUDE LORRAIN': 'painting by Claude Lorrain: IDEAL CLASSICAL LANDSCAPE with golden atmospheric light, ancient ruins and pastoral scenery, warm glowing sunset or sunrise, poetic Arcadian vision, carefully balanced compositions with framing trees, luminous sky reflected in water, Claude Lorrain masterpiece quality'
+    'CLAUDE LORRAIN': genderRule + 'painting by Claude Lorrain: IDEAL CLASSICAL LANDSCAPE with golden atmospheric light, ancient ruins and pastoral scenery, warm glowing sunset or sunrise, poetic Arcadian vision, carefully balanced compositions with framing trees, luminous sky reflected in water, Claude Lorrain masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
@@ -1764,13 +1770,13 @@ function getNeoclassicismArtistPrompt(artistName) {
 // 인상주의 화가별 프롬프트
 function getImpressionismArtistPrompt(artistName) {
   const prompts = {
-    'RENOIR': 'painting by Pierre-Auguste Renoir: SOFT FEATHERY BRUSHSTROKES with warm luminous glow, rosy pink flesh tones with pearly highlights, DAPPLED SUNLIGHT filtering through creating shimmering atmosphere, joyful intimate mood, Dance at Le Moulin de la Galette style celebration of life, loose impressionist brushwork NOT smooth NOT digital, warm harmonious colors (peach pink coral gold), VISIBLE OIL PAINT TEXTURE, Renoir masterpiece quality',
+    'RENOIR': 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. painting by Pierre-Auguste Renoir: SOFT FEATHERY BRUSHSTROKES with warm luminous glow, rosy pink flesh tones with pearly highlights, DAPPLED SUNLIGHT filtering through creating shimmering atmosphere, joyful intimate mood, loose impressionist brushwork NOT smooth NOT digital, warm harmonious colors (peach pink coral gold), VISIBLE OIL PAINT TEXTURE, Renoir masterpiece quality',
     
-    'MONET': 'painting by Claude Monet: BROKEN COLOR BRUSHSTROKES capturing fleeting light effects, SOFT HAZY ATMOSPHERIC effects like morning mist, colors BLENDED and DISSOLVED into each other, NO sharp edges, dreamy blurred boundaries, Water Lilies and Woman with Parasol style light dissolution, cool blue-green palette with warm accents, everything slightly out of focus, Monet Impressionist masterpiece quality',
+    'MONET': 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. painting by Claude Monet: BROKEN COLOR BRUSHSTROKES capturing fleeting light effects, SOFT HAZY ATMOSPHERIC effects like morning mist, colors BLENDED and DISSOLVED into each other, NO sharp edges, dreamy blurred boundaries, Water Lilies style light dissolution, cool blue-green palette with warm accents, everything slightly out of focus, Monet Impressionist masterpiece quality',
     
-    'DEGAS': 'painting by Edgar Degas: UNUSUAL CROPPED ANGLES and asymmetric compositions, capturing movement and gesture, SOFT PASTEL and oil texture with VISIBLE CHALKY STROKES, pale muted colors (soft pink peach powder blue), intimate indoor scenes, ballet rehearsal atmosphere WITHOUT adding dancers not in original photo, delicate precise drawing, Degas masterpiece quality',
+    'DEGAS': 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. painting by Edgar Degas: UNUSUAL CROPPED ANGLES and asymmetric compositions, capturing movement and gesture, SOFT PASTEL and oil texture with VISIBLE CHALKY STROKES, pale muted colors (soft pink peach powder blue), intimate indoor scenes, DO NOT add ballet dancers, delicate precise drawing, Degas masterpiece quality',
     
-    'PISSARRO': 'painting by Camille Pissarro: RURAL IMPRESSIONIST landscapes and village scenes, small dappled brushstrokes building form, soft diffused natural light, peaceful pastoral atmosphere, warm earth tones with fresh greens, gentle humble subjects, Pissarro masterpiece quality'
+    'PISSARRO': 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. painting by Camille Pissarro: RURAL IMPRESSIONIST landscapes and village scenes, small dappled brushstrokes building form, soft diffused natural light, peaceful pastoral atmosphere, warm earth tones with fresh greens, gentle humble subjects, Pissarro masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
@@ -1784,13 +1790,13 @@ function getImpressionismArtistPrompt(artistName) {
 // 후기인상주의 화가별 프롬프트
 function getPostImpressionismArtistPrompt(artistName) {
   const prompts = {
-    'VAN GOGH': 'painting by Vincent van Gogh: EXTREMELY THICK IMPASTO brushstrokes with HEAVY 3D PAINT TEXTURE like squeezed directly from tube, VISIBLE RIDGES AND GROOVES of thick oil paint, SWIRLING TURBULENT brushwork in EVERY area including face and background, CHUNKY BOLD brush marks 5-10mm wide NOT smooth NOT blended, intense saturated colors (cobalt blue cadmium yellow chrome orange), Self-Portrait style ENERGETIC EXPRESSIVE strokes, canvas weave visible through paint, Van Gogh masterpiece quality',
+    'VAN GOGH': 'CRITICAL: PRESERVE the EXACT FACE IDENTITY from original photo but APPLY thick brushstroke texture to the face - do NOT draw Van Gogh himself. CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE - DO NOT convert to female. painting in Vincent van Gogh style: EXTREMELY THICK IMPASTO brushstrokes with HEAVY 3D PAINT TEXTURE like squeezed directly from tube, VISIBLE RIDGES AND GROOVES of thick oil paint, SWIRLING TURBULENT brushwork in EVERY area including face and background, CHUNKY BOLD brush marks NOT smooth NOT blended, intense saturated colors (cobalt blue cadmium yellow chrome orange), ENERGETIC EXPRESSIVE strokes throughout, canvas weave visible through paint, Van Gogh masterpiece quality',
     
-    'GAUGUIN': 'painting by Paul Gauguin Tahitian period: FLAT BOLD AREAS of pure unmixed saturated color WITHOUT shading or modeling, simplified forms with smooth flat surfaces, exotic tropical palette (deep orange ochre yellow turquoise rich purple vibrant green), Tahitian Women style decorative figures, warm golden skin tones, lush tropical background, VISIBLE BRUSHSTROKES with oil paint texture, NOT mosaic NOT geometric tiles, Gauguin masterpiece quality',
+    'GAUGUIN': 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. painting by Paul Gauguin: FLAT BOLD AREAS of pure unmixed saturated color, simplified forms with smooth FLAT COLOR SURFACES, exotic tropical palette (deep orange ochre yellow turquoise rich purple vibrant green), warm golden skin tones, lush tropical background, SMOOTH FLAT oil paint application with NO texture pattern, ABSOLUTELY NO mosaic effect, NO tiles, NO geometric grid, NO stained glass look, NO cell pattern, pure FLAT COLOR AREAS only, Gauguin Tahitian masterpiece quality',
     
-    'CÉZANNE': 'painting by Paul Cézanne: GEOMETRIC STRUCTURED FORMS built with parallel brushstrokes, analytical approach to underlying shapes, Mont Sainte-Victoire style constructive vision, muted earth tones with blues and greens, solid volumes emerging from color planes, visible directional brushwork, contemplative balanced compositions, Cézanne masterpiece quality',
+    'CÉZANNE': 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. painting by Paul Cézanne: GEOMETRIC STRUCTURED FORMS built with parallel brushstrokes, analytical approach to underlying shapes, Mont Sainte-Victoire style constructive vision, muted earth tones with blues and greens, solid volumes emerging from color planes, visible directional brushwork, contemplative balanced compositions, Cézanne masterpiece quality',
     
-    'SIGNAC': 'painting by Paul Signac: POINTILLIST technique with TINY DOTS of pure color placed side by side, bright Mediterranean sunlight and vibrant harbor scenes, dots blend optically when viewed from distance, luminous color vibration, The Port of Saint-Tropez style, scientific color division, Signac Neo-Impressionist masterpiece quality'
+    'SIGNAC': 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. painting by Paul Signac: POINTILLIST technique with TINY DOTS of pure color placed side by side, bright Mediterranean sunlight and vibrant harbor scenes, dots blend optically when viewed from distance, luminous color vibration, The Port of Saint-Tropez style, scientific color division, Signac Neo-Impressionist masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
@@ -1803,12 +1809,13 @@ function getPostImpressionismArtistPrompt(artistName) {
 
 // 야수파 화가별 프롬프트
 function getFauvismArtistPrompt(artistName) {
+  const genderRule = 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. If original photo shows FEMALE person, subject MUST remain FEMALE. ';
   const prompts = {
-    'MATISSE': 'painting by Henri Matisse Fauvist period: PURE BOLD UNMIXED COLORS in flat decorative areas, The Dance style simplified joyful forms, complete liberation of color from reality, saturated intense primary colors (red blue yellow green), rhythmic flowing harmonious lines, VISIBLE BRUSHSTROKES, life-affirming energetic atmosphere, NOT smooth digital rendering, Matisse Fauvist masterpiece quality',
+    'MATISSE': genderRule + 'painting by Henri Matisse Fauvist period: PURE BOLD UNMIXED COLORS in flat decorative areas, The Dance style simplified joyful forms, complete liberation of color from reality, saturated intense primary colors (red blue yellow green), rhythmic flowing harmonious lines, VISIBLE BRUSHSTROKES, life-affirming energetic atmosphere, NOT smooth digital rendering, Matisse Fauvist masterpiece quality',
     
-    'DERAIN': 'painting by André Derain: BOLD FAUVIST LANDSCAPE colors with vivid unnatural hues, Charing Cross Bridge style vibrant scenery, strong color contrasts, energetic expressive brushwork, liberated pure colors, dynamic compositions, Derain Fauvist masterpiece quality',
+    'DERAIN': genderRule + 'painting by André Derain: BOLD FAUVIST LANDSCAPE colors with vivid unnatural hues, Charing Cross Bridge style vibrant scenery, strong color contrasts, energetic expressive brushwork, liberated pure colors, dynamic compositions, Derain Fauvist masterpiece quality',
     
-    'VLAMINCK': 'painting by Maurice de Vlaminck: VIOLENT EXPRESSIVE COLORS with turbulent emotional intensity, most aggressive Fauvist palette, thick impulsive brushwork, raw powerful energy, dramatic color explosions, Van Gogh-influenced passion, Vlaminck Fauvist masterpiece quality'
+    'VLAMINCK': genderRule + 'painting by Maurice de Vlaminck: VIOLENT EXPRESSIVE COLORS with turbulent emotional intensity, most aggressive Fauvist palette, thick impulsive brushwork, raw powerful energy, dramatic color explosions, Van Gogh-influenced passion, Vlaminck Fauvist masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
@@ -1820,14 +1827,15 @@ function getFauvismArtistPrompt(artistName) {
 
 // 표현주의 화가별 프롬프트
 function getExpressionismArtistPrompt(artistName) {
+  const genderRule = 'CRITICAL GENDER RULE: If original photo shows MALE person, subject MUST remain MALE with masculine face and features - DO NOT convert to female. If original photo shows FEMALE person, subject MUST remain FEMALE. ';
   const prompts = {
-    'MUNCH': 'painting by Edvard Munch: INTENSE PSYCHOLOGICAL emotional depth, The Scream style existential anxiety atmosphere, WAVY DISTORTED flowing lines in background, haunting symbolic colors (blood red sky, sickly yellows, deep blues), raw emotional vulnerability, swirling anxious energy, Munch Expressionist masterpiece quality',
+    'MUNCH': genderRule + 'painting by Edvard Munch: INTENSE PSYCHOLOGICAL emotional depth, The Scream style existential anxiety atmosphere, WAVY DISTORTED flowing lines in background, haunting symbolic colors (blood red sky, sickly yellows, deep blues), raw emotional vulnerability, swirling anxious energy, Munch Expressionist masterpiece quality',
     
-    'KIRCHNER': 'painting by Ernst Ludwig Kirchner: ANGULAR JAGGED FORMS with sharp geometric simplification, Berlin street scene style urban tension, bold clashing colors (acid green, hot pink, electric blue), nervous energetic brushwork, Die Brücke Expressionist intensity, Kirchner masterpiece quality',
+    'KIRCHNER': genderRule + 'painting by Ernst Ludwig Kirchner: ANGULAR JAGGED FORMS with sharp geometric simplification, Berlin street scene style urban tension, bold clashing colors (acid green, hot pink, electric blue), nervous energetic brushwork, Die Brücke Expressionist intensity, Kirchner masterpiece quality',
     
-    'KOKOSCHKA': 'painting by Oskar Kokoschka: VIOLENT PSYCHOLOGICAL PORTRAITS with turbulent brushwork revealing inner turmoil, intense probing character study, thick expressive paint application, agitated nervous energy, deep emotional excavation, Kokoschka Expressionist masterpiece quality',
+    'KOKOSCHKA': genderRule + 'painting by Oskar Kokoschka: VIOLENT PSYCHOLOGICAL PORTRAITS with turbulent brushwork revealing inner turmoil, intense probing character study, thick expressive paint application, agitated nervous energy, deep emotional excavation, Kokoschka Expressionist masterpiece quality',
     
-    'KANDINSKY': 'painting by Wassily Kandinsky: ABSTRACT SPIRITUAL FORMS with floating geometric shapes, Composition series style non-representational expression, pure emotional color and form, musical visual harmonies, dynamic abstract energy, Kandinsky Expressionist masterpiece quality'
+    'KANDINSKY': genderRule + 'painting by Wassily Kandinsky: ABSTRACT SPIRITUAL FORMS with floating geometric shapes, Composition series style non-representational expression, pure emotional color and form, musical visual harmonies, dynamic abstract energy, Kandinsky Expressionist masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
