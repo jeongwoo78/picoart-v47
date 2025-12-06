@@ -1,24 +1,24 @@
-// PicoArt v58 - 모더니즘 네가티브 원칙 + 거장 한글 감지
+// PicoArt v59 - 모더니즘 7명 + 사진 유형별 비중
+// v59: 20세기 모더니즘 7명으로 축소 + 사진 유형별 비중 시스템
+//      - 7명: 피카소, 마그리트, 미로, 샤갈, 워홀, 리히텐슈타인, 키스해링
+//      - 제외: 브라크(피카소 중복), 달리(완전 삭제)
+//      - 사진 유형별 비중:
+//        🧑 단독 인물: 피카소35%, 마그리트25%, 워홀25%, 리히텐슈타인10%, 해링5%
+//        💑 커플: 피카소30%, 샤갈25%, 마그리트20%, 워홀15%, 리히텐슈타인10%
+//        👥 그룹3+: 피카소35%, 해링35%, 샤갈15%, 리히텐슈타인15%
+//        🏞️ 풍경: 피카소25%, 마그리트25%, 샤갈20%, 미로15%
+//        🍎 정물: 피카소35%, 마그리트25%, 미로20%, 워홀20%
+//      - 미로: 풍경/정물 전용 (인물 제외)
+//
 // v58: 20세기 모더니즘 가이드라인 단순화 (네가티브 원칙)
-//      - AI 자유 선택 기반
-//      - 금지 조건만 설정:
-//        ❌ 워홀: 3명+ 단체 금지 (4-grid 안 맞음)
-//        ❌ 마그리트: 3명+ 단체 금지 (multiplication 혼란)
-//        ❌ 샤갈: 동물만 있는 사진 금지 (로맨틱/인물 전용)
 //      - 거장 11명 강화 프롬프트 한글 감지 추가
-//        (달리, 샤갈, 반 고흐, 모네, 클림트, 뭉크, 마티스, 피카소, 워홀, 프리다, 마그리트)
-//      - 중복 강화 프롬프트 정리
+//        (샤갈, 반 고흐, 모네, 클림트, 뭉크, 마티스, 피카소, 워홀, 프리다, 마그리트)
 //
 // v51: 20세기 모더니즘 추가 (11번째 사조)
-//      - 입체주의: 피카소, 브라크
-//      - 초현실주의: 달리, 마그리트, 미로, 샤갈
+//      - 입체주의: 피카소
+//      - 초현실주의: 마그리트, 미로, 샤갈
 //      - 팝아트: 워홀, 리히텐슈타인, 키스해링
-//      ⛔ 제외: 만 레이(사진작가), 프리다(마스터 전용), 뒤샹(개념미술), 폴록/로스코(완전추상)
-//
-// v54: 모더니즘 비중 재분배
-//      피카소 19%, 샤갈 18%, 리히텐슈타인 15%, 마그리트 12%
-//      워홀 10%, 달리 8%, 미로 8%, 브라크 5%, 키스해링 5%
-//      리히텐슈타인 조건 완화: 만화풍/액션 장면만
+//      ⛔ 제외: 만 레이(사진작가), 프리다(마스터 전용), 뒤샹(개념미술), 폴록/로스코(완전추상), 달리(삭제), 브라크(중복)
 //
 // v57: 중세 미술 회화 느낌 방지 강화
 //      
@@ -66,24 +66,20 @@
 //   8. 후기인상주의 (1880~1910) - 4명 화가 선택
 //   9. 야수파 (1905~1908) - 3명 화가 선택
 //  10. 표현주의 (1905~1920) - 4명 화가 선택
-//  11. 20세기 모더니즘 (1907~1970) - 8명 화가 선택 ⭐ v54 업데이트
-//      → 입체주의: 피카소(19%), 브라크(5%)
-//      → 초현실주의: 샤갈(18%), 마그리트(12%), 달리(8%), 미로(8%)
-//      → 팝아트: 리히텐슈타인(15%), 워홀(10%), 키스해링(5%)
-//      ⛔ 제외: 만 레이(사진작가), 프리다(마스터 전용)
+//  11. 20세기 모더니즘 (1907~1970) - 7명 화가 선택 ⭐ v59 업데이트
+//      → 입체주의: 피카소
+//      → 초현실주의: 마그리트, 미로(풍경/정물전용), 샤갈
+//      → 팝아트: 워홀, 리히텐슈타인, 키스해링
+//      ⛔ 제외: 브라크(피카소중복), 달리(삭제), 만 레이(사진작가), 프리다(마스터전용)
 //
-// 거장 11명 (시간순 + 생사연도):
-//   1. 모네 (1840-1926, 인상주의)
-//   2. 반 고흐 (1853-1890, 후기인상주의)
-//   3. 클림트 (1862-1918, 아르누보)
-//   4. 뭉크 (1863-1944, 표현주의)
-//   5. 마티스 (1869-1954, 야수파)
-//   6. 피카소 (1881-1973, 입체주의)
-//   7. 샤갈 (1887-1985, 초현실주의)
-//   8. 마그리트 (1898-1967, 초현실주의)
-//   9. 달리 (1904-1989, 초현실주의)
-//   10. 프리다 칼로 (1907-1954, 멕시코)
-//   11. 앤디 워홀 (1928-1987, 팝아트)
+// 거장 7명 (시간순 + 생사연도):
+//   1. 반 고흐 (1853-1890, 후기인상주의)
+//   2. 클림트 (1862-1918, 아르누보)
+//   3. 뭉크 (1863-1944, 표현주의)
+//   4. 마티스 (1869-1954, 야수파)
+//   5. 피카소 (1881-1973, 입체주의)
+//   6. 프리다 칼로 (1907-1954, 멕시코)
+//   7. 앤디 워홀 (1928-1987, 팝아트)
 
 
 // ========================================
@@ -1026,50 +1022,55 @@ Strong core of 4 Expressionist masters!
 `;
 }
 
-// 20세기 모더니즘 (9명 - 3개 세부 사조)
-// 제외: 뒤샹(개념미술), 폴록/로스코(완전추상), 만 레이(사진작가), 프리다 칼로(마스터 전용)
+술), 폴록/로스코(완전추상), 만 레이(사진작가), 프리다/달리(마스터 전용), 브라크(피카소 중복)
 function getModernismGuidelines() {
   return `
-⚠️ CRITICAL: You MUST select ONLY from the 8 artists listed below!
-DO NOT select any other artist (like Boccioni, Kandinsky, Mondrian, Man Ray, Dalí, Frida Kahlo, etc.)
+⚠️ CRITICAL: You MUST select ONLY from the 7 artists listed below!
+DO NOT select any other artist (like Boccioni, Kandinsky, Mondrian, Man Ray, Dalí, Frida Kahlo, Braque, etc.)
 
-Available 20th Century Modernism Artists (8명):
+Available 20th Century Modernism Artists (7명):
 
 === CUBISM 입체주의 ===
 1. PICASSO (피카소) - Geometric fragmented forms, multiple perspectives
-2. BRAQUE (브라크) - Subtle tonal Cubism, muted earth colors, collage
 
 === SURREALISM 초현실주의 ===
-3. MAGRITTE (마그리트) - Philosophical paradox, multiplication of figures
-4. MIRÓ (미로) - Playful biomorphic forms, childlike symbols, primary colors
-5. CHAGALL (샤갈) - Soft dreamy floating figures, muted pastel colors
+2. MAGRITTE (마그리트) - Philosophical paradox, multiplication of figures
+3. MIRÓ (미로) - Playful biomorphic forms, childlike symbols, primary colors (LANDSCAPE/STILL LIFE ONLY)
+4. CHAGALL (샤갈) - Soft dreamy floating figures, muted pastel colors
 
 === POP ART 팝아트 ===
-6. WARHOL (워홀) - Silkscreen 4-panel grid, bold flat colors
-7. LICHTENSTEIN (리히텐슈타인) - Ben-Day dots, comic book style
-8. KEITH HARING (키스 해링) - Bold black outlines, dancing figures
+5. WARHOL (워홀) - Silkscreen 4-panel grid, bold flat colors
+6. LICHTENSTEIN (리히텐슈타인) - Ben-Day dots, comic book style
+7. KEITH HARING (키스 해링) - Bold black outlines, dancing figures
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚫 NEGATIVE RULES (금지 조건) - MUST FOLLOW!
+📊 PHOTO TYPE WEIGHT GUIDE (사진 유형별 비중)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-❌ WARHOL: DO NOT select for 3+ people group photos (4-grid doesn't work)
-❌ MAGRITTE: DO NOT select for 3+ people group photos (multiplication confusing)
-❌ CHAGALL: DO NOT select for animal-only photos (romantic/human style)
+🧑 SINGLE PORTRAIT (단독 인물):
+   PICASSO 35%, MAGRITTE 25%, WARHOL 25%, LICHTENSTEIN 10%, HARING 5%
+   ❌ CHAGALL, MIRÓ 제외
+
+💑 COUPLE (커플 2인):
+   PICASSO 30%, CHAGALL 25%, MAGRITTE 20%, WARHOL 15%, LICHTENSTEIN 10%
+   ❌ HARING, MIRÓ 제외
+
+👥 GROUP 3+ (단체 3명 이상):
+   PICASSO 35%, HARING 35%, CHAGALL 15%, LICHTENSTEIN 15%
+   ❌ WARHOL, MAGRITTE, MIRÓ 제외
+
+🏞️ LANDSCAPE (풍경):
+   PICASSO 25%, MAGRITTE 25%, CHAGALL 20%, MIRÓ 15%
+   ❌ WARHOL, LICHTENSTEIN, HARING 제외
+
+🍎 STILL LIFE (정물):
+   PICASSO 35%, MAGRITTE 25%, MIRÓ 20%, WARHOL 20%
+   ❌ CHAGALL, LICHTENSTEIN, HARING 제외
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ FREE SELECTION - AI chooses best match!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-For all other cases, freely choose the artist that BEST matches the photo's:
-- Subject matter (people, landscape, animals, objects)
-- Mood and emotion
-- Composition and style potential
-
-Trust your artistic judgment! Each artist has unique strengths.
-
-⚠️ FINAL REMINDER: ONLY these 8 artists are valid:
-PICASSO, BRAQUE, MAGRITTE, MIRÓ, CHAGALL, WARHOL, LICHTENSTEIN, KEITH HARING
+⚠️ FINAL REMINDER: ONLY these 7 artists are valid:
+PICASSO, MAGRITTE, MIRÓ, CHAGALL, WARHOL, LICHTENSTEIN, KEITH HARING
 `;
 }
 
@@ -1088,6 +1089,26 @@ function getModernismHints(photoAnalysis) {
 ⚠️ GROUP PHOTO DETECTED (${count} people):
 ❌ DO NOT select WARHOL (4-grid doesn't work with groups)
 ❌ DO NOT select MAGRITTE (multiplication effect confusing with groups)
+❌ DO NOT select MIRÓ (abstract symbols, not suitable for portraits)
+✅ RECOMMENDED: PICASSO 35%, HARING 35%, CHAGALL 15%, LICHTENSTEIN 15%
+`;
+  }
+  
+  // 커플 사진
+  if (count === 2) {
+    negativeWarnings = `
+💑 COUPLE PHOTO DETECTED:
+✅ RECOMMENDED: PICASSO 30%, CHAGALL 25%, MAGRITTE 20%, WARHOL 15%, LICHTENSTEIN 10%
+❌ DO NOT select HARING, MIRÓ
+`;
+  }
+  
+  // 단독 인물
+  if (count === 1) {
+    negativeWarnings = `
+🧑 SINGLE PORTRAIT DETECTED:
+✅ RECOMMENDED: PICASSO 35%, MAGRITTE 25%, WARHOL 25%, LICHTENSTEIN 10%, HARING 5%
+❌ DO NOT select CHAGALL, MIRÓ
 `;
   }
   
@@ -1102,25 +1123,31 @@ function getModernismHints(photoAnalysis) {
 `;
   }
   
+  // 풍경 사진
+  const isLandscape = subject && (subject.includes('landscape') || subject.includes('nature') || 
+                      subject.includes('mountain') || subject.includes('sea') || 
+                      subject.includes('sky')) && (!count || count === 0);
+  if (isLandscape) {
+    negativeWarnings = `
+🏞️ LANDSCAPE DETECTED:
+✅ RECOMMENDED: PICASSO 25%, MAGRITTE 25%, CHAGALL 20%, MIRÓ 15%
+❌ DO NOT select WARHOL, LICHTENSTEIN, HARING
+`;
+  }
+  
   return `
 ${negativeWarnings}
 
-🎯 FREE SELECTION - Choose the BEST artist for this photo!
+🎯 Choose the BEST artist based on photo type!
 
 Each artist has unique strengths:
 - PICASSO: Geometric fragmentation, multiple viewpoints, cubist deconstruction
-- BRAQUE: Subtle analytical cubism, muted earth tones, collage texture
 - MAGRITTE: Philosophical paradox, multiplication, apple-over-face mystery
-- MIRÓ: Playful biomorphic shapes, stars/moons, primary colors, childlike joy
+- MIRÓ: Playful biomorphic shapes, stars/moons, primary colors (LANDSCAPE/STILL LIFE ONLY)
 - CHAGALL: Soft dreamy floating figures, muted pastels, romantic nostalgia
 - WARHOL: 4-panel grid, bold flat pop colors, silkscreen repetition
 - LICHTENSTEIN: Ben-Day dots, comic book style, thick black outlines
 - KEITH HARING: Bold black outlines, dancing figures, radiant energy lines
-
-Trust your artistic judgment to match the photo's:
-- Subject matter and composition
-- Mood and emotion
-- Style potential
 
 Return the artist that will create the most compelling transformation!
 `;
@@ -1183,7 +1210,7 @@ const fallbackPrompts = {
   
   modernism: {
     name: '20세기 모더니즘',
-    prompt: 'Transform into 20th Century Modernism art. Choose best style: CUBIST fragmented geometric forms by Picasso with face broken into multiple angular planes seen from different angles simultaneously, or SURREALIST dreamlike by Dalí with melting dripping forms in hyperrealistic style, or MAGRITTE philosophical paradox with subject multiplied like Golconda raining men, or POP ART by Warhol with face repeated in 4-grid with different bold color schemes, or LICHTENSTEIN comic book style with visible Ben-Day dots throughout and thick black outlines. Revolutionary 20th century masterpiece quality'
+    prompt: 'Transform into 20th Century Modernism art. Choose best style: CUBIST fragmented geometric forms by Picasso with face broken into multiple angular planes seen from different angles simultaneously, or MAGRITTE philosophical paradox with subject multiplied like Golconda raining men, or CHAGALL soft dreamy floating figures with muted pastel colors, or MIRÓ playful biomorphic symbols with primary colors (for landscape/still life), or POP ART by Warhol with face repeated in 4-grid with different bold color schemes, or LICHTENSTEIN comic book style with visible Ben-Day dots throughout and thick black outlines, or KEITH HARING bold black outlines with dancing figures. Revolutionary 20th century masterpiece quality'
   },
   
   // ========================================
@@ -1307,7 +1334,7 @@ async function selectArtistWithAI(imageBase64, selectedStyle, timeoutMs = 15000)
 VINCENT VAN GOGH - SELECT ONE:
 1. "The Starry Night" (별이 빛나는 밤) → night scene, sky, landscape, evening | Style: SWIRLING SPIRAL brushstrokes, COBALT BLUE and YELLOW, cypress trees
 2. "Sunflowers" (해바라기) → flowers, still life, bouquet | Style: THICK IMPASTO, CHROME YELLOW dominates, expressive petal strokes
-3. "Self-Portrait" (자화상) → single portrait, face, upper body | Style: SWIRLING BACKGROUND, intense gaze, blue-green palette`,
+3. "Self-Portrait" (자화상, 1889 Saint-Rémy) → single portrait, face, upper body | Style: TURQUOISE SWIRLING BACKGROUND, red-orange beard, blue-green coat, intense gaze`,
 
         'klimt': `
 GUSTAV KLIMT - SELECT ONE:
@@ -2410,20 +2437,7 @@ export default async function handler(req, res) {
         // v52 추가: 20세기 모더니즘 10명 화가 강화
         // ========================================
         
-        // 브라크 선택시 분석적 입체주의 강화 (모더니즘)
-        if (selectedArtist.toUpperCase().trim().includes('BRAQUE') || 
-            selectedArtist.toUpperCase().trim().includes('GEORGES') ||
-            selectedArtist.includes('브라크') ||
-            selectedArtist.includes('조르주')) {
-          console.log('🎯 Braque detected');
-          if (!finalPrompt.includes('analytical Cubism')) {
-            finalPrompt = finalPrompt + ', painting by Georges Braque, ANALYTICAL CUBISM with subtle geometric fragmentation, muted earth tones of browns tans and grays, papier collé texture with collage-like layered planes, musical instruments and still life motifs, more harmonious and subtle than Picasso, overlapping translucent planes creating shallow space, stenciled letters and numbers integrated into composition';
-            controlStrength = 0.20;
-            console.log('✅ Enhanced Braque analytical Cubism added (control_strength 0.20)');
-          } else {
-            console.log('ℹ️ Braque Cubism already in prompt (AI included it)');
-          }
-        }
+        // 브라크 - v59에서 제거됨 (피카소와 중복)
         
         // 만 레이 선택시 실험적 사진 기법 강화
         if (selectedArtist.toUpperCase().trim().includes('MAN RAY') || 
@@ -2642,6 +2656,29 @@ export default async function handler(req, res) {
     // 20세기 모더니즘: 대전제 적용 제외!
     // (얼굴 분해, 복제, 녹아내림 등 허용 위해)
     // ========================================
+    
+    // ========================================
+    // 매력적 표현 대전제 (Attractive Enhancement)
+    // 고통/왜곡이 핵심인 작품은 제외
+    // ========================================
+    const excludeAttractive = [
+      'munch-scream',      // 절규 - 공포/불안 왜곡
+      'munch-sickchild',   // 병든 아이 - 창백함/고통
+      'picasso-guernica',  // 게르니카 - 전쟁 참상
+      'picasso-weepingwoman', // 우는 여인 - 슬픔 왜곡
+      'frida-brokencolumn' // 부러진 기둥 - 고통 시각화
+    ];
+    
+    const shouldApplyAttractive = !excludeAttractive.includes(selectedWork);
+    
+    if (shouldApplyAttractive && selectedWork) {
+      const attractiveEnhancement = ', render all people ATTRACTIVELY and BEAUTIFULLY with appealing refined features, elegant dignified appearance';
+      finalPrompt = finalPrompt + attractiveEnhancement;
+      console.log('✨ Applied attractive enhancement for:', selectedWork);
+    } else if (selectedWork) {
+      console.log('🎭 Skipped attractive enhancement (expressive distortion allowed):', selectedWork);
+    }
+    
     if (categoryType === 'modernism') {
       console.log('🎨 Modernism: Skipping paintingEnforcement (allows face distortion/fragmentation/multiplication)');
       // 대전제 적용 안 함 - 모더니즘은 프롬프트에서 직접 제어
