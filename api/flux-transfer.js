@@ -86,6 +86,430 @@
 // 사조별 화가 가이드라인 함수
 // ========================================
 
+// ========================================
+// 🎯 대전제: 가중치 기반 랜덤 화가 선택 시스템
+// ========================================
+// 비중이 설정된 사조에서는 AI에게 맡기지 않고
+// 코드에서 비율대로 랜덤 선택 → AI에게 지정
+// ========================================
+
+// 가중치 기반 랜덤 선택 함수
+function weightedRandomSelect(weightedOptions) {
+  const totalWeight = weightedOptions.reduce((sum, opt) => sum + opt.weight, 0);
+  let random = Math.random() * totalWeight;
+  
+  for (const option of weightedOptions) {
+    random -= option.weight;
+    if (random <= 0) {
+      return option.name;
+    }
+  }
+  return weightedOptions[0].name; // fallback
+}
+
+// 사진 유형 감지 함수
+function detectPhotoType(photoAnalysis) {
+  const { count, subject } = photoAnalysis;
+  
+  // 풍경 감지
+  const isLandscape = subject && (
+    subject.includes('landscape') || subject.includes('nature') || 
+    subject.includes('mountain') || subject.includes('sea') || 
+    subject.includes('sky') || subject.includes('scenery') ||
+    subject.includes('building') || subject.includes('city')
+  ) && (!count || count === 0);
+  
+  // 정물 감지
+  const isStillLife = subject && (
+    subject.includes('food') || subject.includes('flower') || 
+    subject.includes('object') || subject.includes('still') ||
+    subject.includes('fruit') || subject.includes('bottle') ||
+    subject.includes('table')
+  ) && (!count || count === 0);
+  
+  // 동물 감지
+  const isAnimal = subject && (
+    subject.includes('animal') || subject.includes('pet') || 
+    subject.includes('dog') || subject.includes('cat') || 
+    subject.includes('bird') || subject.includes('horse')
+  ) && (!count || count === 0);
+  
+  if (isLandscape) return 'landscape';
+  if (isStillLife) return 'stillLife';
+  if (isAnimal) return 'animal';
+  if (count >= 3) return 'group';
+  if (count === 2) return 'couple';
+  if (count === 1) return 'portrait';
+  
+  return 'default';
+}
+
+// ========================================
+// 사조별 가중치 테이블
+// ========================================
+
+const ARTIST_WEIGHTS = {
+  // 모더니즘 (7명)
+  modernism: {
+    portrait: [
+      { name: 'PICASSO', weight: 35 },
+      { name: 'MAGRITTE', weight: 25 },
+      { name: 'WARHOL', weight: 25 },
+      { name: 'LICHTENSTEIN', weight: 10 },
+      { name: 'KEITH HARING', weight: 5 }
+    ],
+    couple: [
+      { name: 'PICASSO', weight: 30 },
+      { name: 'CHAGALL', weight: 25 },
+      { name: 'MAGRITTE', weight: 20 },
+      { name: 'WARHOL', weight: 15 },
+      { name: 'LICHTENSTEIN', weight: 10 }
+    ],
+    group: [
+      { name: 'PICASSO', weight: 35 },
+      { name: 'KEITH HARING', weight: 35 },
+      { name: 'CHAGALL', weight: 15 },
+      { name: 'LICHTENSTEIN', weight: 15 }
+    ],
+    landscape: [
+      { name: 'PICASSO', weight: 25 },
+      { name: 'MAGRITTE', weight: 25 },
+      { name: 'CHAGALL', weight: 20 },
+      { name: 'MIRÓ', weight: 15 },
+      { name: 'PICASSO', weight: 15 } // 나머지
+    ],
+    stillLife: [
+      { name: 'PICASSO', weight: 35 },
+      { name: 'MAGRITTE', weight: 25 },
+      { name: 'MIRÓ', weight: 20 },
+      { name: 'WARHOL', weight: 20 }
+    ],
+    default: [
+      { name: 'PICASSO', weight: 30 },
+      { name: 'MAGRITTE', weight: 20 },
+      { name: 'WARHOL', weight: 20 },
+      { name: 'LICHTENSTEIN', weight: 15 },
+      { name: 'CHAGALL', weight: 10 },
+      { name: 'KEITH HARING', weight: 5 }
+    ]
+  },
+  
+  // 르네상스
+  renaissance: {
+    portrait: [
+      { name: 'LEONARDO DA VINCI', weight: 40 },
+      { name: 'TITIAN', weight: 30 },
+      { name: 'RAPHAEL', weight: 20 },
+      { name: 'BOTTICELLI', weight: 10 }
+    ],
+    femaleFace: [
+      { name: 'LEONARDO DA VINCI', weight: 80 },
+      { name: 'BOTTICELLI', weight: 15 },
+      { name: 'RAPHAEL', weight: 5 }
+    ],
+    maleFace: [
+      { name: 'TITIAN', weight: 70 },
+      { name: 'RAPHAEL', weight: 20 },
+      { name: 'LEONARDO DA VINCI', weight: 10 }
+    ],
+    landscape: [
+      { name: 'TITIAN', weight: 50 },
+      { name: 'LEONARDO DA VINCI', weight: 30 },
+      { name: 'RAPHAEL', weight: 20 }
+    ],
+    default: [
+      { name: 'LEONARDO DA VINCI', weight: 35 },
+      { name: 'TITIAN', weight: 30 },
+      { name: 'RAPHAEL', weight: 20 },
+      { name: 'BOTTICELLI', weight: 15 }
+    ]
+  },
+  
+  // 바로크
+  baroque: {
+    portrait: [
+      { name: 'CARAVAGGIO', weight: 40 },
+      { name: 'REMBRANDT', weight: 35 },
+      { name: 'VERMEER', weight: 15 },
+      { name: 'VELÁZQUEZ', weight: 10 }
+    ],
+    elderly: [
+      { name: 'REMBRANDT', weight: 70 },
+      { name: 'CARAVAGGIO', weight: 20 },
+      { name: 'VELÁZQUEZ', weight: 10 }
+    ],
+    femaleWindow: [
+      { name: 'VERMEER', weight: 65 },
+      { name: 'REMBRANDT', weight: 20 },
+      { name: 'CARAVAGGIO', weight: 15 }
+    ],
+    formal: [
+      { name: 'VELÁZQUEZ', weight: 60 },
+      { name: 'REMBRANDT', weight: 25 },
+      { name: 'CARAVAGGIO', weight: 15 }
+    ],
+    default: [
+      { name: 'CARAVAGGIO', weight: 35 },
+      { name: 'REMBRANDT', weight: 30 },
+      { name: 'VERMEER', weight: 20 },
+      { name: 'VELÁZQUEZ', weight: 15 }
+    ]
+  },
+  
+  // 로코코
+  rococo: {
+    outdoor: [
+      { name: 'WATTEAU', weight: 70 },
+      { name: 'BOUCHER', weight: 30 }
+    ],
+    default: [
+      { name: 'BOUCHER', weight: 70 },
+      { name: 'WATTEAU', weight: 30 }
+    ]
+  },
+  
+  // 중세
+  medieval: {
+    default: [
+      { name: 'BYZANTINE', weight: 40 },
+      { name: 'GOTHIC', weight: 35 },
+      { name: 'ISLAMIC MINIATURE', weight: 25 }
+    ]
+  },
+  
+  // 신고전주의
+  neoclassicism: {
+    formal: [
+      { name: 'JACQUES-LOUIS DAVID', weight: 70 },
+      { name: 'INGRES', weight: 30 }
+    ],
+    femaleFace: [
+      { name: 'INGRES', weight: 65 },
+      { name: 'JACQUES-LOUIS DAVID', weight: 35 }
+    ],
+    landscape: [
+      { name: 'CLAUDE LORRAIN', weight: 75 },
+      { name: 'JACQUES-LOUIS DAVID', weight: 25 }
+    ],
+    default: [
+      { name: 'JACQUES-LOUIS DAVID', weight: 50 },
+      { name: 'INGRES', weight: 30 },
+      { name: 'CLAUDE LORRAIN', weight: 20 }
+    ]
+  },
+  
+  // 고대 그리스-로마 (스타일 선택)
+  ancient: {
+    indoor: [
+      { name: 'CLASSICAL SCULPTURE', weight: 80 },
+      { name: 'ROMAN MOSAIC', weight: 20 }
+    ],
+    outdoor: [
+      { name: 'ROMAN MOSAIC', weight: 80 },
+      { name: 'CLASSICAL SCULPTURE', weight: 20 }
+    ],
+    sports: [
+      { name: 'CLASSICAL SCULPTURE', weight: 90 },
+      { name: 'ROMAN MOSAIC', weight: 10 }
+    ],
+    animal: [
+      { name: 'ROMAN MOSAIC', weight: 95 },
+      { name: 'CLASSICAL SCULPTURE', weight: 5 }
+    ],
+    default: [
+      { name: 'CLASSICAL SCULPTURE', weight: 50 },
+      { name: 'ROMAN MOSAIC', weight: 50 }
+    ]
+  },
+  
+  // 인상주의 (4명)
+  impressionism: {
+    portrait: [
+      { name: 'RENOIR', weight: 45 },
+      { name: 'DEGAS', weight: 35 },
+      { name: 'MONET', weight: 15 },
+      { name: 'PISSARRO', weight: 5 }
+    ],
+    movement: [
+      { name: 'DEGAS', weight: 50 },
+      { name: 'RENOIR', weight: 30 },
+      { name: 'MONET', weight: 15 },
+      { name: 'PISSARRO', weight: 5 }
+    ],
+    landscape: [
+      { name: 'MONET', weight: 45 },
+      { name: 'PISSARRO', weight: 30 },
+      { name: 'RENOIR', weight: 15 },
+      { name: 'DEGAS', weight: 10 }
+    ],
+    default: [
+      { name: 'RENOIR', weight: 35 },
+      { name: 'DEGAS', weight: 30 },
+      { name: 'MONET', weight: 25 },
+      { name: 'PISSARRO', weight: 10 }
+    ]
+  },
+  
+  // 후기인상주의 (4명)
+  postImpressionism: {
+    portrait: [
+      { name: 'VAN GOGH', weight: 40 },
+      { name: 'GAUGUIN', weight: 30 },
+      { name: 'CÉZANNE', weight: 20 },
+      { name: 'SIGNAC', weight: 10 }
+    ],
+    landscape: [
+      { name: 'VAN GOGH', weight: 35 },
+      { name: 'CÉZANNE', weight: 30 },
+      { name: 'GAUGUIN', weight: 20 },
+      { name: 'SIGNAC', weight: 15 }
+    ],
+    stillLife: [
+      { name: 'CÉZANNE', weight: 50 },
+      { name: 'VAN GOGH', weight: 30 },
+      { name: 'GAUGUIN', weight: 15 },
+      { name: 'SIGNAC', weight: 5 }
+    ],
+    default: [
+      { name: 'VAN GOGH', weight: 35 },
+      { name: 'GAUGUIN', weight: 30 },
+      { name: 'CÉZANNE', weight: 20 },
+      { name: 'SIGNAC', weight: 15 }
+    ]
+  },
+  
+  // 야수파 (3명)
+  fauvism: {
+    portrait: [
+      { name: 'MATISSE', weight: 45 },
+      { name: 'DERAIN', weight: 30 },
+      { name: 'VLAMINCK', weight: 25 }
+    ],
+    landscape: [
+      { name: 'DERAIN', weight: 45 },
+      { name: 'VLAMINCK', weight: 35 },
+      { name: 'MATISSE', weight: 20 }
+    ],
+    default: [
+      { name: 'MATISSE', weight: 35 },
+      { name: 'DERAIN', weight: 35 },
+      { name: 'VLAMINCK', weight: 30 }
+    ]
+  },
+  
+  // 표현주의 (4명)
+  expressionism: {
+    portrait: [
+      { name: 'MUNCH', weight: 30 },
+      { name: 'KOKOSCHKA', weight: 30 },
+      { name: 'KIRCHNER', weight: 25 },
+      { name: 'KANDINSKY', weight: 15 }
+    ],
+    urban: [
+      { name: 'KIRCHNER', weight: 45 },
+      { name: 'KOKOSCHKA', weight: 25 },
+      { name: 'MUNCH', weight: 20 },
+      { name: 'KANDINSKY', weight: 10 }
+    ],
+    abstract: [
+      { name: 'KANDINSKY', weight: 60 },
+      { name: 'KIRCHNER', weight: 20 },
+      { name: 'MUNCH', weight: 10 },
+      { name: 'KOKOSCHKA', weight: 10 }
+    ],
+    default: [
+      { name: 'MUNCH', weight: 30 },
+      { name: 'KOKOSCHKA', weight: 30 },
+      { name: 'KIRCHNER', weight: 25 },
+      { name: 'KANDINSKY', weight: 15 }
+    ]
+  }
+};
+
+// 사조별 가중치 선택 함수
+function selectArtistByWeight(category, photoAnalysis) {
+  const weights = ARTIST_WEIGHTS[category];
+  if (!weights) return null; // 가중치 없으면 AI 자유 선택
+  
+  const photoType = detectPhotoType(photoAnalysis);
+  
+  // 특수 케이스 처리 (성별 등)
+  if (category === 'renaissance') {
+    if (photoAnalysis.gender === 'female' && photoType === 'portrait') {
+      return weightedRandomSelect(weights.femaleFace);
+    }
+    if (photoAnalysis.gender === 'male' && photoType === 'portrait') {
+      return weightedRandomSelect(weights.maleFace);
+    }
+  }
+  
+  if (category === 'baroque') {
+    if (photoAnalysis.age === 'elderly') {
+      return weightedRandomSelect(weights.elderly);
+    }
+  }
+  
+  if (category === 'rococo') {
+    if (photoAnalysis.background?.includes('outdoor') || photoAnalysis.background?.includes('garden')) {
+      return weightedRandomSelect(weights.outdoor);
+    }
+  }
+  
+  // 고대 그리스-로마 특수 처리
+  if (category === 'ancient') {
+    const subject = (photoAnalysis.subject || '').toLowerCase();
+    const background = (photoAnalysis.background || '').toLowerCase();
+    
+    // 동물 → 모자이크
+    if (subject.includes('animal') || subject.includes('pet') || subject.includes('dog') || subject.includes('cat')) {
+      return weightedRandomSelect(weights.animal);
+    }
+    // 스포츠/액션 → 조각
+    if (subject.includes('sport') || subject.includes('action') || subject.includes('running') || subject.includes('athletic')) {
+      return weightedRandomSelect(weights.sports);
+    }
+    // 야외 → 모자이크
+    if (background.includes('outdoor') || background.includes('nature') || background.includes('landscape')) {
+      return weightedRandomSelect(weights.outdoor);
+    }
+    // 실내 → 조각
+    if (background.includes('indoor') || background.includes('studio') || background.includes('room')) {
+      return weightedRandomSelect(weights.indoor);
+    }
+  }
+  
+  // 인상주의 특수 처리
+  if (category === 'impressionism') {
+    const subject = (photoAnalysis.subject || '').toLowerCase();
+    // 움직임/액션 → 드가
+    if (subject.includes('dance') || subject.includes('movement') || subject.includes('action') || subject.includes('sport')) {
+      return weightedRandomSelect(weights.movement);
+    }
+  }
+  
+  // 표현주의 특수 처리
+  if (category === 'expressionism') {
+    const subject = (photoAnalysis.subject || '').toLowerCase();
+    const background = (photoAnalysis.background || '').toLowerCase();
+    // 도시/도심 → 키르히너
+    if (background.includes('city') || background.includes('urban') || background.includes('street')) {
+      return weightedRandomSelect(weights.urban);
+    }
+    // 추상적 → 칸딘스키
+    if (subject.includes('abstract') || subject.includes('spiritual')) {
+      return weightedRandomSelect(weights.abstract);
+    }
+  }
+  
+  // 일반 사진 유형별 선택
+  const typeWeights = weights[photoType] || weights.default;
+  return weightedRandomSelect(typeWeights);
+}
+
+// ========================================
+// 끝: 가중치 기반 랜덤 화가 선택 시스템
+// ========================================
+
 // 고대 그리스-로마 (2가지 스타일)
 function getAncientGreekRomanGuidelines() {
   return `
@@ -469,7 +893,7 @@ Unless clear outdoor garden → Watteau (30%)
 `;
 }
 
-// 중세 미술 (비잔틴·고딕·로마네스크·이슬람) ⭐ v45 이슬람 2가지 스타일
+// 중세 미술 (비잔틴·고딕·이슬람) ⭐ v59 로마네스크 삭제
 function getMedievalGuidelines() {
   return `
 Available Medieval Art Styles:
@@ -478,14 +902,15 @@ Available Medieval Art Styles:
 - Islamic MINIATURE → ONLY for PEOPLE (forbidden for landscapes - boring!)
 - Islamic GEOMETRIC → ONLY for LANDSCAPES (excellent for patterns/nature)
 
-📍 FOR PORTRAITS/PEOPLE (인물화) - 4 styles available:
+📍 FOR PORTRAITS/PEOPLE (인물화) - 3 styles available:
 
-1. BYZANTINE (비잔틴) ⭐⭐⭐⭐⭐ (55%)
+1. BYZANTINE (비잔틴) ⭐⭐⭐⭐ (35%)
    - Specialty: SACRED GOLDEN MOSAIC backgrounds, flat iconic forms, divine transcendence
    - Best for: Formal dignified portraits - Byzantine spirituality and eternal presence
-   - Signature: Gold leaf backgrounds, hieratic frontal poses, sacred eternal atmosphere
+   - Signature: GOLDEN HALO behind head, Gold leaf backgrounds, hieratic frontal poses
+   - CRITICAL: Must have CIRCULAR GOLDEN NIMBUS (halo) behind subject's head
 
-2. GOTHIC (고딕) ⭐⭐⭐ (25%)
+2. GOTHIC (고딕) ⭐⭐⭐⭐ (35%)
    - Specialty: CATHEDRAL STAINED GLASS with thick BLACK LEAD LINES dividing colored glass sections
    - Reference: Chartres Cathedral stained glass windows style
    - Best for: Religious atmosphere with jewel-tone translucent colors
@@ -495,7 +920,7 @@ Available Medieval Art Styles:
    - Key features: Flat 2D figures, no perspective, translucent glass effect, light passing through
    - NOT a painting - must look like actual STAINED GLASS WINDOW with lead dividers
 
-3. ISLAMIC MINIATURE (이슬람 세밀화) ⭐⭐ (20%)
+3. ISLAMIC MINIATURE (이슬람 세밀화) ⭐⭐⭐ (30%)
    - Specialty: Persian/Ottoman COURT MINIATURE painting, intricate delicate details, vibrant jewel colors
    - Best for: PEOPLE ONLY - courtly elegant portraits, delicate graceful figures, ornamental backgrounds
    - Signature: Persian manuscript illumination style, flat decorative composition, rich jewel tones, intricate patterns
@@ -519,11 +944,11 @@ Choose best style among: Byzantine, Gothic, Islamic GEOMETRIC
 
 🎯 CRITICAL DECISION LOGIC:
 IF photo has PEOPLE:
-  → Choose from: Byzantine (55%), Gothic (25%), Islamic MINIATURE (20%)
+  → Choose from: Byzantine (35%), Gothic (35%), Islamic MINIATURE (30%)
   → NEVER Islamic GEOMETRIC (it prohibits human figures)
   
 IF photo has NO people (landscape/objects):
-  → Choose from: Byzantine, Gothic, Romanesque, Islamic GEOMETRIC
+  → Choose from: Byzantine, Gothic, Islamic GEOMETRIC
   → AI decides best fit based on scene characteristics
   → NEVER Islamic MINIATURE (boring for landscapes!)
 `;
@@ -551,29 +976,27 @@ function getMedievalHints(photoAnalysis) {
 `;
   }
   
-  // 인물 있으면 → 비잔틴 30%, 고딕 25%, 로마네스크 20%, 이슬람 세밀화 25%
+  // 인물 있으면 → 비잔틴 35%, 고딕 35%, 이슬람 세밀화 30%
   if (count >= 1 || subject.includes('person') || subject.includes('people') || subject.includes('portrait')) {
     return `
 ⚠️ CRITICAL: This photo has PEOPLE
 
-🎯 Choose from 4 portrait styles:
-- Byzantine (30%) - Sacred golden mosaic, divine transcendence
-- Gothic (25%) - Cathedral stained glass, holy atmosphere
-- Romanesque (20%) - Church fresco, biblical simplicity
-- Islamic MINIATURE (25%) - Persian court elegance, ornamental beauty
+🎯 Choose from 3 portrait styles:
+- Byzantine (35%) - Sacred golden mosaic, GOLDEN HALO, divine transcendence
+- Gothic (35%) - Cathedral stained glass, BLACK LEAD LINES, holy atmosphere
+- Islamic MINIATURE (30%) - Persian court elegance, ornamental beauty
 
 ⚠️ NEVER use Islamic GEOMETRIC for people (prohibits human figures)
 `;
   }
   
-  // 인물 없으면 → 비잔틴, 고딕, 로마네스크, 이슬람 기하학 (세밀화 금지!)
+  // 인물 없으면 → 비잔틴, 고딕, 이슬람 기하학 (세밀화 금지!)
   return `
 ⚠️ CRITICAL: This photo has NO people (landscape/objects)
 
-🎯 Choose from 4 landscape styles:
+🎯 Choose from 3 landscape styles:
 - Byzantine - Golden mosaic atmosphere
 - Gothic - Cathedral heavenly light
-- Romanesque - Church fresco solidity  
 - Islamic GEOMETRIC - Arabesque patterns (EXCELLENT for landscapes!)
 
 ⚠️ NEVER use Islamic MINIATURE for landscapes (boring!)
@@ -1091,7 +1514,14 @@ function getModernismHints(photoAnalysis) {
 ❌ DO NOT select WARHOL (4-grid doesn't work with groups)
 ❌ DO NOT select MAGRITTE (multiplication effect confusing with groups)
 ❌ DO NOT select MIRÓ (abstract symbols, not suitable for portraits)
-✅ RECOMMENDED: PICASSO 35%, HARING 35%, CHAGALL 15%, LICHTENSTEIN 15%
+
+✅ VALID OPTIONS for groups:
+- PICASSO: Cubist fragmentation of multiple figures
+- KEITH HARING: Bold outlines, dynamic dancing figures (best for energetic/fun groups)
+- CHAGALL: Dreamy floating figures (best for romantic/family groups)
+- LICHTENSTEIN: Comic book style (best for dramatic/action groups)
+
+Choose based on the GROUP'S MOOD and ENERGY!
 `;
   }
   
@@ -1099,8 +1529,17 @@ function getModernismHints(photoAnalysis) {
   if (count === 2) {
     negativeWarnings = `
 💑 COUPLE PHOTO DETECTED:
-✅ RECOMMENDED: PICASSO 30%, CHAGALL 25%, MAGRITTE 20%, WARHOL 15%, LICHTENSTEIN 10%
-❌ DO NOT select HARING, MIRÓ
+❌ DO NOT select HARING (too energetic for romantic couples)
+❌ DO NOT select MIRÓ (abstract symbols, not suitable for portraits)
+
+✅ VALID OPTIONS for couples:
+- CHAGALL: Dreamy floating lovers (best for romantic mood)
+- PICASSO: Merged/overlapping faces (best for passionate/artistic)
+- MAGRITTE: Philosophical mystery (best for elegant/formal)
+- WARHOL: Pop art repetition (best for modern/fun)
+- LICHTENSTEIN: Comic romance (best for playful)
+
+Choose based on the COUPLE'S MOOD!
 `;
   }
   
@@ -1108,8 +1547,17 @@ function getModernismHints(photoAnalysis) {
   if (count === 1) {
     negativeWarnings = `
 🧑 SINGLE PORTRAIT DETECTED:
-✅ RECOMMENDED: PICASSO 35%, MAGRITTE 25%, WARHOL 25%, LICHTENSTEIN 10%, HARING 5%
-❌ DO NOT select CHAGALL, MIRÓ
+❌ DO NOT select CHAGALL (romantic style needs couple)
+❌ DO NOT select MIRÓ (abstract symbols, not suitable for portraits)
+
+✅ VALID OPTIONS for single portrait:
+- PICASSO: Cubist face fragmentation (best for artistic/bold)
+- MAGRITTE: Apple mystery or multiplication (best for philosophical)
+- WARHOL: 4-panel pop art grid (best for iconic/colorful)
+- LICHTENSTEIN: Comic book dots (best for dramatic expression)
+- HARING: Bold outline figure (best for dynamic pose)
+
+Choose based on the PERSON'S EXPRESSION and POSE!
 `;
   }
   
@@ -1131,8 +1579,17 @@ function getModernismHints(photoAnalysis) {
   if (isLandscape) {
     negativeWarnings = `
 🏞️ LANDSCAPE DETECTED:
-✅ RECOMMENDED: PICASSO 25%, MAGRITTE 25%, CHAGALL 20%, MIRÓ 15%
-❌ DO NOT select WARHOL, LICHTENSTEIN, HARING
+❌ DO NOT select WARHOL (portrait-focused 4-grid)
+❌ DO NOT select LICHTENSTEIN (comic style for people)
+❌ DO NOT select HARING (figure-focused)
+
+✅ VALID OPTIONS for landscape:
+- PICASSO: Cubist geometric landscape
+- MAGRITTE: Surreal dreamscape
+- CHAGALL: Floating village scene
+- MIRÓ: Playful biomorphic symbols
+
+Choose based on the LANDSCAPE'S MOOD!
 `;
   }
   
@@ -1166,7 +1623,7 @@ const fallbackPrompts = {
   
   medieval: {
     name: '중세 미술',
-    prompt: 'Medieval sacred art with dynamic style selection: IF ANIMALS in photo → ALWAYS use Islamic Miniature style: Persian/Ottoman COURT MINIATURE painting with intricate delicate details, vibrant jewel colors (ruby red, sapphire blue, emerald green, gold), flat decorative composition, ornamental floral patterns, courtly elegant aesthetic, richly decorated background, animals depicted in garden or hunting scenes, luxurious manuscript illumination quality, NO religious Christian imagery for animals to avoid inappropriate context. IF PEOPLE in photo choose from BYZANTINE (30%): GOLDEN MOSAIC sacred backgrounds with shimmering gold leaf, flat hieratic frontal iconic figures, divine transcendent spiritual atmosphere; OR GOTHIC (25%): CATHEDRAL STAINED GLASS jewel tones, vertical elongated figures, DIVINE HOLY LIGHT streaming through Gothic arches, FLAT TWO-DIMENSIONAL medieval aesthetic NOT realistic smooth painting, angular linear style with hard edges like stained glass panels; OR ROMANESQUE (20%): CHURCH FRESCO flat solid forms, BIBLICAL NARRATIVE simplicity, stone relief aesthetic, FLAT MURAL FRESCO style NOT smooth realistic painting, solid block-like forms with heavy outlines; OR ISLAMIC MINIATURE (25%): Persian/Ottoman COURT MINIATURE for people. IF NO PEOPLE AND NO ANIMALS (landscape only) → ISLAMIC GEOMETRIC: intricate arabesque patterns, sacred geometry, decorative motifs, flowing ornamental designs. ANIMALS = ISLAMIC MINIATURE ALWAYS (safe secular art). Medieval masterpiece quality'
+    prompt: 'Medieval sacred art with dynamic style selection: IF ANIMALS in photo → ALWAYS use Islamic Miniature style: Persian/Ottoman COURT MINIATURE painting with intricate delicate details, vibrant jewel colors (ruby red, sapphire blue, emerald green, gold), flat decorative composition, ornamental floral patterns, courtly elegant aesthetic, richly decorated background, animals depicted in garden or hunting scenes, luxurious manuscript illumination quality, NO religious Christian imagery for animals to avoid inappropriate context. IF PEOPLE in photo choose from BYZANTINE (35%): GOLDEN MOSAIC sacred backgrounds with shimmering gold leaf, CIRCULAR GOLDEN HALO behind head, flat hieratic frontal iconic figures, divine transcendent spiritual atmosphere; OR GOTHIC (35%): CATHEDRAL STAINED GLASS jewel tones with THICK BLACK LEAD LINES dividing colored segments, vertical elongated figures, DIVINE HOLY LIGHT streaming through Gothic arches, FLAT TWO-DIMENSIONAL medieval aesthetic NOT realistic smooth painting; OR ISLAMIC MINIATURE (30%): Persian/Ottoman COURT MINIATURE for people. IF NO PEOPLE AND NO ANIMALS (landscape only) → ISLAMIC GEOMETRIC: intricate arabesque patterns, sacred geometry, decorative motifs, flowing ornamental designs. ANIMALS = ISLAMIC MINIATURE ALWAYS (safe secular art). Medieval masterpiece quality'
   },
   
   renaissance: {
@@ -1885,6 +2342,24 @@ export default async function handler(req, res) {
     } else if (process.env.ANTHROPIC_API_KEY) {
       console.log(`Trying AI artist selection for ${selectedStyle.name}...`);
       
+      // ========================================
+      // 🎯 대전제: 가중치 기반 화가 사전 선택
+      // ========================================
+      let preSelectedArtist = null;
+      const photoAnalysis = {}; // AI가 분석하기 전 기본 분석
+      
+      // 이미지에서 기본 정보 추출 시도 (카테고리별 가중치 테이블이 있는 경우)
+      const categoryForWeight = selectedStyle.category;
+      if (ARTIST_WEIGHTS[categoryForWeight]) {
+        // 간단한 사진 분석 (AI 호출 전)
+        // 실제로는 AI 응답에서 photoAnalysis를 받아서 처리하지만,
+        // 여기서는 카테고리만으로 기본 선택
+        preSelectedArtist = selectArtistByWeight(categoryForWeight, photoAnalysis);
+        if (preSelectedArtist) {
+          console.log(`🎲 [WEIGHT-BASED] Pre-selected artist: ${preSelectedArtist} (category: ${categoryForWeight})`);
+        }
+      }
+      
       const aiResult = await selectArtistWithAI(
         image, 
         selectedStyle,
@@ -1904,6 +2379,68 @@ export default async function handler(req, res) {
         console.log('✅✅✅ [V41-TEST-SUCCESS] AI selected:', selectedArtist);
         console.log('✅✅✅ [V48] Selected work:', selectedWork);
         
+        // ========================================
+        // 🎯 대전제: AI 분석 후 가중치 기반 화가 재선택
+        // ========================================
+        const categoryForWeight = selectedStyle.category;
+        if (ARTIST_WEIGHTS[categoryForWeight]) {
+          // AI 분석 결과에서 사진 정보 추출
+          const analysisText = (aiResult.analysis || '').toLowerCase();
+          const photoAnalysisFromAI = {
+            count: 0,
+            subject: analysisText,
+            gender: null,
+            age: null,
+            background: analysisText
+          };
+          
+          // 인원수 추출
+          if (analysisText.includes('group') || analysisText.includes('people') || analysisText.includes('family')) {
+            photoAnalysisFromAI.count = 3;
+          } else if (analysisText.includes('couple') || analysisText.includes('two') || analysisText.includes('pair')) {
+            photoAnalysisFromAI.count = 2;
+          } else if (analysisText.includes('person') || analysisText.includes('portrait') || analysisText.includes('face') || 
+                     analysisText.includes('man') || analysisText.includes('woman') || analysisText.includes('child')) {
+            photoAnalysisFromAI.count = 1;
+          }
+          
+          // 성별 추출
+          if (analysisText.includes('woman') || analysisText.includes('female') || analysisText.includes('girl')) {
+            photoAnalysisFromAI.gender = 'female';
+          } else if (analysisText.includes('man') || analysisText.includes('male') || analysisText.includes('boy')) {
+            photoAnalysisFromAI.gender = 'male';
+          }
+          
+          // 나이 추출
+          if (analysisText.includes('elderly') || analysisText.includes('old') || analysisText.includes('aged')) {
+            photoAnalysisFromAI.age = 'elderly';
+          }
+          
+          // 가중치 기반 화가 선택
+          const weightSelectedArtist = selectArtistByWeight(categoryForWeight, photoAnalysisFromAI);
+          if (weightSelectedArtist) {
+            console.log(`🎲 [WEIGHT-OVERRIDE] Changing from "${selectedArtist}" to "${weightSelectedArtist}"`);
+            console.log(`   Photo analysis: count=${photoAnalysisFromAI.count}, gender=${photoAnalysisFromAI.gender}, age=${photoAnalysisFromAI.age}`);
+            
+            // 화가 교체
+            const oldArtist = selectedArtist;
+            selectedArtist = weightSelectedArtist;
+            selectionMethod = 'weight_random';
+            selectionDetails.weightOverride = {
+              original: oldArtist,
+              selected: weightSelectedArtist,
+              photoType: detectPhotoType(photoAnalysisFromAI)
+            };
+            
+            // 프롬프트에서 화가 이름 교체
+            finalPrompt = finalPrompt.replace(new RegExp(oldArtist, 'gi'), weightSelectedArtist);
+            console.log(`✅ [WEIGHT-BASED] Final artist: ${selectedArtist}`);
+          }
+        }
+        // ========================================
+        // 끝: 가중치 기반 화가 재선택
+        // ========================================
+        
         // ===== 디버그 시작 =====
         console.log('DEBUG: selectedArtist raw value:', selectedArtist);
         console.log('DEBUG: selectedArtist type:', typeof selectedArtist);
@@ -1914,13 +2451,79 @@ export default async function handler(req, res) {
         console.log('DEBUG: includes DA VINCI?', selectedArtist.toUpperCase().trim().includes('DA VINCI'));
         // ===== 디버그 끝 =====
         
+        // ========================================
+        // 고대 그리스-로마 강화 프롬프트
+        // ========================================
+        
+        // 고대 조각 선택시 대리석 강화
+        if (selectedArtist.toUpperCase().trim().includes('SCULPTURE') || 
+            selectedArtist.toUpperCase().trim().includes('CLASSICAL') ||
+            selectedArtist.includes('조각')) {
+          console.log('🎯 Classical Sculpture detected');
+          if (!finalPrompt.includes('CARRARA MARBLE')) {
+            finalPrompt = finalPrompt + ', PURE WHITE CARRARA MARBLE ancient Greek-Roman sculpture: CRITICAL - ENTIRE IMAGE must be COMPLETELY STONE including ALL clothing transformed to carved marble drapery with realistic fabric folds in stone, ALL skin becomes smooth polished marble with subtle veining, MONOCHROMATIC white/cream/grey tones ONLY with NO other colors, heroic classical proportions like Discobolus or Augustus of Prima Porta, MUSEUM PEDESTAL DISPLAY with neutral grey background, dramatic sculptural lighting with soft shadows emphasizing carved forms, frozen dynamic moment captured in eternal marble, authentic ancient masterpiece quality, render subject ATTRACTIVELY and BEAUTIFULLY';
+            controlStrength = 0.55;
+            console.log('✅ Enhanced Classical Sculpture marble effect (control_strength 0.55)');
+          } else {
+            console.log('ℹ️ Marble effect already in prompt');
+          }
+        }
+        
+        // 로마 모자이크 선택시 테세라 강화
+        if (selectedArtist.toUpperCase().trim().includes('MOSAIC') || 
+            selectedArtist.toUpperCase().trim().includes('ROMAN') ||
+            selectedArtist.includes('모자이크')) {
+          console.log('🎯 Roman Mosaic detected');
+          if (!finalPrompt.includes('TESSERAE')) {
+            finalPrompt = finalPrompt + ', Ancient Roman floor mosaic: CRITICAL - LARGE VISIBLE TESSERAE TILES (20-30mm each square/rectangular stone pieces), THICK DARK GROUT LINES clearly visible between EVERY tile creating grid pattern, LIMITED ANCIENT COLOR PALETTE (terracotta orange, ochre yellow, umber brown, ivory white, slate blue, olive green), Pompeii villa floor style like Alexander Mosaic or Cave Canem, each tile must be INDIVIDUALLY DISTINGUISHABLE as separate stone piece, authentic ancient Roman craftsmanship, render subject ATTRACTIVELY';
+            controlStrength = 0.60;
+            console.log('✅ Enhanced Roman Mosaic tesserae effect (control_strength 0.60)');
+          } else {
+            console.log('ℹ️ Mosaic effect already in prompt');
+          }
+        }
+        
+        // ========================================
+        // 중세 미술 강화 프롬프트
+        // ========================================
+        
+        // 비잔틴 선택시 금박 후광 강화
+        if (selectedArtist.toUpperCase().trim().includes('BYZANTINE') || 
+            selectedArtist.includes('비잔틴')) {
+          console.log('🎯 Byzantine detected');
+          if (!finalPrompt.includes('HALO')) {
+            finalPrompt = finalPrompt + ', Byzantine sacred icon painting: CRITICAL - CIRCULAR GOLDEN HALO (nimbus) behind head as bright radiating disc of divine light, ENTIRE BACKGROUND must be SHIMMERING GOLD LEAF mosaic with visible tiny square tesserae tiles, flat hieratic frontal pose with LARGE SOLEMN EYES gazing directly at viewer, simplified iconic facial features with spiritual transcendence, rich jewel colors (deep red, royal blue, purple) for robes, gold decorative patterns on clothing, sacred ethereal atmosphere, Eastern Orthodox icon style like Christ Pantocrator or Theotokos, PRESERVE subject face identity and age, divine holy masterpiece quality';
+            controlStrength = 0.55;
+            console.log('✅ Enhanced Byzantine GOLDEN HALO + gold background (control_strength 0.55)');
+          } else {
+            console.log('ℹ️ Byzantine halo already in prompt');
+          }
+        }
+        
+        // 고딕 선택시 스테인드글라스 강화
+        if (selectedArtist.toUpperCase().trim().includes('GOTHIC') || 
+            selectedArtist.includes('고딕')) {
+          console.log('🎯 Gothic detected');
+          if (!finalPrompt.includes('STAINED GLASS')) {
+            finalPrompt = finalPrompt + ', Gothic cathedral STAINED GLASS window style: CRITICAL - THICK BLACK LEAD LINES (cames) dividing image into segments like actual stained glass, JEWEL-TONE TRANSLUCENT COLORS (ruby red, sapphire blue, emerald green, amber gold) as if light shining through colored glass, FLAT TWO-DIMENSIONAL medieval aesthetic NOT realistic, elongated vertical figures with elegant poses, Gothic pointed arch frame, divine holy light streaming through, PRESERVE subject face identity and age, sacred cathedral masterpiece quality';
+            controlStrength = 0.55;
+            console.log('✅ Enhanced Gothic STAINED GLASS effect (control_strength 0.55)');
+          } else {
+            console.log('ℹ️ Gothic stained glass already in prompt');
+          }
+        }
+        
+        // ========================================
+        // 르네상스 ~ 바로크 강화 프롬프트
+        // ========================================
+        
         // 레오나르도 다 빈치 선택시 스푸마토 초강화 + control_strength 0.65
         if (selectedArtist.toUpperCase().trim().includes('LEONARDO') || selectedArtist.toUpperCase().trim().includes('DA VINCI')) {
           console.log('🎯 Leonardo da Vinci detected');
           if (!finalPrompt.includes('Mona Lisa-style')) {
-            finalPrompt = finalPrompt + ', painting by Leonardo da Vinci, EXTREME sfumato technique, PRESERVE original person\'s identity and features, DO NOT replace with famous paintings, only apply Leonardo\'s artistic technique, with all edges completely soft and blurred throughout, NO sharp outlines anywhere in the entire painting, mysterious smoky atmospheric haze dissolving every boundary, gentle soft transitions between all forms, warm golden Renaissance colors, subtle expression, tender atmospheric depth with authentic sfumato, everything slightly out of focus and dreamy';
-            controlStrength = 0.65;
-            console.log('✅ Enhanced Leonardo sfumato added (control_strength 0.65)');
+            finalPrompt = finalPrompt + ', painting by Leonardo da Vinci: CRITICAL SFUMATO - ALL EDGES must be EXTREMELY SOFT AND BLURRED like smoke or fog, ZERO SHARP LINES anywhere in entire image, every boundary DISSOLVED into hazy atmospheric mist, faces and figures emerging from smoky darkness, Mona Lisa and Virgin of the Rocks style MYSTERIOUS HAZE, colors blending seamlessly with NO hard transitions, warm golden-brown Renaissance palette, SOFT FOCUS throughout like looking through gauze, oil painting texture with subtle glazing layers, NOT sharp NOT clear NOT digital, PRESERVE original subject identity age and ethnicity exactly, child must remain child, DO NOT add elements not in original photo, sfumato masterpiece quality';
+            controlStrength = 0.55;
+            console.log('✅ Enhanced Leonardo EXTREME sfumato (control_strength 0.55)');
           } else {
             console.log('ℹ️ Leonardo sfumato already in prompt (AI included it)');
           }
@@ -2029,11 +2632,12 @@ export default async function handler(req, res) {
         // 드가 선택시 발레리나 움직임 강화
         if (selectedArtist.toUpperCase().trim().includes('DEGAS')) {
           console.log('🎯 Degas detected');
-          if (!finalPrompt.includes('ballet dancer')) {
-            finalPrompt = finalPrompt + ', painting by Edgar Degas, ballet dancer-style capturing graceful movement and dynamic gestures in motion, soft pastel colors of pale pinks blues and peachy tones, diagonal compositional angles with unusual cropped viewpoints, rehearsal atmosphere with dancers adjusting stretching practicing, delicate precise drawing with soft sfumato edges';
-            console.log('✅ Enhanced Degas ballet added');
+          if (!finalPrompt.includes('Degas')) {
+            finalPrompt = finalPrompt + ', painting by Edgar Degas: SOFT PASTEL and oil paint texture with VISIBLE CHALKY STROKES, pale muted colors (soft pink peach powder blue sage green), diagonal asymmetric composition with unusual cropped viewpoints, delicate precise drawing with gentle sfumato edges, warm intimate indoor lighting, VISIBLE CANVAS TEXTURE through thin paint layers, impressionist brushwork NOT smooth NOT digital, CRITICAL IDENTITY: PRESERVE original subject face identity age and ethnicity exactly - child must remain child Asian must remain Asian, DO NOT change clothing from original photo, DO NOT add ballet dancers or people not in original photo, apply Degas artistic style to EXISTING scene only, masterpiece quality';
+            controlStrength = 0.60;
+            console.log('✅ Enhanced Degas pastel + identity preserve (control_strength 0.60)');
           } else {
-            console.log('ℹ️ Degas ballet already in prompt (AI included it)');
+            console.log('ℹ️ Degas style already in prompt (AI included it)');
           }
         }
         
@@ -2239,9 +2843,10 @@ export default async function handler(req, res) {
         if (selectedArtist.toUpperCase().trim().includes('RENOIR') || 
             selectedArtist.toUpperCase().trim().includes('PIERRE-AUGUSTE')) {
           console.log('🎯 Renoir detected');
-          if (!finalPrompt.includes('Dance at')) {
-            finalPrompt = finalPrompt + ', painting by Pierre-Auguste Renoir, Dance at Le Moulin de la Galette-style with SOFT LUMINOUS HUMAN FIGURES bathed in dappled sunlight, glowing pearly skin tones with rosy cheeks and warm flesh, feathery loose brushstrokes creating shimmering atmosphere, joyful celebration of leisure and pleasure with smiling faces, warm harmonious colors of pinks peaches and golden light, figures dissolving into radiant vibrant atmosphere, sensuous beauty and carefree happiness, Impressionist light filtering through trees';
-            console.log('✅ Enhanced Renoir warmth added');
+          if (!finalPrompt.includes('Renoir')) {
+            finalPrompt = finalPrompt + ', painting by Pierre-Auguste Renoir: SOFT FEATHERY BRUSHSTROKES with VISIBLE oil paint texture, warm glowing skin tones with rosy pink cheeks, DAPPLED SUNLIGHT filtering through creating luminous atmosphere, warm harmonious colors (peach pink golden coral), loose impressionist brushwork NOT smooth NOT digital, figures bathed in soft radiant light, VISIBLE CANVAS WEAVE through paint layers, joyful warm intimate mood, CRITICAL IDENTITY: PRESERVE original subject face identity age and ethnicity exactly - Asian features must remain Asian, child must remain child, DO NOT change hair color or skin tone to Western appearance, keep original clothing, Renoir masterpiece quality';
+            controlStrength = 0.60;
+            console.log('✅ Enhanced Renoir + identity preserve (control_strength 0.60)');
           } else {
             console.log('ℹ️ Renoir warmth already in prompt (AI included it)');
           }
@@ -2305,8 +2910,9 @@ export default async function handler(req, res) {
             selectedArtist.includes('빈센트')) {
           console.log('🎯 Van Gogh detected');
           if (!finalPrompt.includes('SWIRLING') && !finalPrompt.includes('IMPASTO')) {
-            finalPrompt = finalPrompt + ', painting by Vincent van Gogh, SWIRLING TURBULENT BRUSHSTROKES creating rhythmic cyclonic movement throughout entire composition, THICK IMPASTO with paint applied in bold visible ridges and sculptural texture, intense vibrant colors with emotional expressiveness and symbolic meaning, passionate energetic strokes, every element alive with pulsating energy and inner spiritual turmoil';
-            console.log('✅ Enhanced Van Gogh swirls added (no Starry Night reference)');
+            finalPrompt = finalPrompt + ', painting by Vincent van Gogh: CRITICAL - EXTREMELY THICK IMPASTO brushstrokes with HEAVY 3D PAINT TEXTURE like squeezed directly from tube, VISIBLE RIDGES AND GROOVES of thick oil paint creating sculptural surface, SWIRLING TURBULENT brushwork in EVERY area including face skin clothes background, CHUNKY BOLD brush marks 5-10mm wide NOT smooth NOT blended, face must show VISIBLE BRUSHSTROKES not smooth skin, intense saturated colors (cobalt blue cadmium yellow chrome orange), Self-Portrait style ENERGETIC EXPRESSIVE strokes, painterly NOT illustrative NOT digital, canvas weave texture visible through thick paint, CRITICAL IDENTITY: PRESERVE original person FACE IDENTITY and AGE exactly - child must remain child adult must remain adult, keep original ethnicity and facial features, render subject ATTRACTIVELY and BEAUTIFULLY';
+            controlStrength = 0.60;
+            console.log('✅ Enhanced Van Gogh THICK IMPASTO + identity preserve (control_strength 0.60)');
           } else {
             console.log('ℹ️ Van Gogh swirls already in prompt (AI included it)');
           }
@@ -2421,16 +3027,16 @@ export default async function handler(req, res) {
             selectedArtist.includes('파블로')) {
           console.log('🎯 Picasso detected');
           if (!finalPrompt.includes('Cubist')) {
-            finalPrompt = finalPrompt + ', Transform like Pablo Picasso "Les Demoiselles d\'Avignon" and "Weeping Woman" - EXTREME CUBIST FRAGMENTATION: COMPLETELY DESTROY and SHATTER face into sharp angular geometric planes like broken mirror or African tribal masks, CRITICAL: show NOSE from SIDE PROFILE while showing BOTH EYES from FRONT VIEW simultaneously in SAME face, DECONSTRUCT and REARRANGE all facial features into multiple overlapping viewpoints, sharp jagged edges and violently fractured forms, DISTORT proportions dramatically, monochromatic earthy palette (browns grays ochres olive black), face should look COMPLETELY BROKEN into angular pieces NOT smooth at all, ABSTRACT the human form beyond recognition while maintaining emotional intensity';
-            controlStrength = 0.15;
-            console.log('✅ Enhanced Picasso EXTREME FRAGMENTATION (control_strength 0.15 for maximum deconstruction)');
+            finalPrompt = finalPrompt + ', Cubist painting by Pablo Picasso: CRITICAL MULTI-PERSPECTIVE FACE - show NOSE from SIDE PROFILE angle while BOTH EYES visible from FRONT VIEW in same face, GEOMETRIC PLANES dividing face into angular flat colored sections, VISIBLE BRUSHSTROKES with thick oil paint texture throughout, earth tone palette (ochre sienna brown olive grey), face broken into overlapping angular planes like faceted crystal, Analytical Cubism style with intersecting geometric shapes, painterly NOT illustrative NOT smooth, Les Demoiselles d\'Avignon and Portrait of Dora Maar style, PRESERVE subject age and identity while applying Cubist fragmentation, render subject ATTRACTIVELY';
+            controlStrength = 0.45;
+            console.log('✅ Enhanced Picasso Cubism (control_strength 0.45 for balanced fragmentation)');
           } else {
             console.log('ℹ️ Picasso Cubism already in prompt (AI included it)');
           }
-          // 20세기 모더니즘에서 피카소 선택시 control_strength 낮춤
+          // 20세기 모더니즘에서 피카소 선택시
           if (categoryType === 'modernism') {
-            controlStrength = 0.15;
-            console.log('✅ Modernism Picasso: control_strength 0.15 (allow EXTREME fragmentation)');
+            controlStrength = 0.40;
+            console.log('✅ Modernism Picasso: control_strength 0.40 (balanced Cubist effect)');
           }
         }
         
@@ -2671,6 +3277,11 @@ export default async function handler(req, res) {
     ];
     
     const shouldApplyAttractive = !excludeAttractive.includes(selectedWork);
+    
+    // 🎯 Identity 보존 대전제 (항상 적용)
+    const identityPreservation = ', CRITICAL IDENTITY PRESERVATION: PRESERVE original subject FACE IDENTITY AGE and ETHNICITY exactly - Asian must remain Asian, Western must remain Western, child must remain child, adult must remain adult, DO NOT change hair color or skin tone, DO NOT Westernize Asian faces, keep original facial features and bone structure';
+    finalPrompt = finalPrompt + identityPreservation;
+    console.log('🎯 Applied identity preservation rule');
     
     if (shouldApplyAttractive && selectedWork) {
       const attractiveEnhancement = ', render all people ATTRACTIVELY and BEAUTIFULLY with appealing refined features, elegant dignified appearance';
