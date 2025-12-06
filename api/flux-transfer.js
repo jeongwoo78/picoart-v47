@@ -3248,10 +3248,10 @@ export default async function handler(req, res) {
             selectedArtist.includes('앤디')) {
           console.log('🎯 Warhol detected');
           // 항상 강화 프롬프트로 교체 (4분할 보장)
-          const warholEnhancement = 'CRITICAL: DIVIDE canvas into EXACTLY 4 EQUAL QUADRANTS in 2x2 FOUR-PANEL GRID layout, the EXACT SAME PERSON or OBJECT from the ORIGINAL PHOTO must be repeated 4 times - once in each quadrant, each of the 4 panels must have DIFFERENT BOLD COLOR scheme (hot pink, cyan, yellow, orange, electric blue, lime green), HIGH CONTRAST silkscreen printing effect, FLAT graphic colors with NO gradients, DO NOT draw Marilyn Monroe - draw only the person from the original photo, NOT single image MUST be 4 separate panels with the original subject repeated, ';
+          const warholEnhancement = 'ABSOLUTE REQUIREMENT: CREATE EXACTLY 4 SEPARATE IMAGES arranged in 2x2 GRID with VISIBLE DIVIDING LINES between panels, TOP-LEFT panel + TOP-RIGHT panel + BOTTOM-LEFT panel + BOTTOM-RIGHT panel, the EXACT SAME FACE from the ORIGINAL PHOTO must appear in ALL 4 panels, EACH panel must have COMPLETELY DIFFERENT bold color scheme (panel 1: hot pink, panel 2: cyan blue, panel 3: yellow, panel 4: orange), Andy Warhol silkscreen style, FLAT graphic colors NO gradients, DO NOT draw Marilyn Monroe, MUST be 4 SEPARATE PANELS not single image, ';
           finalPrompt = warholEnhancement + finalPrompt;
-          controlStrength = 0.30;
-          console.log('✅ Enhanced Warhol 4-panel grid (FRONT position, control_strength 0.30)');
+          controlStrength = 0.20;
+          console.log('✅ Enhanced Warhol 4-panel grid (FRONT position, control_strength 0.20)');
         }
         
         // 피카소 선택시 입체주의 강화 (거장 + 모더니즘)
