@@ -1022,7 +1022,8 @@ Strong core of 4 Expressionist masters!
 `;
 }
 
-술), 폴록/로스코(완전추상), 만 레이(사진작가), 프리다/달리(마스터 전용), 브라크(피카소 중복)
+// 20세기 모더니즘 (7명 - 3개 세부 사조)
+// 제외: 뒤샹(개념미술), 폴록/로스코(완전추상), 만 레이(사진작가), 프리다/달리(마스터 전용), 브라크(피카소 중복)
 function getModernismGuidelines() {
   return `
 ⚠️ CRITICAL: You MUST select ONLY from the 7 artists listed below!
