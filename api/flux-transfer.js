@@ -780,7 +780,7 @@ Available Baroque Artists (5명):
 5. VERMEER (베르메르) - Best for window light, peaceful women
    - Specialty: Soft window light, domestic tranquility, pearl-like luminosity
    - Best for: Female subject with natural side lighting, peaceful indoor scenes
-   - Signature: Girl with Pearl Earring-like gentle light and peace
+   - Signature: Pearl Earring-like gentle light and peace
    - When to prioritize: Clear window/natural side light + female subject
 `;
 }
@@ -804,7 +804,7 @@ His soul-revealing depth captures the wisdom of age beautifully.
       return `
 🎯 STRONG RECOMMENDATION: VERMEER (65%+)
 Female subject with natural window light - Vermeer's specialty!
-Consider: Girl with Pearl Earring atmosphere vs Caravaggio drama
+Consider: Pearl Earring atmosphere vs Caravaggio drama
 Vermeer for gentle peace, Caravaggio for dramatic impact.
 `;
     }
@@ -1699,7 +1699,7 @@ function getBaroqueArtistPrompt(artistName) {
     
     'REMBRANDT': genderRule + 'painting by Rembrandt: GOLDEN LUMINOUS LIGHT with warm glowing illumination, subtle light gradations revealing form from shadow, rich impasto brushwork visible in highlights, deep psychological introspection, intimate emotional depth, warm brown and gold palette, The Night Watch style dramatic lighting, Rembrandt masterpiece quality',
     
-    'VERMEER': genderRule + 'painting by Johannes Vermeer: SOFT DIFFUSED DAYLIGHT from window illuminating interior scene, quiet contemplative domestic moment, luminous pearl-like quality to skin and fabrics, Girl with a Pearl Earring style intimate poetry, cool blue and warm yellow color harmony, exquisite rendering of light on surfaces, Vermeer masterpiece quality',
+    'VERMEER': genderRule + 'painting by Johannes Vermeer: SOFT DIFFUSED DAYLIGHT from window illuminating interior scene, quiet contemplative domestic moment, luminous pearl-like quality to skin and fabrics, intimate poetry of light, cool blue and warm yellow color harmony, exquisite rendering of light on surfaces, Vermeer masterpiece quality',
     
     'VELÁZQUEZ': genderRule + 'painting by Diego Velázquez: SOPHISTICATED COURT ELEGANCE with dignified formal poses, loose confident brushwork visible up close, subtle silver-grey palette with rich blacks, atmospheric perspective creating depth, Las Meninas style complex spatial arrangement, aristocratic refinement, Velázquez masterpiece quality'
   };
@@ -2835,8 +2835,8 @@ export default async function handler(req, res) {
         // 베르메르 선택시 진주귀걸이 소녀 빛 강화
         if (selectedArtist.toUpperCase().trim().includes('VERMEER')) {
           console.log('🎯 Vermeer detected');
-          if (!finalPrompt.includes('Girl with Pearl')) {
-            finalPrompt = finalPrompt + ', painting by Johannes Vermeer, Girl with a Pearl Earring-style soft window light with pearl-like luminosity, cool blue and warm yellow color harmonies, precise delicate brushwork with photographic clarity, intimate domestic tranquility and serene peaceful atmosphere, subtle side lighting creating gentle shadows';
+          if (!finalPrompt.includes('pearl-like luminosity')) {
+            finalPrompt = finalPrompt + ', painting by Johannes Vermeer, soft window light with pearl-like luminosity, cool blue and warm yellow color harmonies, precise delicate brushwork with photographic clarity, intimate domestic tranquility and serene peaceful atmosphere, subtle side lighting creating gentle shadows';
             console.log('✅ Enhanced Vermeer pearl light added');
           } else {
             console.log('ℹ️ Vermeer pearl light already in prompt (AI included it)');
@@ -3511,7 +3511,7 @@ export default async function handler(req, res) {
     const shouldApplyAttractive = !excludeAttractive.includes(selectedWork);
     
     // 🎯 Identity 보존 대전제 (항상 적용)
-    const identityPreservation = ', ABSOLUTE IDENTITY PRESERVATION: PRESERVE original subject FACE IDENTITY AGE GENDER and ETHNICITY exactly - Asian must remain Asian, Western must remain Western, child must remain child, adult must remain adult, CRITICAL GENDER: male MUST remain male with MASCULINE features STRONG JAW male bone structure DO NOT feminize DO NOT soften DO NOT make pretty or delicate, female must remain female with feminine features, DO NOT change hair color or skin tone, DO NOT make bald, preserve original hair, DO NOT Westernize Asian faces, DO NOT Asianize Western faces, keep original facial features and bone structure';
+    const identityPreservation = ', ABSOLUTE IDENTITY PRESERVATION: PRESERVE original subject FACE IDENTITY AGE GENDER and ETHNICITY exactly - Asian must remain Asian, Western must remain Western, child must remain child, adult must remain adult, CRITICAL GENDER: male MUST remain male with MASCULINE features STRONG JAW male bone structure DO NOT feminize DO NOT soften DO NOT make pretty or delicate, female must remain female with feminine features, DO NOT change hair color or skin tone, DO NOT Westernize Asian faces, DO NOT Asianize Western faces, keep original facial features and bone structure';
     finalPrompt = finalPrompt + identityPreservation;
     console.log('🎯 Applied identity preservation rule (including gender)');
     
