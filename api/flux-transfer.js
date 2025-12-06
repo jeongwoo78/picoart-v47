@@ -3250,8 +3250,8 @@ export default async function handler(req, res) {
           // 항상 강화 프롬프트로 교체 (4분할 보장)
           const warholEnhancement = 'ABSOLUTE REQUIREMENT: CREATE EXACTLY 4 SEPARATE IMAGES arranged in 2x2 GRID with VISIBLE DIVIDING LINES between panels, TOP-LEFT panel + TOP-RIGHT panel + BOTTOM-LEFT panel + BOTTOM-RIGHT panel, the EXACT SAME FACE from the ORIGINAL PHOTO must appear in ALL 4 panels, EACH panel must have COMPLETELY DIFFERENT bold color scheme (panel 1: hot pink, panel 2: cyan blue, panel 3: yellow, panel 4: orange), Andy Warhol silkscreen style, FLAT graphic colors NO gradients, DO NOT draw Marilyn Monroe, MUST be 4 SEPARATE PANELS not single image, ';
           finalPrompt = warholEnhancement + finalPrompt;
-          controlStrength = 0.20;
-          console.log('✅ Enhanced Warhol 4-panel grid (FRONT position, control_strength 0.20)');
+          controlStrength = 0.30;
+          console.log('✅ Enhanced Warhol 4-panel grid (FRONT position, control_strength 0.30)');
         }
         
         // 피카소 선택시 입체주의 강화 (거장 + 모더니즘)
@@ -3513,12 +3513,12 @@ export default async function handler(req, res) {
     const shouldApplyAttractive = !excludeAttractive.includes(selectedWork);
     
     // 🎯 Identity 보존 대전제 (항상 적용)
-    const identityPreservation = ', CRITICAL IDENTITY PRESERVATION: PRESERVE original subject FACE IDENTITY AGE and ETHNICITY exactly - Asian must remain Asian, Western must remain Western, child must remain child, adult must remain adult, DO NOT change hair color or skin tone, DO NOT Westernize Asian faces, keep original facial features and bone structure';
+    const identityPreservation = ', CRITICAL IDENTITY PRESERVATION: PRESERVE original subject FACE IDENTITY AGE GENDER and ETHNICITY exactly - Asian must remain Asian, Western must remain Western, child must remain child, adult must remain adult, male must remain male with masculine features, female must remain female with feminine features, DO NOT change hair color or skin tone, DO NOT Westernize Asian faces, DO NOT Asianize Western faces, keep original facial features and bone structure';
     finalPrompt = finalPrompt + identityPreservation;
-    console.log('🎯 Applied identity preservation rule');
+    console.log('🎯 Applied identity preservation rule (including gender)');
     
     if (shouldApplyAttractive && selectedWork) {
-      const attractiveEnhancement = ', render all people ATTRACTIVELY BEAUTIFULLY and YOUTHFULLY with appealing refined features, elegant dignified appearance';
+      const attractiveEnhancement = ', render all people ATTRACTIVELY BEAUTIFULLY YOUTHFULLY HANDSOMELY and PRETTILY - make subject look GORGEOUS STUNNING CHARMING and ELEGANT, appealing refined features with dignified graceful appearance, ENHANCE beauty while preserving identity, vibrant healthy glowing look, idealized flattering portrayal';
       finalPrompt = finalPrompt + attractiveEnhancement;
       console.log('✨ Applied attractive enhancement for:', selectedWork);
     } else if (selectedWork) {
