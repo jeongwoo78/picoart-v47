@@ -1649,6 +1649,197 @@ function getModernismArtistPrompt(artistName) {
 
 
 // ========================================
+// 🎯 사조별 화가 개별 프롬프트 함수들
+// 다른 화가 언급 없이 선택된 화가만 포함!
+// ========================================
+
+// 고대 그리스-로마 스타일별 프롬프트
+function getAncientArtistPrompt(styleName) {
+  const prompts = {
+    'CLASSICAL SCULPTURE': 'Ancient Greek-Roman MARBLE SCULPTURE: PURE WHITE CARRARA MARBLE throughout entire image, ALL skin becomes smooth polished marble with subtle veining, ALL clothing transformed to carved marble drapery with realistic stone fabric folds, MONOCHROMATIC white/cream/grey tones ONLY, heroic classical proportions like Discobolus or Augustus of Prima Porta, MUSEUM PEDESTAL DISPLAY with neutral grey background, dramatic sculptural lighting, frozen dynamic moment in eternal marble, NOT colorful NOT mosaic, ancient sculpture masterpiece quality',
+    
+    'ROMAN MOSAIC': 'Ancient Roman floor MOSAIC: LARGE VISIBLE TESSERAE TILES (20-30mm each square stone pieces), THICK DARK GROUT LINES clearly visible between EVERY tile creating grid pattern, LIMITED ANCIENT COLOR PALETTE (terracotta orange, ochre yellow, umber brown, ivory white, slate blue, olive green), Pompeii villa floor style like Alexander Mosaic, each tile INDIVIDUALLY DISTINGUISHABLE, NOT smooth painting NOT marble sculpture, authentic Roman mosaic craftsmanship'
+  };
+  
+  const normalized = styleName.toUpperCase().trim();
+  if (normalized.includes('SCULPTURE') || normalized.includes('CLASSICAL')) return prompts['CLASSICAL SCULPTURE'];
+  if (normalized.includes('MOSAIC') || normalized.includes('ROMAN')) return prompts['ROMAN MOSAIC'];
+  return prompts['CLASSICAL SCULPTURE'];
+}
+
+// 중세 스타일별 프롬프트
+function getMedievalArtistPrompt(styleName) {
+  const prompts = {
+    'BYZANTINE': 'Byzantine sacred icon painting: CIRCULAR GOLDEN HALO (nimbus) behind head as bright radiating disc, ENTIRE BACKGROUND must be SHIMMERING GOLD LEAF mosaic with visible tiny square tesserae tiles, flat hieratic frontal pose with LARGE SOLEMN EYES gazing directly at viewer, rich jewel colors (deep red, royal blue, purple) for robes, gold decorative patterns on clothing, Eastern Orthodox icon style like Christ Pantocrator, NOT Gothic NOT Islamic, Byzantine masterpiece quality',
+    
+    'GOTHIC': 'Gothic cathedral STAINED GLASS window style: THICK BLACK LEAD LINES (cames) dividing image into segments like actual stained glass, JEWEL-TONE TRANSLUCENT COLORS (ruby red, sapphire blue, emerald green, amber gold) as if light shining through colored glass, FLAT TWO-DIMENSIONAL medieval aesthetic, elongated vertical figures, Gothic pointed arch frame, divine holy light streaming through, NOT Byzantine gold NOT mosaic, Gothic stained glass masterpiece quality',
+    
+    'ISLAMIC MINIATURE': 'Persian/Ottoman COURT MINIATURE painting: intricate delicate details with fine brushwork, vibrant jewel colors (ruby red, sapphire blue, emerald green, gold), flat decorative composition, ornamental floral patterns and arabesques, courtly elegant aesthetic, richly decorated background, luxurious manuscript illumination quality, NOT Byzantine NOT Gothic NOT geometric pattern, Islamic miniature masterpiece quality'
+  };
+  
+  const normalized = styleName.toUpperCase().trim();
+  if (normalized.includes('BYZANTINE') || normalized.includes('비잔틴')) return prompts['BYZANTINE'];
+  if (normalized.includes('GOTHIC') || normalized.includes('고딕')) return prompts['GOTHIC'];
+  if (normalized.includes('ISLAMIC') || normalized.includes('MINIATURE') || normalized.includes('이슬람')) return prompts['ISLAMIC MINIATURE'];
+  return prompts['BYZANTINE'];
+}
+
+// 르네상스 화가별 프롬프트
+function getRenaissanceArtistPrompt(artistName) {
+  const prompts = {
+    'LEONARDO DA VINCI': 'painting by Leonardo da Vinci: EXTREME SFUMATO technique with ALL EDGES completely SOFT AND BLURRED like smoke or fog, ZERO SHARP LINES anywhere, every boundary DISSOLVED into hazy atmospheric mist, faces emerging from smoky darkness, Mona Lisa and Virgin of the Rocks style MYSTERIOUS HAZE, warm golden-brown Renaissance palette, SOFT FOCUS throughout like looking through gauze, oil painting with subtle glazing layers, NOT sharp NOT digital, sfumato masterpiece quality',
+    
+    'TITIAN': 'painting by Titian Venetian Renaissance: RICH WARM COLORS with glowing golden flesh tones, loose expressive brushwork visible especially in fabrics, dramatic atmospheric backgrounds, sensuous rendering of silk velvet and skin textures, Venetian colorito tradition with color over line, Portrait of a Man style dignified poses, deep reds golds and earth tones, luminous glazing technique, Titian masterpiece quality',
+    
+    'MICHELANGELO': 'painting by Michelangelo: HEROIC SCULPTURAL FIGURES with powerful muscular anatomy, Sistine Chapel style monumental grandeur, dramatic foreshortening and dynamic poses, strong modeling with clear light and shadow, idealized human form with classical proportions, rich saturated colors, architectural sense of space, Michelangelo masterpiece quality',
+    
+    'RAPHAEL': 'painting by Raphael: PERFECT HARMONIOUS BEAUTY with idealized graceful figures, serene balanced compositions, sweet gentle expressions, clear luminous colors, elegant flowing drapery, School of Athens style classical perfection, soft modeling with gentle transitions, divine serenity and grace, Raphael masterpiece quality'
+  };
+  
+  const normalized = artistName.toUpperCase().trim();
+  if (normalized.includes('LEONARDO') || normalized.includes('DA VINCI') || normalized.includes('다빈치') || normalized.includes('레오나르도')) return prompts['LEONARDO DA VINCI'];
+  if (normalized.includes('TITIAN') || normalized.includes('티치아노')) return prompts['TITIAN'];
+  if (normalized.includes('MICHELANGELO') || normalized.includes('미켈란젤로')) return prompts['MICHELANGELO'];
+  if (normalized.includes('RAPHAEL') || normalized.includes('라파엘로')) return prompts['RAPHAEL'];
+  return prompts['LEONARDO DA VINCI'];
+}
+
+// 바로크 화가별 프롬프트
+function getBaroqueArtistPrompt(artistName) {
+  const prompts = {
+    'CARAVAGGIO': 'painting by Caravaggio: DRAMATIC TENEBRISM with extreme light-dark contrast, single theatrical spotlight illuminating figures from darkness, deep BLACK SHADOWS engulfing most of scene, intense emotional realism, rich saturated colors emerging from darkness, dramatic diagonal composition, raw powerful naturalism, Caravaggio masterpiece quality',
+    
+    'REMBRANDT': 'painting by Rembrandt: GOLDEN LUMINOUS LIGHT with warm glowing illumination, subtle light gradations revealing form from shadow, rich impasto brushwork visible in highlights, deep psychological introspection, intimate emotional depth, warm brown and gold palette, The Night Watch style dramatic lighting, Rembrandt masterpiece quality',
+    
+    'VERMEER': 'painting by Johannes Vermeer: SOFT DIFFUSED DAYLIGHT from window illuminating interior scene, quiet contemplative domestic moment, luminous pearl-like quality to skin and fabrics, Girl with a Pearl Earring style intimate poetry, cool blue and warm yellow color harmony, exquisite rendering of light on surfaces, Vermeer masterpiece quality',
+    
+    'VELÁZQUEZ': 'painting by Diego Velázquez: SOPHISTICATED COURT ELEGANCE with dignified formal poses, loose confident brushwork visible up close, subtle silver-grey palette with rich blacks, atmospheric perspective creating depth, Las Meninas style complex spatial arrangement, aristocratic refinement, Velázquez masterpiece quality'
+  };
+  
+  const normalized = artistName.toUpperCase().trim();
+  if (normalized.includes('CARAVAGGIO') || normalized.includes('카라바조')) return prompts['CARAVAGGIO'];
+  if (normalized.includes('REMBRANDT') || normalized.includes('렘브란트')) return prompts['REMBRANDT'];
+  if (normalized.includes('VERMEER') || normalized.includes('베르메르')) return prompts['VERMEER'];
+  if (normalized.includes('VELÁZQUEZ') || normalized.includes('VELAZQUEZ') || normalized.includes('벨라스케스')) return prompts['VELÁZQUEZ'];
+  return prompts['CARAVAGGIO'];
+}
+
+// 로코코 화가별 프롬프트
+function getRococoArtistPrompt(artistName) {
+  const prompts = {
+    'WATTEAU': 'painting by Antoine Watteau: FÊTE GALANTE outdoor aristocratic gathering, elegant figures in shimmering silk costumes, soft dreamy pastoral landscape, delicate feathery brushwork, romantic melancholic atmosphere, Pilgrimage to Cythera style poetic reverie, pale pastel colors with touches of rose and gold, theatrical graceful poses, Watteau masterpiece quality',
+    
+    'BOUCHER': 'painting by François Boucher: SENSUOUS DECORATIVE BEAUTY with soft rosy flesh tones, playful mythological or pastoral scenes, light pastel palette of pink blue and cream, fluffy clouds and lush foliage, ornate Rococo decoration, Madame de Pompadour style feminine elegance, sweet idealized figures, Boucher masterpiece quality'
+  };
+  
+  const normalized = artistName.toUpperCase().trim();
+  if (normalized.includes('WATTEAU') || normalized.includes('와토')) return prompts['WATTEAU'];
+  if (normalized.includes('BOUCHER') || normalized.includes('부셰')) return prompts['BOUCHER'];
+  return prompts['WATTEAU'];
+}
+
+// 신고전주의/낭만주의/사실주의 화가별 프롬프트
+function getNeoclassicismArtistPrompt(artistName) {
+  const prompts = {
+    'JACQUES-LOUIS DAVID': 'painting by Jacques-Louis David: NEOCLASSICAL PERFECTION with clear crisp outlines, heroic idealized figures in classical poses, cool restrained color palette, dramatic moral narratives, Oath of the Horatii style civic virtue, sculptural modeling with smooth finish, balanced symmetrical compositions, David Neoclassical masterpiece quality',
+    
+    'INGRES': 'painting by Jean-Auguste-Dominique Ingres: PERFECTLY SMOOTH FLOWING CONTOURS like polished surface, porcelain-smooth skin without visible brushstrokes, elegant sinuous curves and graceful elongated forms, La Grande Odalisque style idealized beauty, cool serene color palette, meticulous precise detail, flawless enamel-like finish, Ingres masterpiece quality',
+    
+    'TURNER': 'painting by J.M.W. Turner: ATMOSPHERIC SUBLIME with swirling mist light and color, dramatic natural phenomena, luminous golden light dissolving forms, romantic awe-inspiring landscapes, The Fighting Temeraire style emotional power, loose expressive brushwork, Turner masterpiece quality',
+    
+    'MILLET': 'painting by Jean-François Millet: DIGNIFIED RURAL LABOR with monumental peasant figures, warm earthy palette of browns and ochres, The Gleaners style quiet nobility, soft diffused light, serene contemplative mood, honest depiction of agricultural life, Millet Realist masterpiece quality',
+    
+    'CLAUDE LORRAIN': 'painting by Claude Lorrain: IDEAL CLASSICAL LANDSCAPE with golden atmospheric light, ancient ruins and pastoral scenery, warm glowing sunset or sunrise, poetic Arcadian vision, carefully balanced compositions with framing trees, luminous sky reflected in water, Claude Lorrain masterpiece quality'
+  };
+  
+  const normalized = artistName.toUpperCase().trim();
+  if (normalized.includes('DAVID') || normalized.includes('다비드')) return prompts['JACQUES-LOUIS DAVID'];
+  if (normalized.includes('INGRES') || normalized.includes('앵그르')) return prompts['INGRES'];
+  if (normalized.includes('TURNER') || normalized.includes('터너')) return prompts['TURNER'];
+  if (normalized.includes('MILLET') || normalized.includes('밀레')) return prompts['MILLET'];
+  if (normalized.includes('CLAUDE') || normalized.includes('LORRAIN') || normalized.includes('클로드 로랭')) return prompts['CLAUDE LORRAIN'];
+  return prompts['JACQUES-LOUIS DAVID'];
+}
+
+// 인상주의 화가별 프롬프트
+function getImpressionismArtistPrompt(artistName) {
+  const prompts = {
+    'RENOIR': 'painting by Pierre-Auguste Renoir: SOFT FEATHERY BRUSHSTROKES with warm luminous glow, rosy pink flesh tones with pearly highlights, DAPPLED SUNLIGHT filtering through creating shimmering atmosphere, joyful intimate mood, Dance at Le Moulin de la Galette style celebration of life, loose impressionist brushwork NOT smooth NOT digital, warm harmonious colors (peach pink coral gold), VISIBLE OIL PAINT TEXTURE, Renoir masterpiece quality',
+    
+    'MONET': 'painting by Claude Monet: BROKEN COLOR BRUSHSTROKES capturing fleeting light effects, SOFT HAZY ATMOSPHERIC effects like morning mist, colors BLENDED and DISSOLVED into each other, NO sharp edges, dreamy blurred boundaries, Water Lilies and Woman with Parasol style light dissolution, cool blue-green palette with warm accents, everything slightly out of focus, Monet Impressionist masterpiece quality',
+    
+    'DEGAS': 'painting by Edgar Degas: UNUSUAL CROPPED ANGLES and asymmetric compositions, capturing movement and gesture, SOFT PASTEL and oil texture with VISIBLE CHALKY STROKES, pale muted colors (soft pink peach powder blue), intimate indoor scenes, ballet rehearsal atmosphere WITHOUT adding dancers not in original photo, delicate precise drawing, Degas masterpiece quality',
+    
+    'PISSARRO': 'painting by Camille Pissarro: RURAL IMPRESSIONIST landscapes and village scenes, small dappled brushstrokes building form, soft diffused natural light, peaceful pastoral atmosphere, warm earth tones with fresh greens, gentle humble subjects, Pissarro masterpiece quality'
+  };
+  
+  const normalized = artistName.toUpperCase().trim();
+  if (normalized.includes('RENOIR') || normalized.includes('르누아르')) return prompts['RENOIR'];
+  if (normalized.includes('MONET') || normalized.includes('모네')) return prompts['MONET'];
+  if (normalized.includes('DEGAS') || normalized.includes('드가')) return prompts['DEGAS'];
+  if (normalized.includes('PISSARRO') || normalized.includes('피사로')) return prompts['PISSARRO'];
+  return prompts['RENOIR'];
+}
+
+// 후기인상주의 화가별 프롬프트
+function getPostImpressionismArtistPrompt(artistName) {
+  const prompts = {
+    'VAN GOGH': 'painting by Vincent van Gogh: EXTREMELY THICK IMPASTO brushstrokes with HEAVY 3D PAINT TEXTURE like squeezed directly from tube, VISIBLE RIDGES AND GROOVES of thick oil paint, SWIRLING TURBULENT brushwork in EVERY area including face and background, CHUNKY BOLD brush marks 5-10mm wide NOT smooth NOT blended, intense saturated colors (cobalt blue cadmium yellow chrome orange), Self-Portrait style ENERGETIC EXPRESSIVE strokes, canvas weave visible through paint, Van Gogh masterpiece quality',
+    
+    'GAUGUIN': 'painting by Paul Gauguin Tahitian period: FLAT BOLD AREAS of pure unmixed saturated color WITHOUT shading or modeling, simplified forms with smooth flat surfaces, exotic tropical palette (deep orange ochre yellow turquoise rich purple vibrant green), Tahitian Women style decorative figures, warm golden skin tones, lush tropical background, VISIBLE BRUSHSTROKES with oil paint texture, NOT mosaic NOT geometric tiles, Gauguin masterpiece quality',
+    
+    'CÉZANNE': 'painting by Paul Cézanne: GEOMETRIC STRUCTURED FORMS built with parallel brushstrokes, analytical approach to underlying shapes, Mont Sainte-Victoire style constructive vision, muted earth tones with blues and greens, solid volumes emerging from color planes, visible directional brushwork, contemplative balanced compositions, Cézanne masterpiece quality',
+    
+    'SIGNAC': 'painting by Paul Signac: POINTILLIST technique with TINY DOTS of pure color placed side by side, bright Mediterranean sunlight and vibrant harbor scenes, dots blend optically when viewed from distance, luminous color vibration, The Port of Saint-Tropez style, scientific color division, Signac Neo-Impressionist masterpiece quality'
+  };
+  
+  const normalized = artistName.toUpperCase().trim();
+  if (normalized.includes('VAN GOGH') || normalized.includes('GOGH') || normalized.includes('고흐') || normalized.includes('빈센트')) return prompts['VAN GOGH'];
+  if (normalized.includes('GAUGUIN') || normalized.includes('고갱')) return prompts['GAUGUIN'];
+  if (normalized.includes('CÉZANNE') || normalized.includes('CEZANNE') || normalized.includes('세잔')) return prompts['CÉZANNE'];
+  if (normalized.includes('SIGNAC') || normalized.includes('시냐크')) return prompts['SIGNAC'];
+  return prompts['VAN GOGH'];
+}
+
+// 야수파 화가별 프롬프트
+function getFauvismArtistPrompt(artistName) {
+  const prompts = {
+    'MATISSE': 'painting by Henri Matisse Fauvist period: PURE BOLD UNMIXED COLORS in flat decorative areas, The Dance style simplified joyful forms, complete liberation of color from reality, saturated intense primary colors (red blue yellow green), rhythmic flowing harmonious lines, VISIBLE BRUSHSTROKES, life-affirming energetic atmosphere, NOT smooth digital rendering, Matisse Fauvist masterpiece quality',
+    
+    'DERAIN': 'painting by André Derain: BOLD FAUVIST LANDSCAPE colors with vivid unnatural hues, Charing Cross Bridge style vibrant scenery, strong color contrasts, energetic expressive brushwork, liberated pure colors, dynamic compositions, Derain Fauvist masterpiece quality',
+    
+    'VLAMINCK': 'painting by Maurice de Vlaminck: VIOLENT EXPRESSIVE COLORS with turbulent emotional intensity, most aggressive Fauvist palette, thick impulsive brushwork, raw powerful energy, dramatic color explosions, Van Gogh-influenced passion, Vlaminck Fauvist masterpiece quality'
+  };
+  
+  const normalized = artistName.toUpperCase().trim();
+  if (normalized.includes('MATISSE') || normalized.includes('마티스')) return prompts['MATISSE'];
+  if (normalized.includes('DERAIN') || normalized.includes('드랭')) return prompts['DERAIN'];
+  if (normalized.includes('VLAMINCK') || normalized.includes('블라맹크')) return prompts['VLAMINCK'];
+  return prompts['MATISSE'];
+}
+
+// 표현주의 화가별 프롬프트
+function getExpressionismArtistPrompt(artistName) {
+  const prompts = {
+    'MUNCH': 'painting by Edvard Munch: INTENSE PSYCHOLOGICAL emotional depth, The Scream style existential anxiety atmosphere, WAVY DISTORTED flowing lines in background, haunting symbolic colors (blood red sky, sickly yellows, deep blues), raw emotional vulnerability, swirling anxious energy, Munch Expressionist masterpiece quality',
+    
+    'KIRCHNER': 'painting by Ernst Ludwig Kirchner: ANGULAR JAGGED FORMS with sharp geometric simplification, Berlin street scene style urban tension, bold clashing colors (acid green, hot pink, electric blue), nervous energetic brushwork, Die Brücke Expressionist intensity, Kirchner masterpiece quality',
+    
+    'KOKOSCHKA': 'painting by Oskar Kokoschka: VIOLENT PSYCHOLOGICAL PORTRAITS with turbulent brushwork revealing inner turmoil, intense probing character study, thick expressive paint application, agitated nervous energy, deep emotional excavation, Kokoschka Expressionist masterpiece quality',
+    
+    'KANDINSKY': 'painting by Wassily Kandinsky: ABSTRACT SPIRITUAL FORMS with floating geometric shapes, Composition series style non-representational expression, pure emotional color and form, musical visual harmonies, dynamic abstract energy, Kandinsky Expressionist masterpiece quality'
+  };
+  
+  const normalized = artistName.toUpperCase().trim();
+  if (normalized.includes('MUNCH') || normalized.includes('뭉크')) return prompts['MUNCH'];
+  if (normalized.includes('KIRCHNER') || normalized.includes('키르히너')) return prompts['KIRCHNER'];
+  if (normalized.includes('KOKOSCHKA') || normalized.includes('코코슈카')) return prompts['KOKOSCHKA'];
+  if (normalized.includes('KANDINSKY') || normalized.includes('칸딘스키')) return prompts['KANDINSKY'];
+  return prompts['MUNCH'];
+}
+
+
+// ========================================
 // Fallback 프롬프트 (AI 실패시 사용)
 // ========================================
 const fallbackPrompts = {
@@ -1699,7 +1890,8 @@ const fallbackPrompts = {
   
   expressionism: {
     name: '표현주의',
-    prompt: 'Expressionist painting by Amedeo Modigliani: STRETCH neck vertically to 1.8-2.0x DOUBLE the normal length, STRETCH face vertically to 1.5x elongated oval, ALMOND-SHAPED eyes ABSOLUTELY NO PUPILS NO iris (completely blank dark outlined), TILT head slightly, simplified smooth contours, DESATURATED muted earth tones (ochre sienna grey-blue), dark shadowy background, NOT photographic preserve facial identity'
+    prompt: 'MUNCH_EXPRESSIONISM',  // 기본값 - 실제로는 getExpressionismArtistPrompt()에서 동적 생성
+    dynamicPrompt: true
   },
   
   modernism: {
@@ -2469,12 +2661,26 @@ export default async function handler(req, res) {
               photoType: detectPhotoType(photoAnalysisFromAI)
             };
             
-            // 🎯 모더니즘: 프롬프트 완전 교체 (다른 화가 언급 제거!)
-            if (categoryForWeight === 'modernism') {
-              finalPrompt = getModernismArtistPrompt(weightSelectedArtist);
-              console.log(`🎨 [MODERNISM] Replaced prompt with ${weightSelectedArtist}-only prompt`);
+            // 🎯 모든 사조: 화가별 개별 프롬프트로 완전 교체 (다른 화가 언급 제거!)
+            const artistPromptMap = {
+              'ancient': getAncientArtistPrompt,
+              'medieval': getMedievalArtistPrompt,
+              'renaissance': getRenaissanceArtistPrompt,
+              'baroque': getBaroqueArtistPrompt,
+              'rococo': getRococoArtistPrompt,
+              'neoclassicism': getNeoclassicismArtistPrompt,
+              'impressionism': getImpressionismArtistPrompt,
+              'postImpressionism': getPostImpressionismArtistPrompt,
+              'fauvism': getFauvismArtistPrompt,
+              'expressionism': getExpressionismArtistPrompt,
+              'modernism': getModernismArtistPrompt
+            };
+            
+            if (artistPromptMap[categoryForWeight]) {
+              finalPrompt = artistPromptMap[categoryForWeight](weightSelectedArtist);
+              console.log(`🎨 [${categoryForWeight.toUpperCase()}] Replaced prompt with ${weightSelectedArtist}-only prompt`);
             } else {
-              // 다른 사조: 기존 방식 (화가 이름만 교체)
+              // 프롬프트 함수 없는 사조: 기존 방식 (화가 이름만 교체)
               finalPrompt = finalPrompt.replace(new RegExp(oldArtist, 'gi'), weightSelectedArtist);
             }
             console.log(`✅ [WEIGHT-BASED] Final artist: ${selectedArtist}`);
@@ -2602,18 +2808,6 @@ export default async function handler(req, res) {
             console.log('✅ Enhanced Titian colors added');
           } else {
             console.log('ℹ️ Titian colors already in prompt (AI included it)');
-          }
-        }
-        
-        // 모딜리아니 선택시 긴 목/아몬드 눈 강화 + control_strength 0.65
-        if (selectedArtist.toUpperCase().trim().includes('MODIGLIANI')) {
-          console.log('🎯 Modigliani detected');
-          if (!finalPrompt.includes('elongated neck')) {
-            finalPrompt = finalPrompt + ', painting by Amedeo Modigliani, signature elongated portrait-style with EXTREMELY elongated graceful neck (2X longer than normal swan-like proportions), mysterious almond-shaped eyes WITHOUT pupils (blank dark oval eyes), simplified elegant sculptural forms with smooth contours, warm earthy palette of ochres terracottas and muted browns, melancholic serene beauty with African mask influences, dramatically stretched neck and hauntingly blank eyes';
-            controlStrength = 0.65;
-            console.log('✅ Enhanced Modigliani elongation added (control_strength 0.65)');
-          } else {
-            console.log('ℹ️ Modigliani elongation already in prompt (AI included it)');
           }
         }
         
@@ -3053,15 +3247,11 @@ export default async function handler(req, res) {
             selectedArtist.includes('워홀') ||
             selectedArtist.includes('앤디')) {
           console.log('🎯 Warhol detected');
-          if (!finalPrompt.includes('GRID') && !finalPrompt.includes('grid') && !finalPrompt.includes('silkscreen')) {
-            // 강화 프롬프트를 앞으로 이동 (A 방안)
-            const warholEnhancement = 'CRITICAL: DIVIDE canvas into EXACTLY 4 EQUAL QUADRANTS, 2x2 FOUR-PANEL GRID layout, SAME subject repeated 4 times in each quadrant, each panel with DIFFERENT BOLD COLOR scheme (hot pink, cyan, yellow, orange, electric blue, lime green), Marilyn Monroe series style HIGH CONTRAST silkscreen effect, FLAT graphic colors with NO gradients, commercial mass-production aesthetic, NOT single image MUST be 4 separate panels, ';
-            finalPrompt = warholEnhancement + finalPrompt;
-            controlStrength = 0.30;
-            console.log('✅ Enhanced Warhol 4-panel grid added (FRONT position, control_strength 0.30)');
-          } else {
-            console.log('ℹ️ Warhol grid already in prompt (AI included it)');
-          }
+          // 항상 강화 프롬프트로 교체 (4분할 보장)
+          const warholEnhancement = 'CRITICAL: DIVIDE canvas into EXACTLY 4 EQUAL QUADRANTS, 2x2 FOUR-PANEL GRID layout, SAME subject repeated 4 times in each quadrant, each panel with DIFFERENT BOLD COLOR scheme (hot pink, cyan, yellow, orange, electric blue, lime green), Marilyn Monroe series style HIGH CONTRAST silkscreen effect, FLAT graphic colors with NO gradients, commercial mass-production aesthetic, NOT single image MUST be 4 separate panels, ';
+          finalPrompt = warholEnhancement + finalPrompt;
+          controlStrength = 0.30;
+          console.log('✅ Enhanced Warhol 4-panel grid (FRONT position, control_strength 0.30)');
         }
         
         // 피카소 선택시 입체주의 강화 (거장 + 모더니즘)
@@ -3328,7 +3518,7 @@ export default async function handler(req, res) {
     console.log('🎯 Applied identity preservation rule');
     
     if (shouldApplyAttractive && selectedWork) {
-      const attractiveEnhancement = ', render all people ATTRACTIVELY BEAUTIFULLY and YOUTHFULLY with appealing refined features, elegant dignified appearance, smooth healthy skin';
+      const attractiveEnhancement = ', render all people ATTRACTIVELY BEAUTIFULLY and YOUTHFULLY with appealing refined features, elegant dignified appearance';
       finalPrompt = finalPrompt + attractiveEnhancement;
       console.log('✨ Applied attractive enhancement for:', selectedWork);
     } else if (selectedWork) {
