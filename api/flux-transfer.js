@@ -771,12 +771,6 @@ Available Baroque Artists (5명):
    - Masterpiece: Self-portraits
    - When to prioritize: Clear elderly subject (70%+)
 
-3. RUBENS (루벤스) - Best for groups (4+ people)
-   - Specialty: Dynamic composition, voluptuous figures, rich energetic colors
-   - Best for: Group photos (4+ people), energetic scenes, multiple subjects
-   - Signature: Baroque movement and vitality, flesh tones
-   - When to prioritize: 4+ people in photo
-
 4. VELÁZQUEZ (벨라스케스) - Best for formal/official portraits
    - Specialty: Courtly dignity, Spanish formality, spatial mastery
    - Best for: Formal clothing, aristocratic mood, official portraits
@@ -836,19 +830,10 @@ Unless:
 `;
   }
   
-  // 4명 이상 → 루벤스
-  if (count >= 4) {
-    return `
-🎯 STRONG RECOMMENDATION: RUBENS
-Group of ${count} people - Rubens excels at dynamic group compositions!
-`;
-  }
-  
-  // 2-3명 → 카라바조 or 루벤스
+  // 2명 이상 → 카라바조
   return `
-🎯 Consider: CARAVAGGIO for dramatic small group, RUBENS for energetic scene
-Caravaggio: intimate drama
-Rubens: dynamic movement
+🎯 STRONG RECOMMENDATION: CARAVAGGIO for dramatic group scene
+Caravaggio's chiaroscuro creates powerful intimate drama for any group size.
 `;
 }
 
@@ -2057,9 +2042,10 @@ PABLO PICASSO - SELECT ONE:
 
         'frida': `
 FRIDA KAHLO - SELECT ONE:
-1. "Me and My Parrots" (나와 앵무새들) → person with birds/pets | Style: COLORFUL PARROTS on shoulders, lush green foliage, direct gaze
-2. "The Broken Column" (부러진 기둥) → single figure, frontal pose | Style: Cracked torso with IONIC COLUMN spine, nails in skin, tears
-3. "Self-Portrait with Thorn Necklace" (가시 목걸이 자화상) → portrait with animal | Style: THORNS with hummingbird, monkey, jungle foliage`,
+1. "Me and My Parrots" (나와 앵무새들) → person with birds/pets | Style: COLORFUL PARROTS on shoulders, lush green foliage, direct gaze, vibrant colors
+2. "The Broken Column" (부러진 기둥) → single figure, frontal pose | Style: Cracked torso with IONIC COLUMN spine, nails piercing skin, tears streaming
+3. "Self-Portrait with Thorn Necklace" (가시 목걸이 자화상) → portrait with nature/insects | Style: THORNS around neck with hummingbird, black cat, jungle foliage
+4. "Self-Portrait with Monkeys" (원숭이와 자화상) → person with pets/animals, warm mood | Style: MONKEYS EMBRACING from behind, lush green leaves, intimate warm atmosphere`,
 
         'warhol': `
 ANDY WARHOL - USE THIS STYLE:
@@ -3045,18 +3031,6 @@ export default async function handler(req, res) {
             console.log('✅ Enhanced Michelangelo sculptural power added');
           } else {
             console.log('ℹ️ Michelangelo power already in prompt (AI included it)');
-          }
-        }
-        
-        // 루벤스 선택시 바로크 역동성 강화
-        if (selectedArtist.toUpperCase().trim().includes('RUBENS') || 
-            selectedArtist.toUpperCase().trim().includes('PETER PAUL')) {
-          console.log('🎯 Rubens detected');
-          if (!finalPrompt.includes('Baroque dynamism')) {
-            finalPrompt = finalPrompt + ', painting by Peter Paul Rubens, DYNAMIC BAROQUE ENERGY with swirling diagonal compositions full of turbulent cascading movement, voluptuous fleshy figures with robust sensuous vitality and full-bodied forms, rich saturated colors of deep crimson reds luxurious golds and warm glowing flesh tones, dramatic passionate gestures and exuberant expressions, flowing billowing drapery in constant motion, exuberant vitality and monumental grandeur, lush painterly technique with thick fluid brushwork';
-            console.log('✅ Enhanced Rubens dynamism added');
-          } else {
-            console.log('ℹ️ Rubens dynamism already in prompt (AI included it)');
           }
         }
         
