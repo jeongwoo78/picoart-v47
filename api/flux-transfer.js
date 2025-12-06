@@ -325,10 +325,10 @@ const ARTIST_WEIGHTS = {
   // 인상주의 (4명)
   impressionism: {
     portrait: [
-      { name: 'RENOIR', weight: 45 },
-      { name: 'DEGAS', weight: 35 },
-      { name: 'MONET', weight: 15 },
-      { name: 'PISSARRO', weight: 5 }
+      { name: 'RENOIR', weight: 40 },
+      { name: 'MONET', weight: 40 },
+      { name: 'DEGAS', weight: 10 },
+      { name: 'PISSARRO', weight: 10 }
     ],
     movement: [
       { name: 'DEGAS', weight: 50 },
@@ -343,9 +343,9 @@ const ARTIST_WEIGHTS = {
       { name: 'DEGAS', weight: 10 }
     ],
     default: [
-      { name: 'RENOIR', weight: 35 },
-      { name: 'DEGAS', weight: 30 },
-      { name: 'MONET', weight: 25 },
+      { name: 'RENOIR', weight: 40 },
+      { name: 'MONET', weight: 40 },
+      { name: 'DEGAS', weight: 10 },
       { name: 'PISSARRO', weight: 10 }
     ]
   },
@@ -1611,6 +1611,42 @@ Return the artist that will create the most compelling transformation!
 `;
 }
 
+// ========================================
+// 모더니즘 화가별 개별 프롬프트 (다른 화가 언급 없음!)
+// ========================================
+function getModernismArtistPrompt(artistName) {
+  const prompts = {
+    'PICASSO': 'Cubist painting by Pablo Picasso: SINGLE UNIFIED IMAGE not divided into panels, GEOMETRIC FRAGMENTED forms broken into angular planes, MULTIPLE SIMULTANEOUS PERSPECTIVES showing different angles at once, show NOSE from SIDE PROFILE while BOTH EYES visible from FRONT VIEW, Les Demoiselles d\'Avignon style, earth tone palette (ochre sienna brown olive grey), analytical cubist dissection, VISIBLE BRUSHSTROKES, painterly NOT illustrative, Picasso Cubist masterpiece quality',
+    
+    'MAGRITTE': 'Surrealist painting by René Magritte: philosophical visual paradox, The Son of Man style with mysterious object partially obscuring face, or Golconda style MULTIPLICATION of same figure repeated in grid pattern floating/falling through sky, bowler hat gentleman aesthetic, hyperrealistic smooth painting technique, dreamlike impossible scenarios, thought-provoking conceptual art, Belgian Surrealist masterpiece quality',
+    
+    'MIRÓ': 'Abstract painting by Joan Miró: playful BIOMORPHIC SHAPES floating on canvas, childlike symbols (stars moons eyes birds), PRIMARY COLORS (red blue yellow) on white or neutral background, spontaneous automatic drawing style, whimsical dreamlike universe, black calligraphic lines, Catalan Surrealist fantasy, joyful cosmic abstraction, Miró masterpiece quality',
+    
+    'CHAGALL': 'Dreamlike painting by Marc Chagall: FLOATING FIGURES defying gravity in romantic nocturnal sky, soft MUTED PASTEL colors (lavender pale blue rose), nostalgic village scenes with tilted houses, lovers embracing mid-air, symbolic imagery (violins roosters flowers), poetic lyrical atmosphere, Jewish folklore dreamscape, Chagall romantic masterpiece quality',
+    
+    'WARHOL': 'Pop Art by Andy Warhol: MUST create 2x2 FOUR-PANEL GRID layout, SAME subject repeated 4 times with DIFFERENT BOLD COLOR schemes in each panel, Marilyn Monroe series style HIGH CONTRAST silkscreen effect, FLAT graphic colors (hot pink cyan yellow orange electric blue), commercial mass-production aesthetic, Warhol Pop Art masterpiece quality',
+    
+    'LICHTENSTEIN': 'Pop Art by Roy Lichtenstein: comic book style with VISIBLE BEN-DAY DOTS pattern throughout entire image, THICK BLACK OUTLINES around all forms, PRIMARY COLORS (red yellow blue) with white, speech bubble aesthetic, dramatic comic panel composition, halftone printing effect, bold graphic simplification, Lichtenstein Pop Art masterpiece quality',
+    
+    'KEITH HARING': 'Street art by Keith Haring: BOLD CONTINUOUS BLACK OUTLINES, simplified dancing human figures with RADIANT ENERGY LINES emanating from bodies, flat bright colors (red yellow blue green), dynamic movement and rhythm, subway graffiti aesthetic, joyful kinetic energy, interlocking figures, Keith Haring street art masterpiece quality'
+  };
+  
+  // 아티스트 이름 정규화
+  const normalizedName = artistName.toUpperCase().trim();
+  
+  // 매칭
+  if (normalizedName.includes('PICASSO') || normalizedName.includes('피카소')) return prompts['PICASSO'];
+  if (normalizedName.includes('MAGRITTE') || normalizedName.includes('마그리트')) return prompts['MAGRITTE'];
+  if (normalizedName.includes('MIRÓ') || normalizedName.includes('MIRO') || normalizedName.includes('미로')) return prompts['MIRÓ'];
+  if (normalizedName.includes('CHAGALL') || normalizedName.includes('샤갈')) return prompts['CHAGALL'];
+  if (normalizedName.includes('WARHOL') || normalizedName.includes('워홀')) return prompts['WARHOL'];
+  if (normalizedName.includes('LICHTENSTEIN') || normalizedName.includes('리히텐슈타인')) return prompts['LICHTENSTEIN'];
+  if (normalizedName.includes('HARING') || normalizedName.includes('해링') || normalizedName.includes('키스')) return prompts['KEITH HARING'];
+  
+  // 기본값 (피카소)
+  return prompts['PICASSO'];
+}
+
 
 // ========================================
 // Fallback 프롬프트 (AI 실패시 사용)
@@ -1668,7 +1704,8 @@ const fallbackPrompts = {
   
   modernism: {
     name: '20세기 모더니즘',
-    prompt: 'Transform into 20th Century Modernism art. Choose best style: CUBIST fragmented geometric forms by Picasso with face broken into multiple angular planes seen from different angles simultaneously, or MAGRITTE philosophical paradox with subject multiplied like Golconda raining men, or CHAGALL soft dreamy floating figures with muted pastel colors, or MIRÓ playful biomorphic symbols with primary colors (for landscape/still life), or POP ART by Warhol with face repeated in 4-grid with different bold color schemes, or LICHTENSTEIN comic book style with visible Ben-Day dots throughout and thick black outlines, or KEITH HARING bold black outlines with dancing figures. Revolutionary 20th century masterpiece quality'
+    prompt: 'PICASSO_CUBIST',  // 기본값 - 실제로는 getModernismArtistPrompt()에서 동적 생성
+    dynamicPrompt: true  // 동적 프롬프트 플래그
   },
   
   // ========================================
@@ -2432,8 +2469,14 @@ export default async function handler(req, res) {
               photoType: detectPhotoType(photoAnalysisFromAI)
             };
             
-            // 프롬프트에서 화가 이름 교체
-            finalPrompt = finalPrompt.replace(new RegExp(oldArtist, 'gi'), weightSelectedArtist);
+            // 🎯 모더니즘: 프롬프트 완전 교체 (다른 화가 언급 제거!)
+            if (categoryForWeight === 'modernism') {
+              finalPrompt = getModernismArtistPrompt(weightSelectedArtist);
+              console.log(`🎨 [MODERNISM] Replaced prompt with ${weightSelectedArtist}-only prompt`);
+            } else {
+              // 다른 사조: 기존 방식 (화가 이름만 교체)
+              finalPrompt = finalPrompt.replace(new RegExp(oldArtist, 'gi'), weightSelectedArtist);
+            }
             console.log(`✅ [WEIGHT-BASED] Final artist: ${selectedArtist}`);
           }
         }
@@ -2655,11 +2698,12 @@ export default async function handler(req, res) {
         // 고갱 선택시 평면적 원시주의 강화
         if (selectedArtist.toUpperCase().trim().includes('GAUGUIN')) {
           console.log('🎯 Gauguin detected');
-          if (!finalPrompt.includes('Tahitian painting')) {
-            finalPrompt = finalPrompt + ', painting by Paul Gauguin, Tahitian painting-style flat bold areas of pure unmixed color with NO modeling or shading, primitive decorative patterns with strong dark outlines (cloisonnism), exotic tropical colors of deep oranges purples and vibrant greens, simplified forms with flat decorative surfaces, symbolic primitive aesthetic with mystical exotic atmosphere';
-            console.log('✅ Enhanced Gauguin primitive added');
+          if (!finalPrompt.includes('Gauguin')) {
+            finalPrompt = finalPrompt + ', painting by Paul Gauguin Tahitian period: FLAT BOLD AREAS of pure unmixed saturated color WITHOUT shading or modeling, simplified forms with smooth flat surfaces, exotic tropical palette (deep orange, ochre yellow, turquoise, rich purple, vibrant green), Tahitian Women style with decorative simplified figures, warm golden skin tones, lush tropical background, Post-Impressionist flat color planes, VISIBLE BRUSHSTROKES with oil paint texture, NOT mosaic NOT stained glass NOT geometric tiles, PRESERVE original subject face identity age and ethnicity, Gauguin masterpiece quality';
+            controlStrength = 0.60;
+            console.log('✅ Enhanced Gauguin flat colors + identity preserve (control_strength 0.60)');
           } else {
-            console.log('ℹ️ Gauguin primitive already in prompt (AI included it)');
+            console.log('ℹ️ Gauguin style already in prompt (AI included it)');
           }
         }
         
@@ -3027,7 +3071,7 @@ export default async function handler(req, res) {
             selectedArtist.includes('파블로')) {
           console.log('🎯 Picasso detected');
           if (!finalPrompt.includes('Cubist')) {
-            finalPrompt = finalPrompt + ', Cubist painting by Pablo Picasso: CRITICAL MULTI-PERSPECTIVE FACE - show NOSE from SIDE PROFILE angle while BOTH EYES visible from FRONT VIEW in same face, GEOMETRIC PLANES dividing face into angular flat colored sections, VISIBLE BRUSHSTROKES with thick oil paint texture throughout, earth tone palette (ochre sienna brown olive grey), face broken into overlapping angular planes like faceted crystal, Analytical Cubism style with intersecting geometric shapes, painterly NOT illustrative NOT smooth, Les Demoiselles d\'Avignon and Portrait of Dora Maar style, PRESERVE subject age and identity while applying Cubist fragmentation, render subject ATTRACTIVELY';
+            finalPrompt = finalPrompt + ', Cubist painting by Pablo Picasso: CRITICAL - SINGLE UNIFIED IMAGE not divided into panels NOT 4-panel grid NOT multiple frames, MULTI-PERSPECTIVE FACE showing NOSE from SIDE PROFILE angle while BOTH EYES visible from FRONT VIEW in same face, GEOMETRIC PLANES dividing face into angular flat colored sections, VISIBLE BRUSHSTROKES with thick oil paint texture throughout, earth tone palette (ochre sienna brown olive grey), face broken into overlapping angular planes like faceted crystal, Analytical Cubism style with intersecting geometric shapes, painterly NOT illustrative NOT smooth, Les Demoiselles d\'Avignon and Portrait of Dora Maar style, PRESERVE subject age and identity while applying Cubist fragmentation, render subject ATTRACTIVELY';
             controlStrength = 0.45;
             console.log('✅ Enhanced Picasso Cubism (control_strength 0.45 for balanced fragmentation)');
           } else {
@@ -3284,7 +3328,7 @@ export default async function handler(req, res) {
     console.log('🎯 Applied identity preservation rule');
     
     if (shouldApplyAttractive && selectedWork) {
-      const attractiveEnhancement = ', render all people ATTRACTIVELY and BEAUTIFULLY with appealing refined features, elegant dignified appearance';
+      const attractiveEnhancement = ', render all people ATTRACTIVELY BEAUTIFULLY and YOUTHFULLY with appealing refined features, elegant dignified appearance, smooth healthy skin';
       finalPrompt = finalPrompt + attractiveEnhancement;
       console.log('✨ Applied attractive enhancement for:', selectedWork);
     } else if (selectedWork) {
