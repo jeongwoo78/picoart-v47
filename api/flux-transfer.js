@@ -659,11 +659,11 @@ Available Renaissance Artists (5명):
    - Signature: Madonna-like grace, perfect harmony
    - When to prioritize: Clear mother+baby or peaceful multi-person scene
 
-4. MICHELANGELO (미켈란젤로) - Best for ADULT male full body, heroic
+4. MICHELANGELO (미켈란젤로) - Best for ADULT male, dynamic/heroic
    - Specialty: Sculptural powerful anatomy, heroic masculine figures
-   - Best for: ADULT male full body (age 18+), athletic/heroic poses
+   - Best for: ADULT male (age 18+) with full body, athletic, dynamic, heroic poses
    - Signature: David-like muscular strength, monumental dignity
-   - When to prioritize: Adult male full body or heroic masculine subject
+   - When to prioritize: Adult male with masculine energy, sports, action, heroic subject
    - CRITICAL: NEVER for children, teenagers, women, or elderly - ONLY adult men
 
 5. BOTTICELLI (보티첼리) - Best for young female full body, graceful
@@ -735,12 +735,18 @@ This scene with baby is perfect for Raphael's Madonna-like grace!
 `;
   }
   
-  // 성인 남성 전신 → 미켈란젤로 (아동/청소년/노인 제외)
-  if (count === 1 && gender === 'male' && shot_type === 'full_body' && 
-      age_range !== 'child' && age_range !== 'teen' && age_range !== 'elderly') {
+  // 성인 남성 + (전신 OR 역동적/스포츠/액션) → 미켈란젤로 (아동/청소년/노인 제외)
+  // v59: 남성 전신뿐 아니라 남성적+역동적 사진에도 적용
+  if (count === 1 && gender === 'male' && 
+      age_range !== 'child' && age_range !== 'teen' && age_range !== 'elderly' &&
+      (shot_type === 'full_body' || 
+       subject.includes('sport') || subject.includes('athletic') || 
+       subject.includes('action') || subject.includes('dynamic') ||
+       subject.includes('heroic') || subject.includes('muscular'))) {
     return `
 🎯 STRONG RECOMMENDATION: MICHELANGELO
-ADULT male full body - perfect for Michelangelo's David-like heroic strength!
+ADULT male with dynamic/heroic qualities - perfect for Michelangelo's David-like heroic strength!
+His sculptural anatomy and monumental power suit masculine energy.
 CRITICAL: Only for adult men (18-60), never for children/teens/elderly.
 `;
   }
@@ -1729,16 +1735,26 @@ function getRococoArtistPrompt(artistName) {
 }
 
 // 신고전주의/낭만주의/사실주의 화가별 프롬프트
+// v59: 고야, 들라크루아, 마네 추가
 function getNeoclassicismArtistPrompt(artistName) {
   const genderRule = 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. ';
   const prompts = {
+    // 신고전주의
     'JACQUES-LOUIS DAVID': genderRule + 'painting by Jacques-Louis David: NEOCLASSICAL PERFECTION with clear crisp outlines, heroic idealized figures in classical poses, cool restrained color palette, dramatic moral narratives, Oath of the Horatii style civic virtue, sculptural modeling with smooth finish, balanced symmetrical compositions, David Neoclassical masterpiece quality',
     
     'INGRES': genderRule + 'painting by Jean-Auguste-Dominique Ingres: PERFECTLY SMOOTH FLOWING CONTOURS like polished surface, porcelain-smooth skin without visible brushstrokes, elegant sinuous curves and graceful elongated forms, idealized beauty, cool serene color palette, meticulous precise detail, flawless enamel-like finish, Ingres masterpiece quality',
     
+    // 낭만주의
     'TURNER': genderRule + 'painting by J.M.W. Turner: ATMOSPHERIC SUBLIME with swirling mist light and color, dramatic natural phenomena, luminous golden light dissolving forms, romantic awe-inspiring landscapes, The Fighting Temeraire style emotional power, loose expressive brushwork, Turner masterpiece quality',
     
+    'GOYA': genderRule + 'painting by Francisco Goya: PSYCHOLOGICAL INTENSITY with penetrating gaze and inner truth revealed, dramatic chiaroscuro with deep shadows and stark contrasts, La Maja Vestida style Spanish elegance for portraits, dark romantic palette with rich blacks and warm flesh tones, unflinching honesty capturing human nature, court painter sophistication with underlying tension, Goya masterpiece quality',
+    
+    'DELACROIX': genderRule + 'painting by Eugène Delacroix: PASSIONATE REVOLUTIONARY ENERGY with Liberty Leading the People style dramatic action, vivid intense colors with bold reds blues and warm golden tones, dynamic diagonal compositions with turbulent swirling movement, loose expressive brushstrokes full of emotion, dramatic gestures and heroic romantic intensity, Delacroix Romantic masterpiece quality',
+    
+    // 사실주의
     'MILLET': genderRule + 'painting by Jean-François Millet: DIGNIFIED RURAL LABOR with monumental peasant figures, warm earthy palette of browns and ochres, The Gleaners style quiet nobility, soft diffused light, serene contemplative mood, honest depiction of agricultural life, Millet Realist masterpiece quality',
+    
+    'MANET': genderRule + 'painting by Édouard Manet: MODERN PARIS REALISM with Olympia-style bold flat composition and striking contrasts, dramatic blacks and pure whites with minimal mid-tones, sophisticated urban café society atmosphere, frank direct confrontational gaze, loose confident brushwork with visible energetic strokes, metropolitan elegance and modern audacity, Manet masterpiece quality',
     
     'CLAUDE LORRAIN': genderRule + 'painting by Claude Lorrain: IDEAL CLASSICAL LANDSCAPE with golden atmospheric light, ancient ruins and pastoral scenery, warm glowing sunset or sunrise, poetic Arcadian vision, carefully balanced compositions with framing trees, luminous sky reflected in water, Claude Lorrain masterpiece quality'
   };
@@ -1747,7 +1763,10 @@ function getNeoclassicismArtistPrompt(artistName) {
   if (normalized.includes('DAVID') || normalized.includes('다비드')) return prompts['JACQUES-LOUIS DAVID'];
   if (normalized.includes('INGRES') || normalized.includes('앵그르')) return prompts['INGRES'];
   if (normalized.includes('TURNER') || normalized.includes('터너')) return prompts['TURNER'];
+  if (normalized.includes('GOYA') || normalized.includes('고야')) return prompts['GOYA'];
+  if (normalized.includes('DELACROIX') || normalized.includes('들라크루아')) return prompts['DELACROIX'];
   if (normalized.includes('MILLET') || normalized.includes('밀레')) return prompts['MILLET'];
+  if (normalized.includes('MANET') || normalized.includes('마네')) return prompts['MANET'];
   if (normalized.includes('CLAUDE') || normalized.includes('LORRAIN') || normalized.includes('클로드 로랭')) return prompts['CLAUDE LORRAIN'];
   return prompts['JACQUES-LOUIS DAVID'];
 }
@@ -3063,6 +3082,17 @@ export default async function handler(req, res) {
             console.log('✅ Enhanced Turner mist added');
           } else {
             console.log('ℹ️ Turner mist already in prompt (AI included it)');
+          }
+        }
+        
+        // v59: 고야 선택시 심리적 깊이 강화
+        if (selectedArtist.toUpperCase().trim().includes('GOYA')) {
+          console.log('🎯 Goya detected');
+          if (!finalPrompt.includes('La Maja')) {
+            finalPrompt = finalPrompt + ', painting by Francisco Goya, La Maja Vestida-style Spanish romantic elegance with psychological intensity and penetrating gaze, dramatic chiaroscuro with deep rich shadows and stark contrasts, dark romantic palette with sumptuous blacks warm flesh tones and muted earth colors, unflinching honesty capturing inner truth and human nature, court painter sophistication with underlying tension';
+            console.log('✅ Enhanced Goya psychological depth added');
+          } else {
+            console.log('ℹ️ Goya depth already in prompt (AI included it)');
           }
         }
         

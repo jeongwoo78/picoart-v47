@@ -440,7 +440,7 @@ const ResultScreen = ({
       'rembrandt': '렘브란트(Rembrandt van Rijn)',
       'vermeer': '베르메르(Johannes Vermeer)',
       'velazquez': '벨라스케스(Diego Velázquez)',
-      'rubens': '루벤스(Peter Paul Rubens)',
+      // v59: 루벤스 삭제 (API에 프롬프트 없음)
       
       // 로코코
       'watteau': '와토(Jean-Antoine Watteau)',
@@ -482,8 +482,7 @@ const ResultScreen = ({
       'camille pissarro': '피사로(Camille Pissarro)',
       'sisley': '시슬리(Alfred Sisley)',
       'alfred sisley': '시슬리(Alfred Sisley)',
-      'morisot': '모리조(Berthe Morisot)',
-      'berthe morisot': '모리조(Berthe Morisot)',
+      // v59: 모리조 삭제 (API에 프롬프트 없음)
       
       // 후기인상주의
       'van gogh': '반 고흐(Vincent van Gogh)',
@@ -611,12 +610,11 @@ const ResultScreen = ({
   const getModernismMovement = (artistName) => {
     const artist = artistName.toLowerCase();
     
-    // 입체주의
-    const cubism = ['picasso', 'pablo picasso', 'braque', 'georges braque'];
+    // 입체주의 - v59: 브라크 제거 (피카소와 중복)
+    const cubism = ['picasso', 'pablo picasso'];
     
-    // 초현실주의
-    const surrealism = ['dali', 'dalí', 'salvador dali', 'salvador dalí',
-                        'magritte', 'rené magritte', 'rene magritte',
+    // 초현실주의 - v59: 달리 완전 삭제
+    const surrealism = ['magritte', 'rené magritte', 'rene magritte',
                         'miro', 'miró', 'joan miro', 'joan miró',
                         'chagall', 'marc chagall'];
     
