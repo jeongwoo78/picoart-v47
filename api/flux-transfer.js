@@ -526,7 +526,17 @@ function selectArtistByWeight(category, photoAnalysis) {
     }
     
     // 풍경 분기: 자연 vs 도시
-    if (subject.includes('landscape') || subject === 'landscape') {
+    // 'landscape' 또는 ('object'인데 outdoor 배경)이면 풍경으로 처리
+    const isOutdoorBackground = background.includes('outdoor') || background.includes('nature') || 
+                                 background.includes('park') || background.includes('garden') ||
+                                 background.includes('tree') || background.includes('sky') ||
+                                 background.includes('path') || background.includes('road') ||
+                                 background.includes('forest') || background.includes('mountain');
+    
+    const isLandscapeScene = subject.includes('landscape') || subject === 'landscape' ||
+                             (subject === 'object' && isOutdoorBackground);
+    
+    if (isLandscapeScene) {
       // 도시/건물/거리 → 칼리보트
       if (background.includes('city') || background.includes('urban') || background.includes('building') || 
           background.includes('street') || subject.includes('city') || subject.includes('urban') || subject.includes('building')) {
