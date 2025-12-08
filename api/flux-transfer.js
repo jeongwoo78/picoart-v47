@@ -2561,6 +2561,15 @@ function buildIdentityPrompt(visionAnalysis) {
       parts.push('soft delicate features, female bone structure, feminine build');
     }
     parts.push('DO NOT masculinize, KEEP AS WOMAN');
+  } else if (visionAnalysis.gender === 'both') {
+    // 남녀 혼합 (커플, 그룹 등)
+    parts.push('MIXED GENDER GROUP - PRESERVE BOTH GENDERS EXACTLY');
+    if (visionAnalysis.physical_description) {
+      parts.push(visionAnalysis.physical_description);
+    }
+    parts.push('MALE figures MUST remain MASCULINE with strong jaw and male bone structure');
+    parts.push('FEMALE figures MUST remain FEMININE with soft features and female bone structure');
+    parts.push('DO NOT swap genders, DO NOT feminize males, DO NOT masculinize females');
   }
   
   // 나이
@@ -3009,6 +3018,9 @@ export default async function handler(req, res) {
             } else if (photoAnalysisFromAI.gender === 'female') {
               genderPrefix = 'ABSOLUTE REQUIREMENT: This is a FEMALE person - subject MUST have FEMININE face with soft features, female bone structure, KEEP AS WOMAN. ';
               console.log('🚨 Detected FEMALE - Added FEMININE enforcement');
+            } else if (photoAnalysisFromAI.gender === 'both' || (visionAnalysis && visionAnalysis.gender === 'both')) {
+              genderPrefix = 'ABSOLUTE REQUIREMENT: MIXED GENDER GROUP - MALE figures MUST remain MASCULINE with strong jaw and male bone structure, FEMALE figures MUST remain FEMININE with soft features, DO NOT swap genders, DO NOT feminize males, DO NOT masculinize females, PRESERVE EACH PERSON\'S ORIGINAL GENDER EXACTLY. ';
+              console.log('🚨 Detected BOTH genders - Added MIXED preservation rule');
             } else {
               // 성별 미감지 시에도 강력한 보존 규칙 적용
               genderPrefix = 'ABSOLUTE REQUIREMENT: STRICTLY PRESERVE ORIGINAL GENDER from photo - if subject appears MALE keep MASCULINE features with strong jaw and male bone structure DO NOT feminize DO NOT soften DO NOT add feminine traits, if subject appears FEMALE keep FEMININE features. ';
