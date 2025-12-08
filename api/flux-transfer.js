@@ -2060,18 +2060,25 @@ AVAILABLE MASTERWORKS:
 ${masterWorks}
 
 INSTRUCTIONS:
-1. Analyze the photo: subject type (person/landscape/animal/object), mood, composition
+1. Analyze the photo THOROUGHLY:
+   - Subject type (person/landscape/animal/object)
+   - If PERSON: gender (male/female), age, physical features (jaw shape, hair, build)
+   - Mood, composition
 2. Match to the MOST SUITABLE masterwork from the list above
-3. Generate a FLUX prompt using that specific masterwork's style
+3. Generate a FLUX prompt that STARTS with detailed subject description
 4. IMPORTANT: Preserve the original subject - if it's a baby, keep it as a baby; if elderly, keep elderly
 
 Return ONLY valid JSON (no markdown):
 {
   "analysis": "brief photo analysis",
+  "subject_type": "person" or "landscape" or "animal" or "object",
+  "gender": "male" or "female" or null,
+  "age_range": "baby/child/teen/young_adult/adult/middle_aged/elderly" or null,
+  "physical_description": "for MALE: strong jaw, angular face, short hair, broad shoulders etc. For FEMALE: soft features, delicate face etc." or null,
   "selected_artist": "${categoryName}",
   "selected_work": "exact title of the masterwork you selected",
   "reason": "why this masterwork matches this photo",
-  "prompt": "painting by ${categoryName} in the style of [selected work title], [that work's distinctive techniques], depicting the subject while preserving original features"
+  "prompt": "Start with 'MALE/FEMALE SUBJECT with [physical features]' if person, then 'painting by ${categoryName} in the style of [selected work title], [that work's distinctive techniques]'"
 }`;
       
     } else if (categoryType === 'oriental') {
@@ -2131,10 +2138,14 @@ CRITICAL INSTRUCTIONS FOR PROMPT GENERATION:
 Return ONLY valid JSON (no markdown):
 {
   "analysis": "brief photo description including gender if person present (1 sentence)",
+  "subject_type": "person" or "landscape" or "animal" or "object",
+  "gender": "male" or "female" or null,
+  "age_range": "baby/child/teen/young_adult/adult/middle_aged/elderly" or null,
+  "physical_description": "for MALE: strong jaw, angular face, short hair, broad shoulders etc. For FEMALE: soft features, delicate face etc." or null,
   "selected_artist": "Korean Minhwa" or "Korean Pungsokdo" or "Korean Jingyeong Landscape",
   "selected_style": "minhwa" or "pungsokdo" or "landscape",
   "reason": "why this style fits (1 sentence)",
-  "prompt": "Complete FLUX prompt starting with GENDER RULE if person present, then 'Authentic Korean [style name] from Joseon Dynasty...' including: [for Minhwa: painted on ROUGH THICK HANJI PAPER with PROMINENT FIBER TEXTURE visible throughout, UNEVEN PATCHY pigment absorption, genuinely FADED WEATHERED colors like 200-year museum artifact, TREMBLING WOBBLY folk brushlines, primitive naive quality, NOT digital NOT smooth NOT bright] [for Pungsokdo: KOREAN INK PAINTING on ROUGH HANJI with visible texture, BLACK INK BRUSHWORK dominates 70-80%, then MINIMAL PALE washes 20-30% only, earth tones ONLY (pale brown grey-green faint ochre), spontaneous confident strokes, Kim Hong-do elegance, NOT colorful Chinese gongbi, simple everyday hanbok] [for Jingyeong: bold expressive monochrome ink]. CRITICAL ENDING: 'ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or any Japanese text, NO vertical Japanese writing, NO Japanese ukiyo-e elements, REMOVE all Japanese style, this is 100% PURE KOREAN TRADITIONAL ART not Japanese, NO text NO characters on painting unless Korean Hangul or Chinese only'."
+  "prompt": "Start with 'MALE/FEMALE SUBJECT with [physical features]' if person, then 'Authentic Korean [style name] from Joseon Dynasty...' including: [for Minhwa: painted on ROUGH THICK HANJI PAPER with PROMINENT FIBER TEXTURE visible throughout, UNEVEN PATCHY pigment absorption, genuinely FADED WEATHERED colors like 200-year museum artifact, TREMBLING WOBBLY folk brushlines, primitive naive quality, NOT digital NOT smooth NOT bright] [for Pungsokdo: KOREAN INK PAINTING on ROUGH HANJI with visible texture, BLACK INK BRUSHWORK dominates 70-80%, then MINIMAL PALE washes 20-30% only, earth tones ONLY (pale brown grey-green faint ochre), spontaneous confident strokes, Kim Hong-do elegance, NOT colorful Chinese gongbi, simple everyday hanbok] [for Jingyeong: bold expressive monochrome ink]. CRITICAL ENDING: 'ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or any Japanese text, NO vertical Japanese writing, NO Japanese ukiyo-e elements, REMOVE all Japanese style, this is 100% PURE KOREAN TRADITIONAL ART not Japanese, NO text NO characters on painting unless Korean Hangul or Chinese only'."
 }
 
 Keep it concise and accurate.`;
@@ -2188,10 +2199,14 @@ CRITICAL INSTRUCTIONS FOR PROMPT GENERATION:
 Return ONLY valid JSON (no markdown):
 {
   "analysis": "brief photo description including gender if person present (1 sentence)",
+  "subject_type": "person" or "landscape" or "animal" or "object",
+  "gender": "male" or "female" or null,
+  "age_range": "baby/child/teen/young_adult/adult/middle_aged/elderly" or null,
+  "physical_description": "for MALE: strong jaw, angular face, short hair, broad shoulders etc. For FEMALE: soft features, delicate face etc." or null,
   "selected_artist": "Chinese Ink Wash" or "Chinese Gongbi" or "Chinese Huaniao",
   "selected_style": "ink_wash" or "gongbi" or "huaniao",
   "reason": "why this style fits (1 sentence)",
-  "prompt": "Complete FLUX prompt starting with GENDER RULE if person present, then 'Chinese [style name]...' with all characteristics. CRITICAL ENDING: 'ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or any Japanese text, NO vertical Japanese writing, NO Japanese ukiyo-e elements, REMOVE all Japanese style, this is 100% PURE CHINESE TRADITIONAL ART not Japanese, NO text NO characters on painting unless Chinese characters only'."
+  "prompt": "Start with 'MALE/FEMALE SUBJECT with [physical features]' if person, then 'Chinese [style name]...' with all characteristics. CRITICAL ENDING: 'ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or any Japanese text, NO vertical Japanese writing, NO Japanese ukiyo-e elements, REMOVE all Japanese style, this is 100% PURE CHINESE TRADITIONAL ART not Japanese, NO text NO characters on painting unless Chinese characters only'."
 }
 
 Keep it concise and accurate.`;
@@ -2429,7 +2444,14 @@ Return JSON only:
       work: result.selected_work,  // 거장 모드: 선택된 대표작
       reason: result.reason,
       prompt: result.prompt,
-      analysis: result.analysis
+      analysis: result.analysis,
+      // Vision 분석 결과 (통합됨)
+      visionData: {
+        subject_type: result.subject_type || null,
+        gender: result.gender || null,
+        age_range: result.age_range || null,
+        physical_description: result.physical_description || null
+      }
     };
     
   } catch (error) {
@@ -2437,6 +2459,96 @@ Return JSON only:
     console.error('AI selection failed:', error.message);
     return { success: false, error: error.message };
   }
+}
+
+// ========================================
+// A 방안: 상세 분석 결과를 프롬프트로 변환
+// ========================================
+function buildIdentityPrompt(visionAnalysis) {
+  if (!visionAnalysis || visionAnalysis.subject_type !== 'person') {
+    return '';
+  }
+  
+  const parts = [];
+  
+  // 성별 강조 (가장 중요)
+  if (visionAnalysis.gender === 'male') {
+    parts.push('MALE SUBJECT with MASCULINE features');
+    if (visionAnalysis.physical_description) {
+      parts.push(visionAnalysis.physical_description);
+    } else {
+      parts.push('strong angular jaw, male bone structure, masculine build');
+    }
+    parts.push('DO NOT feminize, DO NOT soften features, KEEP AS MAN');
+  } else if (visionAnalysis.gender === 'female') {
+    parts.push('FEMALE SUBJECT with FEMININE features');
+    if (visionAnalysis.physical_description) {
+      parts.push(visionAnalysis.physical_description);
+    } else {
+      parts.push('soft delicate features, female bone structure, feminine build');
+    }
+    parts.push('DO NOT masculinize, KEEP AS WOMAN');
+  }
+  
+  // 나이
+  if (visionAnalysis.age_range) {
+    const ageMap = {
+      'baby': 'BABY infant',
+      'child': 'CHILD young kid',
+      'teen': 'TEENAGER adolescent',
+      'young_adult': 'young adult in 20s',
+      'adult': 'adult in 30s-40s',
+      'middle_aged': 'middle-aged person in 50s',
+      'elderly': 'ELDERLY senior person'
+    };
+    parts.push(ageMap[visionAnalysis.age_range] || visionAnalysis.age_range);
+  }
+  
+  // 머리
+  if (visionAnalysis.hair) {
+    parts.push(visionAnalysis.hair);
+  }
+  
+  // 민족성
+  if (visionAnalysis.ethnicity) {
+    parts.push(`${visionAnalysis.ethnicity} ethnicity PRESERVE original ethnic features`);
+  }
+  
+  return parts.join(', ');
+}
+
+// ========================================
+// B 방안: 성별에 맞지 않는 화가 필터링
+// ========================================
+const FEMALE_BIASED_ARTISTS = [
+  'VERMEER', 'BOUCHER', 'WATTEAU', 'BOTTICELLI', 'RENOIR'
+];
+
+const MALE_BIASED_ARTISTS = [
+  'REMBRANDT', 'CARAVAGGIO', 'TITIAN', 'VELÁZQUEZ', 'VELAZQUEZ'
+];
+
+function filterArtistByGender(artistName, gender) {
+  const upperArtist = artistName.toUpperCase();
+  
+  if (gender === 'male') {
+    // 남자 사진인데 여성 편향 화가 선택됨
+    for (const femaleArtist of FEMALE_BIASED_ARTISTS) {
+      if (upperArtist.includes(femaleArtist)) {
+        console.log(`⚠️ Gender filter: ${artistName} is female-biased, but subject is MALE`);
+        return {
+          filtered: true,
+          reason: `${artistName} specializes in female subjects`,
+          suggestion: 'REMBRANDT' // 남성 추천
+        };
+      }
+    }
+  } else if (gender === 'female') {
+    // 여자 사진인데 남성 편향 화가는 괜찮음 (여성도 잘 그림)
+    // 필터링 안 함
+  }
+  
+  return { filtered: false };
 }
 
 // ========================================
@@ -2566,28 +2678,58 @@ export default async function handler(req, res) {
       console.log(`Trying AI artist selection for ${selectedStyle.name}...`);
       
       // ========================================
-      // 🎯 대전제: 가중치 기반 화가 사전 선택
+      // 🎯 통합된 AI 호출 (화가 선택 + Vision 분석)
       // ========================================
-      let preSelectedArtist = null;
-      const photoAnalysis = {}; // AI가 분석하기 전 기본 분석
-      
-      // 이미지에서 기본 정보 추출 시도 (카테고리별 가중치 테이블이 있는 경우)
-      const categoryForWeight = selectedStyle.category;
-      if (ARTIST_WEIGHTS[categoryForWeight]) {
-        // 간단한 사진 분석 (AI 호출 전)
-        // 실제로는 AI 응답에서 photoAnalysis를 받아서 처리하지만,
-        // 여기서는 카테고리만으로 기본 선택
-        preSelectedArtist = selectArtistByWeight(categoryForWeight, photoAnalysis);
-        if (preSelectedArtist) {
-          console.log(`🎲 [WEIGHT-BASED] Pre-selected artist: ${preSelectedArtist} (category: ${categoryForWeight})`);
-        }
-      }
-      
       const aiResult = await selectArtistWithAI(
         image, 
         selectedStyle,
         15000 // 15초 타임아웃 (성공률 98%)
       );
+      
+      // Vision 분석 결과 추출 (통합됨)
+      let visionAnalysis = null;
+      let identityPrompt = '';
+      
+      if (aiResult.success && aiResult.visionData) {
+        visionAnalysis = aiResult.visionData;
+        identityPrompt = buildIdentityPrompt(visionAnalysis);
+        console.log('📸 Vision data (integrated):', visionAnalysis);
+        console.log('📸 Identity prompt:', identityPrompt);
+      }
+      
+      // ========================================
+      // 🎯 대전제: 가중치 기반 화가 사전 선택
+      // ========================================
+      let preSelectedArtist = null;
+      const photoAnalysis = {}; // AI가 분석하기 전 기본 분석
+      
+      // Vision 분석 결과를 photoAnalysis에 반영
+      if (visionAnalysis) {
+        photoAnalysis.gender = visionAnalysis.gender;
+        photoAnalysis.age_range = visionAnalysis.age_range;
+        photoAnalysis.count = visionAnalysis.person_count || 0;
+      }
+      
+      // 이미지에서 기본 정보 추출 시도 (카테고리별 가중치 테이블이 있는 경우)
+      const categoryForWeight = selectedStyle.category;
+      if (ARTIST_WEIGHTS[categoryForWeight]) {
+        preSelectedArtist = selectArtistByWeight(categoryForWeight, photoAnalysis);
+        if (preSelectedArtist) {
+          console.log(`🎲 [WEIGHT-BASED] Pre-selected artist: ${preSelectedArtist} (category: ${categoryForWeight})`);
+          
+          // ========================================
+          // 🔴 B 방안: 성별에 맞지 않는 화가 필터링
+          // ========================================
+          if (visionAnalysis && visionAnalysis.gender) {
+            const filterResult = filterArtistByGender(preSelectedArtist, visionAnalysis.gender);
+            if (filterResult.filtered) {
+              console.log(`🚫 [GENDER-FILTER] ${filterResult.reason}`);
+              console.log(`🔄 [GENDER-FILTER] Suggesting: ${filterResult.suggestion}`);
+              preSelectedArtist = filterResult.suggestion;
+            }
+          }
+        }
+      }
       
       if (aiResult.success) {
         // AI 성공!
@@ -2640,7 +2782,20 @@ export default async function handler(req, res) {
           }
           
           // 가중치 기반 화가 선택
-          const weightSelectedArtist = selectArtistByWeight(categoryForWeight, photoAnalysisFromAI);
+          let weightSelectedArtist = selectArtistByWeight(categoryForWeight, photoAnalysisFromAI);
+          
+          // ========================================
+          // 🔴 B 방안: 성별에 맞지 않는 화가 필터링 (가중치 선택 후)
+          // ========================================
+          if (weightSelectedArtist && visionAnalysis && visionAnalysis.gender) {
+            const filterResult = filterArtistByGender(weightSelectedArtist, visionAnalysis.gender);
+            if (filterResult.filtered) {
+              console.log(`🚫 [GENDER-FILTER] ${weightSelectedArtist} filtered: ${filterResult.reason}`);
+              console.log(`🔄 [GENDER-FILTER] Replacing with: ${filterResult.suggestion}`);
+              weightSelectedArtist = filterResult.suggestion;
+            }
+          }
+          
           if (weightSelectedArtist) {
             console.log(`🎲 [WEIGHT-OVERRIDE] Changing from "${selectedArtist}" to "${weightSelectedArtist}"`);
             console.log(`   Photo analysis: count=${photoAnalysisFromAI.count}, gender=${photoAnalysisFromAI.gender}, age=${photoAnalysisFromAI.age}`);
@@ -2679,8 +2834,14 @@ export default async function handler(req, res) {
             }
             
             // 🚨 성별 감지 기반 강력한 프롬프트 삽입 (맨 앞)
+            // E 방안: Vision 분석 결과가 있으면 더 상세한 프롬프트 사용
             let genderPrefix = '';
-            if (photoAnalysisFromAI.gender === 'male') {
+            
+            if (identityPrompt && identityPrompt.length > 0) {
+              // Vision 분석 결과 사용 (더 상세함)
+              genderPrefix = `ABSOLUTE REQUIREMENT: ${identityPrompt}. `;
+              console.log('🚨 Using Vision-based identity prompt');
+            } else if (photoAnalysisFromAI.gender === 'male') {
               genderPrefix = 'ABSOLUTE REQUIREMENT: This is a MALE person - subject MUST have MASCULINE face with strong jaw, male bone structure, NO feminine features, DO NOT make female, DO NOT add makeup or feminine traits, DO NOT soften features, KEEP AS MAN. ';
               console.log('🚨 Detected MALE - Added MASCULINE enforcement');
             } else if (photoAnalysisFromAI.gender === 'female') {
