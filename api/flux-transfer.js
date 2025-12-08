@@ -2063,10 +2063,13 @@ INSTRUCTIONS:
 1. Analyze the photo THOROUGHLY:
    - Subject type (person/landscape/animal/object)
    - If PERSON: gender (male/female), age, physical features (jaw shape, hair, build)
+   - PERSON COUNT: How many people are in the photo? (1, 2, 3+)
+   - BACKGROUND: What's in the background? (simple/complex/outdoor/indoor)
    - Mood, composition
 2. Match to the MOST SUITABLE masterwork from the list above
 3. Generate a FLUX prompt that STARTS with detailed subject description
 4. IMPORTANT: Preserve the original subject - if it's a baby, keep it as a baby; if elderly, keep elderly
+5. CRITICAL: If only 1 person in photo, add "DO NOT add extra people in background"
 
 Return ONLY valid JSON (no markdown):
 {
@@ -2075,10 +2078,12 @@ Return ONLY valid JSON (no markdown):
   "gender": "male" or "female" or null,
   "age_range": "baby/child/teen/young_adult/adult/middle_aged/elderly" or null,
   "physical_description": "for MALE: strong jaw, angular face, short hair, broad shoulders etc. For FEMALE: soft features, delicate face etc." or null,
+  "person_count": 1 or 2 or 3 (number of people in photo),
+  "background_type": "simple" or "complex" or "outdoor" or "indoor" or "studio",
   "selected_artist": "${categoryName}",
   "selected_work": "exact title of the masterwork you selected",
   "reason": "why this masterwork matches this photo",
-  "prompt": "Start with 'MALE/FEMALE SUBJECT with [physical features]' if person, then 'painting by ${categoryName} in the style of [selected work title], [that work's distinctive techniques]'"
+  "prompt": "Start with 'MALE/FEMALE SUBJECT with [physical features]' if person, then 'painting by ${categoryName} in the style of [selected work title], [that work's distinctive techniques]'. If person_count=1, END with 'DO NOT add extra people, NO hallucinated figures in background'"
 }`;
       
     } else if (categoryType === 'oriental') {
@@ -2371,18 +2376,31 @@ ${guidelines}
 ${hints}
 
 Instructions:
-1. Analyze photo: people count, subject, mood, age, composition
+1. FIRST analyze the photo THOROUGHLY:
+   - Subject type (person/landscape/animal/object)
+   - If PERSON: gender (male/female), age, physical features (jaw shape, hair, build)
+   - PERSON COUNT: How many people are in the photo? (1, 2, 3+)
+   - BACKGROUND: What's in the background? (simple/complex/outdoor/indoor)
+   - Mood, composition
 2. Follow RECOMMENDATIONS (70-80% weight)
 3. Choose most DISTINCTIVE artist for THIS specific photo
 4. Preserve facial identity and original features
 5. Include DETAILED style characteristics in your prompt
+6. IMPORTANT: Start prompt with subject description if person
+7. CRITICAL: If only 1 person in photo, add "DO NOT add extra people in background, keep background clean"
 
 Return JSON only:
 {
   "analysis": "brief (1 sentence)",
+  "subject_type": "person" or "landscape" or "animal" or "object",
+  "gender": "male" or "female" or null,
+  "age_range": "baby/child/teen/young_adult/adult/middle_aged/elderly" or null,
+  "physical_description": "for MALE: strong jaw, angular face, short hair, broad shoulders etc. For FEMALE: soft features, delicate face etc." or null,
+  "person_count": 1 or 2 or 3 (number of people in photo),
+  "background_type": "simple" or "complex" or "outdoor" or "indoor" or "studio",
   "selected_artist": "Artist Full Name",
   "reason": "why this artist fits (1 sentence)",
-  "prompt": "painting by [Artist], [artist's signature technique], [detailed visual characteristics], depicting subject while preserving original features"
+  "prompt": "Start with 'MALE/FEMALE SUBJECT with [physical features]' if person, then 'painting by [Artist], [artist's signature technique], [detailed visual characteristics]'. If person_count=1, END with 'DO NOT add extra people, NO hallucinated figures in background, keep background CLEAN'"
 }`;
         }
       }
@@ -2450,7 +2468,9 @@ Return JSON only:
         subject_type: result.subject_type || null,
         gender: result.gender || null,
         age_range: result.age_range || null,
-        physical_description: result.physical_description || null
+        physical_description: result.physical_description || null,
+        person_count: result.person_count || null,
+        background_type: result.background_type || null
       }
     };
     
@@ -2853,6 +2873,37 @@ export default async function handler(req, res) {
               console.log('🚨 Gender unknown - Added STRONG preservation rule');
             }
             finalPrompt = genderPrefix + finalPrompt;
+            
+            // ========================================
+            // 🚫 환각 방지: 원본에 없는 요소 추가 금지
+            // ========================================
+            let antiHallucinationRule = ' STRICT ANTI-HALLUCINATION: DO NOT add ANY elements not present in the original photo. ';
+            
+            if (visionAnalysis) {
+              const count = visionAnalysis.person_count;
+              const subjectType = visionAnalysis.subject_type;
+              
+              if (subjectType === 'person' && count) {
+                if (count === 1) {
+                  antiHallucinationRule += 'Original has EXACTLY 1 PERSON - DO NOT add extra people or faces in background. ';
+                } else if (count === 2) {
+                  antiHallucinationRule += 'Original has EXACTLY 2 PEOPLE - DO NOT add extra people. ';
+                } else {
+                  antiHallucinationRule += `Original has EXACTLY ${count} PEOPLE - maintain same count. `;
+                }
+              } else if (subjectType === 'landscape') {
+                antiHallucinationRule += 'This is LANDSCAPE - DO NOT add people or figures not in original. ';
+              } else if (subjectType === 'animal') {
+                antiHallucinationRule += 'This is ANIMAL photo - DO NOT add humans or extra animals not in original. ';
+              } else if (subjectType === 'object') {
+                antiHallucinationRule += 'This is OBJECT/STILL LIFE - DO NOT add people or extra objects not in original. ';
+              }
+              
+              antiHallucinationRule += 'Keep composition faithful to original photo. NO hallucinated elements.';
+            }
+            
+            finalPrompt = finalPrompt + antiHallucinationRule;
+            console.log('🚫 Anti-hallucination rule added:', antiHallucinationRule);
             
             console.log(`✅ [WEIGHT-BASED] Final artist: ${selectedArtist}`);
           }
