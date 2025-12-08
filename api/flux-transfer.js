@@ -366,9 +366,9 @@ const ARTIST_WEIGHTS = {
     ],
     landscape: [
       { name: 'MONET', weight: 50 },       // 자연 풍경
-      { name: 'CAILLEBOTTE', weight: 30 }, // 도시 풍경
-      { name: 'RENOIR', weight: 15 },
-      { name: 'DEGAS', weight: 5 }
+      { name: 'CAILLEBOTTE', weight: 25 }, // 도시 풍경
+      { name: 'RENOIR', weight: 15 },      // 야외 장면
+      { name: 'DEGAS', weight: 10 }
     ],
     default: [
       { name: 'RENOIR', weight: 35 },
@@ -1637,7 +1637,7 @@ Return the artist that will create the most compelling transformation!
 // 모더니즘 화가별 개별 프롬프트 (다른 화가 언급 없음!)
 // ========================================
 function getModernismArtistPrompt(artistName) {
-  const genderRule = 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. ';
+  const genderRule = 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. ';
   const prompts = {
     'PICASSO': genderRule + 'Cubist painting by Pablo Picasso: SINGLE UNIFIED IMAGE not divided into panels, GEOMETRIC FRAGMENTED forms broken into angular planes, MULTIPLE SIMULTANEOUS PERSPECTIVES showing different angles at once, show NOSE from SIDE PROFILE while BOTH EYES visible from FRONT VIEW, Les Demoiselles d\'Avignon style, earth tone palette (ochre sienna brown olive grey), analytical cubist dissection, VISIBLE BRUSHSTROKES, painterly NOT illustrative, Picasso Cubist masterpiece quality',
     
@@ -1708,8 +1708,8 @@ function getMedievalArtistPrompt(styleName) {
 }
 
 // 르네상스 화가별 프롬프트
-function getRenaissanceArtistPrompt(artistName) {
-  const genderRule = 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. ';
+function getRenaissanceArtistPrompt(artistName, subjectType = 'person') {
+  const genderRule = 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. ';
   const prompts = {
     'LEONARDO DA VINCI': genderRule + 'painting by Leonardo da Vinci: EXTREME SFUMATO technique with ALL EDGES completely SOFT AND BLURRED like smoke or fog, ZERO SHARP LINES anywhere, every boundary DISSOLVED into hazy atmospheric mist, faces emerging from smoky darkness, Mona Lisa and Virgin of the Rocks style MYSTERIOUS HAZE, warm golden-brown Renaissance palette, SOFT FOCUS throughout like looking through gauze, oil painting with subtle glazing layers, NOT sharp NOT digital, sfumato masterpiece quality',
     
@@ -1732,8 +1732,8 @@ function getRenaissanceArtistPrompt(artistName) {
 }
 
 // 바로크 화가별 프롬프트
-function getBaroqueArtistPrompt(artistName) {
-  const genderRule = 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. ';
+function getBaroqueArtistPrompt(artistName, subjectType = 'person') {
+  const genderRule = 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. ';
   const prompts = {
     'CARAVAGGIO': genderRule + 'painting by Caravaggio: DRAMATIC TENEBRISM with extreme light-dark contrast, single theatrical spotlight illuminating figures from darkness, deep BLACK SHADOWS engulfing most of scene, intense emotional realism, rich saturated colors emerging from darkness, dramatic diagonal composition, raw powerful naturalism, Caravaggio masterpiece quality',
     
@@ -1755,7 +1755,7 @@ function getBaroqueArtistPrompt(artistName) {
 // 로코코 화가별 프롬프트
 // 로코코 화가별 프롬프트
 function getRococoArtistPrompt(artistName) {
-  const genderRule = 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. ';
+  const genderRule = 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. ';
   const prompts = {
     'WATTEAU': genderRule + 'painting by Antoine Watteau: FÊTE GALANTE outdoor aristocratic gathering, elegant figures in shimmering silk costumes, soft dreamy pastoral landscape, delicate feathery brushwork, romantic melancholic atmosphere, Pilgrimage to Cythera style poetic reverie, pale pastel colors with touches of rose and gold, theatrical graceful poses, Watteau masterpiece quality',
     
@@ -1771,7 +1771,7 @@ function getRococoArtistPrompt(artistName) {
 // 신고전주의/낭만주의/사실주의 화가별 프롬프트
 // v59: 고야, 들라크루아, 마네 추가
 function getNeoclassicismArtistPrompt(artistName) {
-  const genderRule = 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. ';
+  const genderRule = 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. ';
   const prompts = {
     // 신고전주의
     'JACQUES-LOUIS DAVID': genderRule + 'painting by Jacques-Louis David: NEOCLASSICAL PERFECTION with clear crisp outlines, heroic idealized figures in classical poses, cool restrained color palette, dramatic moral narratives, Oath of the Horatii style civic virtue, sculptural modeling with smooth finish, balanced symmetrical compositions, David Neoclassical masterpiece quality',
@@ -1806,15 +1806,16 @@ function getNeoclassicismArtistPrompt(artistName) {
 }
 
 // 인상주의 화가별 프롬프트
-function getImpressionismArtistPrompt(artistName) {
+function getImpressionismArtistPrompt(artistName, subjectType = 'person') {
+  const genderRule = 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. ';
   const prompts = {
-    'RENOIR': 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. painting by Pierre-Auguste Renoir: SOFT FEATHERY BRUSHSTROKES with warm luminous glow, rosy pink flesh tones with pearly highlights, DAPPLED SUNLIGHT filtering through creating shimmering atmosphere, joyful intimate mood, loose impressionist brushwork NOT smooth NOT digital, warm harmonious colors (peach pink coral gold), VISIBLE OIL PAINT TEXTURE, Renoir masterpiece quality',
+    'RENOIR': genderRule + 'painting by Pierre-Auguste Renoir: SOFT FEATHERY BRUSHSTROKES with warm luminous glow, rosy pink flesh tones with pearly highlights, DAPPLED SUNLIGHT filtering through creating shimmering atmosphere, joyful intimate mood, loose impressionist brushwork NOT smooth NOT digital, warm harmonious colors (peach pink coral gold), VISIBLE OIL PAINT TEXTURE, Renoir masterpiece quality',
     
-    'MONET': 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. painting by Claude Monet: BROKEN COLOR BRUSHSTROKES capturing fleeting light effects, SOFT HAZY ATMOSPHERIC effects like morning mist, colors BLENDED and DISSOLVED into each other, NO sharp edges, dreamy blurred boundaries, Water Lilies style light dissolution, cool blue-green palette with warm accents, everything slightly out of focus, Monet Impressionist masterpiece quality',
+    'MONET': genderRule + 'painting by Claude Monet: BROKEN COLOR BRUSHSTROKES capturing fleeting light effects, SOFT HAZY ATMOSPHERIC effects like morning mist, colors BLENDED and DISSOLVED into each other, NO sharp edges, dreamy blurred boundaries, Water Lilies style light dissolution, cool blue-green palette with warm accents, everything slightly out of focus, Monet Impressionist masterpiece quality',
     
-    'DEGAS': 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. painting by Edgar Degas: UNUSUAL CROPPED ANGLES and asymmetric compositions, capturing movement and gesture, SOFT PASTEL and oil texture with VISIBLE CHALKY STROKES, pale muted colors (soft pink peach powder blue), intimate indoor scenes, DO NOT add ballet dancers, delicate precise drawing, Degas masterpiece quality',
+    'DEGAS': genderRule + 'painting by Edgar Degas: UNUSUAL CROPPED ANGLES and asymmetric compositions, capturing movement and gesture, SOFT PASTEL and oil texture with VISIBLE CHALKY STROKES, pale muted colors (soft pink peach powder blue), intimate indoor scenes, delicate precise drawing, Degas masterpiece quality',
     
-    'CAILLEBOTTE': 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. painting by Gustave Caillebotte: MODERN URBAN REALISM with dramatic bird\'s-eye perspective, SHARP PERSPECTIVE LINES converging dramatically, Paris Street Rainy Day style city scenes, photographic clarity with impressionist color palette, elegant bourgeois figures in urban settings, wet pavement reflections, muted gray-blue urban tones with warm accents, GEOMETRIC COMPOSITION with strong diagonal lines, Floor Scrapers style working figures, Caillebotte masterpiece quality'
+    'CAILLEBOTTE': genderRule + 'painting by Gustave Caillebotte: MODERN URBAN REALISM with dramatic bird\'s-eye perspective, SHARP PERSPECTIVE LINES converging dramatically, Paris Street Rainy Day style city scenes, photographic clarity with impressionist color palette, elegant bourgeois figures in urban settings, wet pavement reflections, muted gray-blue urban tones with warm accents, GEOMETRIC COMPOSITION with strong diagonal lines, Floor Scrapers style working figures, Caillebotte masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
@@ -1830,11 +1831,11 @@ function getPostImpressionismArtistPrompt(artistName) {
   const prompts = {
     'VAN GOGH': 'CRITICAL: PRESERVE the EXACT FACE IDENTITY from original photo but APPLY thick brushstroke texture to the face - do NOT draw Van Gogh himself. ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, KEEP AS MAN. painting in Vincent van Gogh style: EXTREMELY THICK IMPASTO brushstrokes with HEAVY 3D PAINT TEXTURE like squeezed directly from tube, VISIBLE RIDGES AND GROOVES of thick oil paint, SWIRLING TURBULENT brushwork in EVERY area including face and background, CHUNKY BOLD brush marks NOT smooth NOT blended, intense saturated colors (cobalt blue cadmium yellow chrome orange), ENERGETIC EXPRESSIVE strokes throughout, canvas weave visible through paint, Van Gogh masterpiece quality',
     
-    'GAUGUIN': 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. painting by Paul Gauguin: FLAT BOLD AREAS of pure unmixed saturated color, simplified forms with smooth FLAT COLOR SURFACES, exotic tropical palette (deep orange ochre yellow turquoise rich purple vibrant green), warm golden skin tones, lush tropical background, SMOOTH FLAT oil paint application with NO texture pattern, ABSOLUTELY NO mosaic effect, NO tiles, NO geometric grid, NO stained glass look, NO cell pattern, pure FLAT COLOR AREAS only, Gauguin Tahitian masterpiece quality',
+    'GAUGUIN': 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. painting by Paul Gauguin: FLAT BOLD AREAS of pure unmixed saturated color, simplified forms with smooth FLAT COLOR SURFACES, exotic tropical palette (deep orange ochre yellow turquoise rich purple vibrant green), warm golden skin tones, lush tropical background, SMOOTH FLAT oil paint application with NO texture pattern, ABSOLUTELY NO mosaic effect, NO tiles, NO geometric grid, NO stained glass look, NO cell pattern, pure FLAT COLOR AREAS only, Gauguin Tahitian masterpiece quality',
     
-    'CÉZANNE': 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. painting by Paul Cézanne: GEOMETRIC STRUCTURED FORMS built with parallel brushstrokes, analytical approach to underlying shapes, Mont Sainte-Victoire style constructive vision, muted earth tones with blues and greens, solid volumes emerging from color planes, visible directional brushwork, contemplative balanced compositions, Cézanne masterpiece quality',
+    'CÉZANNE': 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. painting by Paul Cézanne: GEOMETRIC STRUCTURED FORMS built with parallel brushstrokes, analytical approach to underlying shapes, Mont Sainte-Victoire style constructive vision, muted earth tones with blues and greens, solid volumes emerging from color planes, visible directional brushwork, contemplative balanced compositions, Cézanne masterpiece quality',
     
-    'SIGNAC': 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. painting by Paul Signac: POINTILLIST technique with TINY DOTS of pure color placed side by side, bright Mediterranean sunlight and vibrant harbor scenes, dots blend optically when viewed from distance, luminous color vibration, The Port of Saint-Tropez style, scientific color division, Signac Neo-Impressionist masterpiece quality'
+    'SIGNAC': 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. painting by Paul Signac: POINTILLIST technique with TINY DOTS of pure color placed side by side, bright Mediterranean sunlight and vibrant harbor scenes, dots blend optically when viewed from distance, luminous color vibration, The Port of Saint-Tropez style, scientific color division, Signac Neo-Impressionist masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
@@ -1847,7 +1848,7 @@ function getPostImpressionismArtistPrompt(artistName) {
 
 // 야수파 화가별 프롬프트
 function getFauvismArtistPrompt(artistName) {
-  const genderRule = 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. ';
+  const genderRule = 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. ';
   const prompts = {
     'MATISSE': genderRule + 'painting by Henri Matisse Fauvist period: PURE BOLD UNMIXED COLORS in flat decorative areas, The Dance style simplified joyful forms, complete liberation of color from reality, saturated intense primary colors (red blue yellow green), rhythmic flowing harmonious lines, VISIBLE BRUSHSTROKES, life-affirming energetic atmosphere, NOT smooth digital rendering, Matisse Fauvist masterpiece quality',
     
@@ -1865,7 +1866,7 @@ function getFauvismArtistPrompt(artistName) {
 
 // 표현주의 화가별 프롬프트
 function getExpressionismArtistPrompt(artistName) {
-  const genderRule = 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. ';
+  const genderRule = 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. ';
   const prompts = {
     'MUNCH': genderRule + 'painting by Edvard Munch: INTENSE PSYCHOLOGICAL emotional depth, The Scream style existential anxiety atmosphere, WAVY DISTORTED flowing lines in background, haunting symbolic colors (blood red sky, sickly yellows, deep blues), raw emotional vulnerability, swirling anxious energy, Munch Expressionist masterpiece quality',
     
@@ -2128,9 +2129,10 @@ Return ONLY valid JSON (no markdown):
 {
   "analysis": "brief photo analysis",
   "subject_type": "person" or "landscape" or "animal" or "object",
-  "gender": "male" or "female" or null,
+  "gender": "male" or "female" or "both" or null,
   "age_range": "baby/child/teen/young_adult/adult/middle_aged/elderly" or null,
-  "physical_description": "for MALE: strong jaw, angular face, short hair, broad shoulders etc. For FEMALE: soft features, delicate face etc." or null,
+  "ethnicity": "asian" or "caucasian" or "african" or "hispanic" or "middle_eastern" or "mixed" or null,
+  "physical_description": "for MALE: strong jaw, angular face, short hair, broad shoulders etc. For FEMALE: soft features, delicate face etc. ALWAYS include skin tone and ethnic features." or null,
   "person_count": 1 or 2 or 3 (number of people in photo),
   "background_type": "simple" or "complex" or "outdoor" or "indoor" or "studio",
   "selected_artist": "${categoryName}",
@@ -2446,9 +2448,10 @@ Return JSON only:
 {
   "analysis": "brief (1 sentence)",
   "subject_type": "person" or "landscape" or "animal" or "object",
-  "gender": "male" or "female" or null,
+  "gender": "male" or "female" or "both" or null,
   "age_range": "baby/child/teen/young_adult/adult/middle_aged/elderly" or null,
-  "physical_description": "for MALE: strong jaw, angular face, short hair, broad shoulders etc. For FEMALE: soft features, delicate face etc." or null,
+  "ethnicity": "asian" or "caucasian" or "african" or "hispanic" or "middle_eastern" or "mixed" or null,
+  "physical_description": "for MALE: strong jaw, angular face, short hair, broad shoulders etc. For FEMALE: soft features, delicate face etc. ALWAYS include skin tone and ethnic features." or null,
   "person_count": 1 or 2 or 3 (number of people in photo),
   "background_type": "simple" or "complex" or "outdoor" or "indoor" or "studio",
   "selected_artist": "Artist Full Name",
@@ -2591,9 +2594,19 @@ function buildIdentityPrompt(visionAnalysis) {
     parts.push(visionAnalysis.hair);
   }
   
-  // 민족성
+  // 민족성 (매우 중요!)
   if (visionAnalysis.ethnicity) {
-    parts.push(`${visionAnalysis.ethnicity} ethnicity PRESERVE original ethnic features`);
+    const ethnicityMap = {
+      'asian': 'ASIAN ethnicity with East Asian facial features, monolid or double eyelid eyes, warm golden-brown skin tone',
+      'caucasian': 'CAUCASIAN ethnicity with European facial features, light skin tone',
+      'african': 'AFRICAN ethnicity with African facial features, dark brown skin tone',
+      'hispanic': 'HISPANIC/LATINO ethnicity with Latin American features, warm tan skin tone',
+      'middle_eastern': 'MIDDLE EASTERN ethnicity with Middle Eastern features, olive skin tone',
+      'mixed': 'MIXED ethnicity preserving original mixed heritage features'
+    };
+    const ethnicDesc = ethnicityMap[visionAnalysis.ethnicity] || `${visionAnalysis.ethnicity} ethnicity`;
+    parts.push(ethnicDesc);
+    parts.push('DO NOT change race, DO NOT alter skin color, PRESERVE original ethnicity EXACTLY');
   }
   
   return parts.join(', ');
@@ -2929,14 +2942,23 @@ export default async function handler(req, res) {
             background: analysisText
           };
           
-          // 인원수 추출
-          if (analysisText.includes('group') || analysisText.includes('people') || analysisText.includes('family')) {
-            photoAnalysisFromAI.count = 3;
-          } else if (analysisText.includes('couple') || analysisText.includes('two') || analysisText.includes('pair')) {
-            photoAnalysisFromAI.count = 2;
-          } else if (analysisText.includes('person') || analysisText.includes('portrait') || analysisText.includes('face') || 
-                     analysisText.includes('man') || analysisText.includes('woman') || analysisText.includes('child')) {
-            photoAnalysisFromAI.count = 1;
+          // 🚨 Vision이 landscape/animal/object로 판단했으면 count=0 유지
+          if (visionAnalysis && (visionAnalysis.subject_type === 'landscape' || 
+                                  visionAnalysis.subject_type === 'animal' || 
+                                  visionAnalysis.subject_type === 'object')) {
+            photoAnalysisFromAI.count = 0;
+            photoAnalysisFromAI.subject = visionAnalysis.subject_type;
+            console.log(`📸 [VISION-OVERRIDE] Subject is ${visionAnalysis.subject_type}, keeping count=0`);
+          } else {
+            // 인원수 추출 (인물 사진일 때만)
+            if (analysisText.includes('group') || analysisText.includes('people') || analysisText.includes('family')) {
+              photoAnalysisFromAI.count = 3;
+            } else if (analysisText.includes('couple') || analysisText.includes('two') || analysisText.includes('pair')) {
+              photoAnalysisFromAI.count = 2;
+            } else if (analysisText.includes('person') || analysisText.includes('portrait') || analysisText.includes('face') || 
+                       analysisText.includes('man') || analysisText.includes('woman') || analysisText.includes('child')) {
+              photoAnalysisFromAI.count = 1;
+            }
           }
           
           // 성별 추출
@@ -2997,8 +3019,10 @@ export default async function handler(req, res) {
             };
             
             if (artistPromptMap[categoryForWeight]) {
-              finalPrompt = artistPromptMap[categoryForWeight](weightSelectedArtist);
-              console.log(`🎨 [${categoryForWeight.toUpperCase()}] Replaced prompt with ${weightSelectedArtist}-only prompt`);
+              // subjectType 전달 (풍경/정물/동물일 때 인물 관련 프롬프트 제거)
+              const subjectType = visionAnalysis ? visionAnalysis.subject_type : 'person';
+              finalPrompt = artistPromptMap[categoryForWeight](weightSelectedArtist, subjectType);
+              console.log(`🎨 [${categoryForWeight.toUpperCase()}] Replaced prompt with ${weightSelectedArtist}-only prompt (subjectType: ${subjectType})`);
             } else {
               // 프롬프트 함수 없는 사조: 기존 방식 (화가 이름만 교체)
               finalPrompt = finalPrompt.replace(new RegExp(oldArtist, 'gi'), weightSelectedArtist);
@@ -3008,7 +3032,18 @@ export default async function handler(req, res) {
             // E 방안: Vision 분석 결과가 있으면 더 상세한 프롬프트 사용
             let genderPrefix = '';
             
-            if (identityPrompt && identityPrompt.length > 0) {
+            // 풍경/정물/동물일 때는 성별 프롬프트 건너뛰기
+            const isNonPerson = visionAnalysis && (
+              visionAnalysis.subject_type === 'landscape' || 
+              visionAnalysis.subject_type === 'animal' || 
+              visionAnalysis.subject_type === 'object'
+            );
+            
+            if (isNonPerson) {
+              console.log(`📸 [NON-PERSON] Subject is ${visionAnalysis.subject_type}, skipping gender prefix`);
+              // 풍경/정물용 프롬프트
+              genderPrefix = `CRITICAL: This is a ${visionAnalysis.subject_type.toUpperCase()} photo - DO NOT add any people or human figures. Keep as pure ${visionAnalysis.subject_type}. `;
+            } else if (identityPrompt && identityPrompt.length > 0) {
               // Vision 분석 결과 사용 (더 상세함)
               genderPrefix = `ABSOLUTE REQUIREMENT: ${identityPrompt}. `;
               console.log('🚨 Using Vision-based identity prompt');
