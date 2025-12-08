@@ -364,11 +364,20 @@ const ARTIST_WEIGHTS = {
       { name: 'MONET', weight: 15 },
       { name: 'CAILLEBOTTE', weight: 5 }
     ],
-    landscape: [
-      { name: 'MONET', weight: 50 },       // 자연 풍경
-      { name: 'CAILLEBOTTE', weight: 25 }, // 도시 풍경
-      { name: 'RENOIR', weight: 15 },      // 야외 장면
-      { name: 'DEGAS', weight: 10 }
+    landscape_nature: [  // 자연 풍경 (산, 숲, 바다, 정원)
+      { name: 'MONET', weight: 85 },       // 자연 풍경 전문
+      { name: 'RENOIR', weight: 15 }       // 야외 장면
+      // 드가/칼리보트 제외
+    ],
+    landscape_urban: [   // 도시 풍경 (건물, 거리)
+      { name: 'CAILLEBOTTE', weight: 70 }, // 도시 풍경 전문
+      { name: 'MONET', weight: 30 }
+    ],
+    landscape: [  // 기본 풍경 (분류 불가 시)
+      { name: 'MONET', weight: 70 },
+      { name: 'RENOIR', weight: 20 },
+      { name: 'CAILLEBOTTE', weight: 10 }
+      // 드가 제외 (발레/실내 전문)
     ],
     default: [
       { name: 'RENOIR', weight: 35 },
@@ -509,9 +518,22 @@ function selectArtistByWeight(category, photoAnalysis) {
   // 인상주의 특수 처리
   if (category === 'impressionism') {
     const subject = (photoAnalysis.subject || '').toLowerCase();
+    const background = (photoAnalysis.background || '').toLowerCase();
+    
     // 움직임/액션 → 드가
     if (subject.includes('dance') || subject.includes('movement') || subject.includes('action') || subject.includes('sport')) {
       return weightedRandomSelect(weights.movement);
+    }
+    
+    // 풍경 분기: 자연 vs 도시
+    if (subject.includes('landscape') || subject === 'landscape') {
+      // 도시/건물/거리 → 칼리보트
+      if (background.includes('city') || background.includes('urban') || background.includes('building') || 
+          background.includes('street') || subject.includes('city') || subject.includes('urban') || subject.includes('building')) {
+        return weightedRandomSelect(weights.landscape_urban);
+      }
+      // 자연 풍경 (산, 숲, 바다, 정원 등) → 모네
+      return weightedRandomSelect(weights.landscape_nature);
     }
   }
   
@@ -2845,6 +2867,10 @@ export default async function handler(req, res) {
       console.log(`📊 Modernism category control_strength: ${controlStrength} (will be overridden per artist)`);
     }
     
+    // 🎨 풍경/정물/동물일 때 control_strength 높여서 원본 구도 유지
+    // (나중에 visionAnalysis 확인 후 조정됨)
+    let landscapeStrengthBoost = false;
+    
     if (selectedStyle.category === 'oriental' && selectedStyle.id === 'japanese') {
       // 일본 우키요에 (고정)
       console.log('Japanese Ukiyo-e - using fixed style');
@@ -3043,6 +3069,11 @@ export default async function handler(req, res) {
               console.log(`📸 [NON-PERSON] Subject is ${visionAnalysis.subject_type}, skipping gender prefix`);
               // 풍경/정물용 프롬프트
               genderPrefix = `CRITICAL: This is a ${visionAnalysis.subject_type.toUpperCase()} photo - DO NOT add any people or human figures. Keep as pure ${visionAnalysis.subject_type}. `;
+              
+              // 🎨 풍경/정물일 때 control_strength 높여서 원본 구도 유지
+              const originalStrength = controlStrength;
+              controlStrength = Math.min(controlStrength + 0.15, 0.90);  // +0.15, 최대 0.90
+              console.log(`📊 [LANDSCAPE-BOOST] control_strength: ${originalStrength} → ${controlStrength} (원본 구도 유지 강화)`);
             } else if (identityPrompt && identityPrompt.length > 0) {
               // Vision 분석 결과 사용 (더 상세함)
               genderPrefix = `ABSOLUTE REQUIREMENT: ${identityPrompt}. `;
