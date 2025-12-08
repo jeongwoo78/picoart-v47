@@ -288,13 +288,16 @@ const ARTIST_WEIGHTS = {
       { name: 'JACQUES-LOUIS DAVID', weight: 35 }
     ],
     landscape: [
-      { name: 'CLAUDE LORRAIN', weight: 75 },
-      { name: 'JACQUES-LOUIS DAVID', weight: 25 }
-    ],
-    default: [
       { name: 'JACQUES-LOUIS DAVID', weight: 50 },
       { name: 'INGRES', weight: 30 },
-      { name: 'CLAUDE LORRAIN', weight: 20 }
+      { name: 'GOYA', weight: 20 }
+      // Claude Lorrain 제거 (바로크 시대 화가)
+    ],
+    default: [
+      { name: 'JACQUES-LOUIS DAVID', weight: 55 },
+      { name: 'INGRES', weight: 30 },
+      { name: 'GOYA', weight: 15 }
+      // Claude Lorrain 제거
     ]
   },
   
@@ -306,11 +309,16 @@ const ARTIST_WEIGHTS = {
       { name: 'MANET', weight: 25 },
       { name: 'JACQUES-LOUIS DAVID', weight: 20 }
     ],
+    movement: [  // 스포츠/액션
+      { name: 'DELACROIX', weight: 50 },       // 역동적 군중, 격렬한 동작
+      { name: 'GOYA', weight: 35 },            // 투우, 격렬한 표현
+      { name: 'JACQUES-LOUIS DAVID', weight: 15 }  // 영웅적 포즈
+    ],
     landscape: [
-      { name: 'TURNER', weight: 40 },
-      { name: 'CLAUDE LORRAIN', weight: 30 },
-      { name: 'DELACROIX', weight: 20 },
-      { name: 'MILLET', weight: 10 }
+      { name: 'TURNER', weight: 50 },        // 낭만주의 풍경 대표
+      { name: 'DELACROIX', weight: 30 },     // 낭만주의
+      { name: 'MILLET', weight: 20 }         // 사실주의 농촌 풍경
+      // Claude Lorrain 제거 (바로크 시대 화가)
     ],
     dramatic: [
       { name: 'DELACROIX', weight: 40 },
@@ -544,6 +552,17 @@ function selectArtistByWeight(category, photoAnalysis) {
       }
       // 자연 풍경 (산, 숲, 바다, 정원 등) → 모네
       return weightedRandomSelect(weights.landscape_nature);
+    }
+  }
+  
+  // 신고전주의 vs 낭만주의 vs 사실주의 특수 처리
+  if (category === 'neoclassicism_vs_romanticism_vs_realism') {
+    const subject = (photoAnalysis.subject || '').toLowerCase();
+    
+    // 스포츠/액션/움직임 → 들라크루아, 고야
+    if (subject.includes('sport') || subject.includes('action') || subject.includes('movement') || 
+        subject.includes('running') || subject.includes('dance') || subject.includes('athletic')) {
+      return weightedRandomSelect(weights.movement);
     }
   }
   
@@ -1820,9 +1839,7 @@ function getNeoclassicismArtistPrompt(artistName) {
     // 사실주의
     'MILLET': genderRule + 'painting by Jean-François Millet: DIGNIFIED RURAL LABOR with monumental peasant figures, warm earthy palette of browns and ochres, The Gleaners style quiet nobility, soft diffused light, serene contemplative mood, honest depiction of agricultural life, Millet Realist masterpiece quality',
     
-    'MANET': genderRule + 'painting by Édouard Manet: MODERN PARIS REALISM with Olympia-style bold flat composition and striking contrasts, dramatic blacks and pure whites with minimal mid-tones, sophisticated urban café society atmosphere, frank direct confrontational gaze, loose confident brushwork with visible energetic strokes, metropolitan elegance and modern audacity, Manet masterpiece quality',
-    
-    'CLAUDE LORRAIN': genderRule + 'painting by Claude Lorrain: IDEAL CLASSICAL LANDSCAPE with golden atmospheric light, ancient ruins and pastoral scenery, warm glowing sunset or sunrise, poetic Arcadian vision, carefully balanced compositions with framing trees, luminous sky reflected in water, Claude Lorrain masterpiece quality'
+    'MANET': genderRule + 'painting by Édouard Manet: MODERN PARIS REALISM with Olympia-style bold flat composition and striking contrasts, dramatic blacks and pure whites with minimal mid-tones, sophisticated urban café society atmosphere, frank direct confrontational gaze, loose confident brushwork with visible energetic strokes, metropolitan elegance and modern audacity, Manet masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
@@ -1833,7 +1850,6 @@ function getNeoclassicismArtistPrompt(artistName) {
   if (normalized.includes('DELACROIX') || normalized.includes('들라크루아')) return prompts['DELACROIX'];
   if (normalized.includes('MILLET') || normalized.includes('밀레')) return prompts['MILLET'];
   if (normalized.includes('MANET') || normalized.includes('마네')) return prompts['MANET'];
-  if (normalized.includes('CLAUDE') || normalized.includes('LORRAIN') || normalized.includes('클로드 로랭')) return prompts['CLAUDE LORRAIN'];
   return prompts['JACQUES-LOUIS DAVID'];
 }
 
