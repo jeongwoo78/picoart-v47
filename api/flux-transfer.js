@@ -298,6 +298,35 @@ const ARTIST_WEIGHTS = {
     ]
   },
   
+  // 신고전주의 vs 낭만주의 vs 사실주의 (프론트엔드 카테고리명)
+  neoclassicism_vs_romanticism_vs_realism: {
+    portrait: [
+      { name: 'INGRES', weight: 30 },
+      { name: 'GOYA', weight: 25 },
+      { name: 'MANET', weight: 25 },
+      { name: 'JACQUES-LOUIS DAVID', weight: 20 }
+    ],
+    landscape: [
+      { name: 'TURNER', weight: 40 },
+      { name: 'CLAUDE LORRAIN', weight: 30 },
+      { name: 'DELACROIX', weight: 20 },
+      { name: 'MILLET', weight: 10 }
+    ],
+    dramatic: [
+      { name: 'DELACROIX', weight: 40 },
+      { name: 'GOYA', weight: 35 },
+      { name: 'TURNER', weight: 25 }
+    ],
+    default: [
+      { name: 'JACQUES-LOUIS DAVID', weight: 25 },
+      { name: 'GOYA', weight: 20 },
+      { name: 'DELACROIX', weight: 20 },
+      { name: 'MANET', weight: 15 },
+      { name: 'INGRES', weight: 10 },
+      { name: 'MILLET', weight: 10 }
+    ]
+  },
+  
   // 고대 그리스-로마 (스타일 선택)
   ancient: {
     indoor: [
@@ -2572,7 +2601,80 @@ const MALE_BIASED_ARTISTS = [
   'REMBRANDT', 'CARAVAGGIO', 'TITIAN', 'VELÁZQUEZ', 'VELAZQUEZ'
 ];
 
-function filterArtistByGender(artistName, gender) {
+// 사조별 남성 적합 화가 목록 (여성 편향 화가 제외)
+// 여성 편향: VERMEER, BOUCHER, WATTEAU, BOTTICELLI, RENOIR
+const MALE_SUITABLE_ARTISTS_BY_CATEGORY = {
+  'impressionism': [
+    // RENOIR 제외
+    { name: 'CAILLEBOTTE', weight: 50 },  // 도시 남성 전문
+    { name: 'MONET', weight: 30 },
+    { name: 'DEGAS', weight: 20 }
+  ],
+  'postImpressionism': [
+    // 여성 편향 없음
+    { name: 'VAN GOGH', weight: 40 },
+    { name: 'CÉZANNE', weight: 25 },
+    { name: 'GAUGUIN', weight: 25 },
+    { name: 'SIGNAC', weight: 10 }
+  ],
+  'baroque': [
+    // VERMEER 제외
+    { name: 'CARAVAGGIO', weight: 45 },
+    { name: 'REMBRANDT', weight: 40 },
+    { name: 'VELÁZQUEZ', weight: 15 }
+  ],
+  'renaissance': [
+    // BOTTICELLI 제외
+    { name: 'LEONARDO DA VINCI', weight: 45 },
+    { name: 'TITIAN', weight: 30 },
+    { name: 'MICHELANGELO', weight: 15 },
+    { name: 'RAPHAEL', weight: 10 }
+  ],
+  'rococo': [
+    // WATTEAU, BOUCHER 둘 다 여성 편향 - 로코코는 원래 여성적 사조
+    // 남성 사진엔 로코코 자체가 부적합하지만, 그래도 와토가 그나마 나음
+    { name: 'WATTEAU', weight: 70 },
+    { name: 'BOUCHER', weight: 30 }
+  ],
+  'fauvism': [
+    // 여성 편향 없음
+    { name: 'MATISSE', weight: 40 },
+    { name: 'DERAIN', weight: 35 },
+    { name: 'VLAMINCK', weight: 25 }
+  ],
+  'expressionism': [
+    // 여성 편향 없음
+    { name: 'MUNCH', weight: 30 },
+    { name: 'KIRCHNER', weight: 30 },
+    { name: 'KOKOSCHKA', weight: 25 },
+    { name: 'KANDINSKY', weight: 15 }
+  ],
+  'modernism': [
+    // 여성 편향 없음
+    { name: 'PICASSO', weight: 35 },
+    { name: 'WARHOL', weight: 25 },
+    { name: 'MAGRITTE', weight: 20 },
+    { name: 'LICHTENSTEIN', weight: 15 },
+    { name: 'KEITH HARING', weight: 5 }
+  ],
+  'neoclassicism': [
+    // 여성 편향 없음 (INGRES는 여성 인물 잘 그리지만 남성도 잘 그림)
+    { name: 'JACQUES-LOUIS DAVID', weight: 45 },
+    { name: 'INGRES', weight: 25 },
+    { name: 'GOYA', weight: 20 },
+    { name: 'DELACROIX', weight: 10 }
+  ],
+  'neoclassicism_vs_romanticism_vs_realism': [
+    // neoclassicism과 동일 (별칭)
+    { name: 'JACQUES-LOUIS DAVID', weight: 35 },
+    { name: 'GOYA', weight: 25 },
+    { name: 'DELACROIX', weight: 20 },
+    { name: 'MANET', weight: 10 },
+    { name: 'MILLET', weight: 10 }
+  ]
+};
+
+function filterArtistByGender(artistName, gender, category = null) {
   const upperArtist = artistName.toUpperCase();
   
   if (gender === 'male') {
@@ -2580,10 +2682,24 @@ function filterArtistByGender(artistName, gender) {
     for (const femaleArtist of FEMALE_BIASED_ARTISTS) {
       if (upperArtist.includes(femaleArtist)) {
         console.log(`⚠️ Gender filter: ${artistName} is female-biased, but subject is MALE`);
+        
+        // 사조에 맞는 남성 적합 화가 중 가중치 랜덤 선택
+        const maleSuitable = MALE_SUITABLE_ARTISTS_BY_CATEGORY[category];
+        if (maleSuitable) {
+          const suggestion = weightedRandomSelect(maleSuitable);
+          console.log(`🔄 [GENDER-FILTER] Category: ${category}, weight-selected: ${suggestion}`);
+          return {
+            filtered: true,
+            reason: `${artistName} specializes in female subjects`,
+            suggestion: suggestion
+          };
+        }
+        
+        // fallback
         return {
           filtered: true,
           reason: `${artistName} specializes in female subjects`,
-          suggestion: 'REMBRANDT' // 남성 추천
+          suggestion: 'REMBRANDT'
         };
       }
     }
@@ -2670,6 +2786,7 @@ export default async function handler(req, res) {
       'baroque': 0.80,
       'rococo': 0.70,  // 로코코: 회화적 붓터치 강조
       'neoclassicism': 0.80,
+      'neoclassicism_vs_romanticism_vs_realism': 0.80,
       'romanticism': 0.80,
       
       // 빛으로 형태 흐릿 (0.70)
@@ -2765,7 +2882,7 @@ export default async function handler(req, res) {
           // 🔴 B 방안: 성별에 맞지 않는 화가 필터링
           // ========================================
           if (visionAnalysis && visionAnalysis.gender) {
-            const filterResult = filterArtistByGender(preSelectedArtist, visionAnalysis.gender);
+            const filterResult = filterArtistByGender(preSelectedArtist, visionAnalysis.gender, categoryForWeight);
             if (filterResult.filtered) {
               console.log(`🚫 [GENDER-FILTER] ${filterResult.reason}`);
               console.log(`🔄 [GENDER-FILTER] Suggesting: ${filterResult.suggestion}`);
@@ -2832,7 +2949,7 @@ export default async function handler(req, res) {
           // 🔴 B 방안: 성별에 맞지 않는 화가 필터링 (가중치 선택 후)
           // ========================================
           if (weightSelectedArtist && visionAnalysis && visionAnalysis.gender) {
-            const filterResult = filterArtistByGender(weightSelectedArtist, visionAnalysis.gender);
+            const filterResult = filterArtistByGender(weightSelectedArtist, visionAnalysis.gender, categoryForWeight);
             if (filterResult.filtered) {
               console.log(`🚫 [GENDER-FILTER] ${weightSelectedArtist} filtered: ${filterResult.reason}`);
               console.log(`🔄 [GENDER-FILTER] Replacing with: ${filterResult.suggestion}`);
@@ -2862,6 +2979,7 @@ export default async function handler(req, res) {
               'baroque': getBaroqueArtistPrompt,
               'rococo': getRococoArtistPrompt,
               'neoclassicism': getNeoclassicismArtistPrompt,
+              'neoclassicism_vs_romanticism_vs_realism': getNeoclassicismArtistPrompt,  // 별칭
               'impressionism': getImpressionismArtistPrompt,
               'postImpressionism': getPostImpressionismArtistPrompt,
               'fauvism': getFauvismArtistPrompt,
