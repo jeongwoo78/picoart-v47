@@ -294,8 +294,7 @@ const ResultScreen = ({
         'Thorn Necklace': 'frida-thornnecklace',
         'Self-Portrait with Monkeys': 'frida-monkeys',
         '원숭이와 자화상': 'frida-monkeys',
-        'Diego and I': 'frida-diegoandi',
-        '디에고와 나': 'frida-diegoandi',
+
         
         // 워홀
         'Marilyn Monroe': 'warhol-marilyn',
@@ -478,11 +477,9 @@ const ResultScreen = ({
       'pierre-auguste renoir': '르누아르(Pierre-Auguste Renoir)',
       'degas': '드가(Edgar Degas)',
       'edgar degas': '드가(Edgar Degas)',
-      'pissarro': '피사로(Camille Pissarro)',
-      'camille pissarro': '피사로(Camille Pissarro)',
-      'sisley': '시슬리(Alfred Sisley)',
-      'alfred sisley': '시슬리(Alfred Sisley)',
-      // v59: 모리조 삭제 (API에 프롬프트 없음)
+      'caillebotte': '칼리보트(Gustave Caillebotte)',
+      'gustave caillebotte': '칼리보트(Gustave Caillebotte)',
+      // v60: 피사로/시슬리 삭제 → 칼리보트 추가
       
       // 후기인상주의
       'van gogh': '반 고흐(Vincent van Gogh)',

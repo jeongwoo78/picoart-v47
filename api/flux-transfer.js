@@ -322,31 +322,30 @@ const ARTIST_WEIGHTS = {
     ]
   },
   
-  // 인상주의 (4명)
+  // 인상주의 (4명) - 피사로→칼리보트 교체 (도시풍경/남성인물 차별화)
   impressionism: {
     portrait: [
-      { name: 'RENOIR', weight: 40 },
-      { name: 'MONET', weight: 40 },
-      { name: 'DEGAS', weight: 10 },
-      { name: 'PISSARRO', weight: 10 }
+      { name: 'RENOIR', weight: 35 },      // 여성/아이 인물 (AI힌트로 분기)
+      { name: 'MONET', weight: 30 },
+      { name: 'CAILLEBOTTE', weight: 35 }  // 남성 인물 (AI힌트로 분기)
     ],
     movement: [
       { name: 'DEGAS', weight: 50 },
       { name: 'RENOIR', weight: 30 },
       { name: 'MONET', weight: 15 },
-      { name: 'PISSARRO', weight: 5 }
+      { name: 'CAILLEBOTTE', weight: 5 }
     ],
     landscape: [
-      { name: 'MONET', weight: 45 },
-      { name: 'PISSARRO', weight: 30 },
+      { name: 'MONET', weight: 50 },       // 자연 풍경
+      { name: 'CAILLEBOTTE', weight: 30 }, // 도시 풍경
       { name: 'RENOIR', weight: 15 },
-      { name: 'DEGAS', weight: 10 }
+      { name: 'DEGAS', weight: 5 }
     ],
     default: [
-      { name: 'RENOIR', weight: 40 },
-      { name: 'MONET', weight: 40 },
-      { name: 'DEGAS', weight: 10 },
-      { name: 'PISSARRO', weight: 10 }
+      { name: 'RENOIR', weight: 35 },
+      { name: 'MONET', weight: 35 },
+      { name: 'CAILLEBOTTE', weight: 20 },
+      { name: 'DEGAS', weight: 10 }
     ]
   },
   
@@ -1184,16 +1183,18 @@ Available Impressionism Artists (4명):
    - When to prioritize: Pure landscapes without people (25%)
    - Note: Impressionist hazy effects can be challenging for AI
 
-4. PISSARRO (피사로) ⭐ Backup option (10%)
-   - Specialty: Rural landscapes, market scenes, gentle brush touches
-   - Best for: Gentle rural scenes, soft pastoral mood
-   - When to prioritize: Soft gentle landscapes (10%)
+4. CAILLEBOTTE (칼리보트) ⭐ Urban specialist (20%)
+   - Specialty: Modern urban scenes, dramatic perspective, city life
+   - Best for: City backgrounds, male portraits, geometric compositions
+   - Signature works: "Paris Street, Rainy Day", "The Floor Scrapers"
+   - When to prioritize: Urban/city scenes (80%), male portraits (35%)
 
 🎯 CRITICAL DECISION LOGIC:
-- Most portraits → RENOIR (35%) ⭐⭐⭐⭐ PRIMARY
+- Female/child portraits → RENOIR (35%) ⭐⭐⭐⭐ PRIMARY
+- Male portraits → CAILLEBOTTE (35%) ⭐⭐⭐ (modern urban men)
 - Movement/action/interesting angles → DEGAS (30%) ⭐⭐⭐
-- Pure landscapes (no people) → MONET (25%) ⭐⭐
-- Gentle rural scenes → PISSARRO (10%) ⭐
+- Natural landscapes (no people) → MONET (50%) ⭐⭐
+- Urban/city scenes → CAILLEBOTTE (80%) ⭐⭐⭐⭐
 `;
 }
 
@@ -1244,10 +1245,11 @@ Warm sunlit people, festive scenes.
   
   return `
 🎯 Priority order:
-- Most portraits → RENOIR (35%) - BEST for AI
+- Female/child portraits → RENOIR (35%) - warm soft style
+- Male portraits → CAILLEBOTTE (35%) - modern urban men
 - Movement/angles → DEGAS (30%)
-- Pure landscapes → MONET (25%)
-- Gentle scenes → PISSARRO (10%)
+- Natural landscapes → MONET (50%)
+- Urban/city scenes → CAILLEBOTTE (80%)
 `;
 }
 
@@ -1686,7 +1688,9 @@ function getRenaissanceArtistPrompt(artistName) {
     
     'MICHELANGELO': genderRule + 'painting by Michelangelo: HEROIC SCULPTURAL FIGURES with powerful muscular anatomy, Sistine Chapel style monumental grandeur, dramatic foreshortening and dynamic poses, strong modeling with clear light and shadow, idealized human form with classical proportions, rich saturated colors, architectural sense of space, Michelangelo masterpiece quality',
     
-    'RAPHAEL': genderRule + 'painting by Raphael: PERFECT HARMONIOUS BEAUTY with idealized graceful figures, serene balanced compositions, sweet gentle expressions, clear luminous colors, elegant flowing drapery, School of Athens style classical perfection, soft modeling with gentle transitions, divine serenity and grace, Raphael masterpiece quality'
+    'RAPHAEL': genderRule + 'painting by Raphael: PERFECT HARMONIOUS BEAUTY with idealized graceful figures, serene balanced compositions, sweet gentle expressions, clear luminous colors, elegant flowing drapery, School of Athens style classical perfection, soft modeling with gentle transitions, divine serenity and grace, Raphael masterpiece quality',
+    
+    'BOTTICELLI': genderRule + 'painting by Sandro Botticelli: GRACEFUL FLOWING LINES with elegant elongated figures, Birth of Venus and Primavera style ethereal beauty, delicate pale skin with soft rose tints, FLOWING GOLDEN HAIR with intricate wavy patterns, sheer diaphanous fabrics billowing in gentle breeze, sweet melancholic expressions, decorative floral backgrounds, Early Renaissance Florentine grace, mythological poetic atmosphere, Botticelli masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
@@ -1694,6 +1698,7 @@ function getRenaissanceArtistPrompt(artistName) {
   if (normalized.includes('TITIAN') || normalized.includes('티치아노')) return prompts['TITIAN'];
   if (normalized.includes('MICHELANGELO') || normalized.includes('미켈란젤로')) return prompts['MICHELANGELO'];
   if (normalized.includes('RAPHAEL') || normalized.includes('라파엘로')) return prompts['RAPHAEL'];
+  if (normalized.includes('BOTTICELLI') || normalized.includes('보티첼리')) return prompts['BOTTICELLI'];
   return prompts['LEONARDO DA VINCI'];
 }
 
@@ -1780,14 +1785,14 @@ function getImpressionismArtistPrompt(artistName) {
     
     'DEGAS': 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. painting by Edgar Degas: UNUSUAL CROPPED ANGLES and asymmetric compositions, capturing movement and gesture, SOFT PASTEL and oil texture with VISIBLE CHALKY STROKES, pale muted colors (soft pink peach powder blue), intimate indoor scenes, DO NOT add ballet dancers, delicate precise drawing, Degas masterpiece quality',
     
-    'PISSARRO': 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. painting by Camille Pissarro: RURAL IMPRESSIONIST landscapes and village scenes, small dappled brushstrokes building form, soft diffused natural light, peaceful pastoral atmosphere, warm earth tones with fresh greens, gentle humble subjects, Pissarro masterpiece quality'
+    'CAILLEBOTTE': 'ABSOLUTE GENDER REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. painting by Gustave Caillebotte: MODERN URBAN REALISM with dramatic bird\'s-eye perspective, SHARP PERSPECTIVE LINES converging dramatically, Paris Street Rainy Day style city scenes, photographic clarity with impressionist color palette, elegant bourgeois figures in urban settings, wet pavement reflections, muted gray-blue urban tones with warm accents, GEOMETRIC COMPOSITION with strong diagonal lines, Floor Scrapers style working figures, Caillebotte masterpiece quality'
   };
   
   const normalized = artistName.toUpperCase().trim();
   if (normalized.includes('RENOIR') || normalized.includes('르누아르')) return prompts['RENOIR'];
   if (normalized.includes('MONET') || normalized.includes('모네')) return prompts['MONET'];
   if (normalized.includes('DEGAS') || normalized.includes('드가')) return prompts['DEGAS'];
-  if (normalized.includes('PISSARRO') || normalized.includes('피사로')) return prompts['PISSARRO'];
+  if (normalized.includes('CAILLEBOTTE') || normalized.includes('칼리보트') || normalized.includes('카유보트')) return prompts['CAILLEBOTTE'];
   return prompts['RENOIR'];
 }
 
@@ -3330,15 +3335,15 @@ export default async function handler(req, res) {
           }
         }
         
-        // 피사로 선택시 온화한 풍경 강화
-        if (selectedArtist.toUpperCase().trim().includes('PISSARRO') || 
-            selectedArtist.toUpperCase().trim().includes('CAMILLE')) {
-          console.log('🎯 Pissarro detected');
-          if (!finalPrompt.includes('gentle rural')) {
-            finalPrompt = finalPrompt + ', painting by Camille Pissarro, GENTLE RURAL LANDSCAPE with soft diffused Impressionist light, quiet countryside or village scenes with humble everyday subjects, muted harmonious colors with atmospheric unity, short delicate brushstrokes creating textured surface, peaceful pastoral mood with democratic vision, subtle tonal variations and gentle transitions, unpretentious natural beauty captured with patient observation';
-            console.log('✅ Enhanced Pissarro gentle landscape added');
+        // 칼리보트 선택시 도시 풍경/원근법 강화
+        if (selectedArtist.toUpperCase().trim().includes('CAILLEBOTTE') || 
+            selectedArtist.toUpperCase().trim().includes('GUSTAVE')) {
+          console.log('🎯 Caillebotte detected');
+          if (!finalPrompt.includes('urban perspective')) {
+            finalPrompt = finalPrompt + ', painting by Gustave Caillebotte, MODERN URBAN REALISM with dramatic bird\'s-eye perspective, Paris Street Rainy Day style city scenes, SHARP PERSPECTIVE LINES converging dramatically, photographic clarity with impressionist color palette, elegant bourgeois figures in urban settings, wet pavement reflections, muted gray-blue urban tones with warm accents, GEOMETRIC COMPOSITION with strong diagonal lines, Floor Scrapers style working figures, Caillebotte masterpiece quality';
+            console.log('✅ Enhanced Caillebotte urban perspective added');
           } else {
-            console.log('ℹ️ Pissarro landscape already in prompt (AI included it)');
+            console.log('ℹ️ Caillebotte perspective already in prompt (AI included it)');
           }
         }
         
