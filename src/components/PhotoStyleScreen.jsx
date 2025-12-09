@@ -189,7 +189,7 @@ const PhotoStyleScreen = ({ mainCategory, onBack, onSelect }) => {
 
         {/* 전체 변환 버튼 */}
         <button 
-          className="full-transform-btn"
+          className={`full-transform-btn ${mainCategory}`}
           onClick={handleFullTransform}
         >
           <span className="ft-icon">✨</span>
@@ -350,7 +350,6 @@ const PhotoStyleScreen = ({ mainCategory, onBack, onSelect }) => {
 
         .full-transform-btn {
           width: 100%;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           border: none;
           border-radius: 16px;
           padding: 1.25rem 1.5rem;
@@ -360,12 +359,36 @@ const PhotoStyleScreen = ({ mainCategory, onBack, onSelect }) => {
           align-items: center;
           gap: 1rem;
           transition: all 0.3s;
-          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .full-transform-btn:hover {
+        /* 미술사조 - 보라→파랑 (클래식) */
+        .full-transform-btn.movements {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .full-transform-btn.movements:hover {
           transform: translateY(-3px);
           box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 거장 - 금색→주황 (프리미엄) */
+        .full-transform-btn.masters {
+          background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+          box-shadow: 0 4px 15px rgba(245, 175, 25, 0.3);
+        }
+        .full-transform-btn.masters:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(245, 175, 25, 0.4);
+        }
+
+        /* 동양화 - 빨강→분홍 (전통) */
+        .full-transform-btn.oriental {
+          background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+          box-shadow: 0 4px 15px rgba(238, 9, 121, 0.3);
+        }
+        .full-transform-btn.oriental:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(238, 9, 121, 0.4);
         }
 
         .ft-icon {
