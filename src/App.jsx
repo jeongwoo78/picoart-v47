@@ -1,14 +1,15 @@
-// PicoArt v63 - Main App (새 흐름: 대카테고리 → 사진+세부선택 → 변환)
+// PicoArt v68 - Main App (원클릭 전체 변환 지원)
 import React, { useState } from 'react';
 import CategorySelection from './components/CategorySelection';
 import PhotoStyleScreen from './components/PhotoStyleScreen';
 import ProcessingScreen from './components/ProcessingScreen';
 import ResultScreen from './components/ResultScreen';
+import FullResultScreen from './components/FullResultScreen';
 import GalleryScreen from './components/GalleryScreen';
 import './styles/App.css';
 
 const App = () => {
-  // 화면 상태: 'category' | 'photoStyle' | 'processing' | 'result'
+  // 화면 상태: 'category' | 'photoStyle' | 'processing' | 'result' | 'fullResult'
   const [currentScreen, setCurrentScreen] = useState('category');
   const [showGallery, setShowGallery] = useState(false);
   
@@ -19,6 +20,9 @@ const App = () => {
   const [resultImage, setResultImage] = useState(null);
   const [aiSelectedArtist, setAiSelectedArtist] = useState(null);
   const [aiSelectedWork, setAiSelectedWork] = useState(null);
+  
+  // 원클릭 전용 상태
+  const [fullTransformResults, setFullTransformResults] = useState([]);
 
   // 1단계: 대카테고리 선택
   const handleCategorySelect = (categoryId) => {
@@ -35,6 +39,15 @@ const App = () => {
 
   // 변환 완료
   const handleProcessingComplete = (style, resultImageUrl, result) => {
+    // 원클릭 전체 변환인 경우
+    if (result && result.isFullTransform) {
+      console.log('✅ Full transform completed:', result.results.length, 'items');
+      setFullTransformResults(result.results);
+      setCurrentScreen('fullResult');
+      return;
+    }
+    
+    // 단일 변환인 경우 (기존 로직)
     setResultImage(resultImageUrl);
     
     if (result && result.aiSelectedArtist) {
@@ -63,6 +76,7 @@ const App = () => {
     setResultImage(null);
     setAiSelectedArtist(null);
     setAiSelectedWork(null);
+    setFullTransformResults([]);
   };
 
   // 뒤로가기 (photoStyle → category)
@@ -108,7 +122,7 @@ const App = () => {
             />
           )}
 
-          {/* 4단계: 결과 */}
+          {/* 4단계: 결과 (단일 변환) */}
           {currentScreen === 'result' && (
             <ResultScreen
               originalPhoto={uploadedPhoto}
@@ -116,6 +130,20 @@ const App = () => {
               selectedStyle={selectedStyle}
               aiSelectedArtist={aiSelectedArtist}
               aiSelectedWork={aiSelectedWork}
+              onReset={handleReset}
+              onGallery={() => {
+                handleReset();
+                setShowGallery(true);
+              }}
+            />
+          )}
+
+          {/* 4단계: 결과 (원클릭 전체 변환) */}
+          {currentScreen === 'fullResult' && (
+            <FullResultScreen
+              originalPhoto={uploadedPhoto}
+              results={fullTransformResults}
+              selectedStyle={selectedStyle}
               onReset={handleReset}
               onGallery={() => {
                 handleReset();
