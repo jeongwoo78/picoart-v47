@@ -257,11 +257,11 @@ const GalleryScreen = ({ onBack }) => {
           <p style={styles.emptySubtext}>사진을 변환하면 여기에 자동 저장됩니다</p>
         </div>
       ) : (
-        <div style={styles.grid} className="gallery-grid">
+        <div className="gallery-grid">
           {galleryItems.map((item) => (
             <div
               key={item.id}
-              style={styles.gridItem}
+              className="gallery-item"
               onClick={() => setSelectedItem(item)}
             >
               <img
@@ -341,21 +341,29 @@ const animationStyle = `
     gap: 15px;
   }
   
+  .gallery-item {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .gallery-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(167, 139, 250, 0.3);
+  }
+  
   @media (min-width: 768px) {
     .gallery-grid {
-      grid-template-columns: repeat(4, 1fr) !important;
+      grid-template-columns: repeat(4, 1fr);
     }
   }
   
   @media (min-width: 1200px) {
     .gallery-grid {
-      grid-template-columns: repeat(6, 1fr) !important;
+      grid-template-columns: repeat(6, 1fr);
     }
-  }
-  
-  .gallery-grid > div:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 25px rgba(167, 139, 250, 0.3);
   }
 `;
 
