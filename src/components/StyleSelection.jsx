@@ -153,6 +153,24 @@ const StyleSelection = ({ onSelect }) => {
               <p className="section-period">서양 미술의 흐름</p>
             </div>
             
+            {/* 전체 변환 버튼 */}
+            <button 
+              className="full-transform-btn"
+              onClick={() => onSelect({ 
+                id: 'movements-all', 
+                name: '미술사조 전체 변환',
+                category: 'movements',
+                isFullTransform: true,
+                count: 11
+              })}
+            >
+              <span className="full-transform-icon">✨</span>
+              <div className="full-transform-content">
+                <span className="full-transform-title">전체 변환</span>
+                <span className="full-transform-desc">당신의 사진 한 장이 2,500년 서양 미술을 관통합니다</span>
+              </div>
+            </button>
+            
             <div className="sub-category-tabs">
               {currentSubcategories.map(key => {
                 const category = styleCategories[key];
@@ -189,6 +207,46 @@ const StyleSelection = ({ onSelect }) => {
                     {groupedStyles[subCategory].category.period}
                   </p>
                 </div>
+
+                {/* 전체 변환 버튼 - 거장 */}
+                {mainCategory === 'masters' && (
+                  <button 
+                    className="full-transform-btn"
+                    onClick={() => onSelect({ 
+                      id: 'masters-all', 
+                      name: '거장 전체 변환',
+                      category: 'masters',
+                      isFullTransform: true,
+                      count: 7
+                    })}
+                  >
+                    <span className="full-transform-icon">✨</span>
+                    <div className="full-transform-content">
+                      <span className="full-transform-title">전체 변환</span>
+                      <span className="full-transform-desc">당신의 사진 한 장이 일곱 거장의 세계를 만납니다</span>
+                    </div>
+                  </button>
+                )}
+
+                {/* 전체 변환 버튼 - 동양화 */}
+                {mainCategory === 'oriental' && (
+                  <button 
+                    className="full-transform-btn"
+                    onClick={() => onSelect({ 
+                      id: 'oriental-all', 
+                      name: '동양화 전체 변환',
+                      category: 'oriental',
+                      isFullTransform: true,
+                      count: 6
+                    })}
+                  >
+                    <span className="full-transform-icon">✨</span>
+                    <div className="full-transform-content">
+                      <span className="full-transform-title">전체 변환</span>
+                      <span className="full-transform-desc">당신의 사진 한 장이 천 년의 동양 미학을 만납니다</span>
+                    </div>
+                  </button>
+                )}
 
                 <div className="styles-grid">
                   {groupedStyles[subCategory].styles.map(style => (
@@ -414,6 +472,50 @@ const StyleSelection = ({ onSelect }) => {
           margin: 0;
         }
 
+        /* 전체 변환 버튼 */
+        .full-transform-btn {
+          width: 100%;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border: none;
+          border-radius: 16px;
+          padding: 1.25rem 1.5rem;
+          margin-bottom: 1.5rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          transition: all 0.3s;
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .full-transform-btn:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .full-transform-icon {
+          font-size: 2rem;
+        }
+
+        .full-transform-content {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.25rem;
+        }
+
+        .full-transform-title {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: white;
+        }
+
+        .full-transform-desc {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.9);
+          text-align: left;
+        }
+
         .styles-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -564,6 +666,22 @@ const StyleSelection = ({ onSelect }) => {
 
           .card-description {
             font-size: 0.65rem;
+          }
+
+          .full-transform-btn {
+            padding: 1rem;
+          }
+
+          .full-transform-icon {
+            font-size: 1.5rem;
+          }
+
+          .full-transform-title {
+            font-size: 1rem;
+          }
+
+          .full-transform-desc {
+            font-size: 0.8rem;
           }
         }
       `}</style>
