@@ -1,31 +1,39 @@
-// PicoArt v61 - Main App (갤러리 기능 추가)
+// PicoArt v63 - Main App (새 흐름: 대카테고리 → 사진+세부선택 → 변환)
 import React, { useState } from 'react';
-import UploadScreen from './components/UploadScreen';
-import StyleSelection from './components/StyleSelection';
+import CategorySelection from './components/CategorySelection';
+import PhotoStyleScreen from './components/PhotoStyleScreen';
 import ProcessingScreen from './components/ProcessingScreen';
 import ResultScreen from './components/ResultScreen';
 import GalleryScreen from './components/GalleryScreen';
 import './styles/App.css';
 
 const App = () => {
-  const [currentScreen, setCurrentScreen] = useState('upload');
+  // 화면 상태: 'category' | 'photoStyle' | 'processing' | 'result'
+  const [currentScreen, setCurrentScreen] = useState('category');
   const [showGallery, setShowGallery] = useState(false);
+  
+  // 데이터 상태
+  const [mainCategory, setMainCategory] = useState(null); // 'movements' | 'masters' | 'oriental'
   const [uploadedPhoto, setUploadedPhoto] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [resultImage, setResultImage] = useState(null);
   const [aiSelectedArtist, setAiSelectedArtist] = useState(null);
-  const [aiSelectedWork, setAiSelectedWork] = useState(null);  // 거장 선택 작품
+  const [aiSelectedWork, setAiSelectedWork] = useState(null);
 
-  const handlePhotoUpload = (photoFile) => {
-    setUploadedPhoto(photoFile);
-    setCurrentScreen('style');
+  // 1단계: 대카테고리 선택
+  const handleCategorySelect = (categoryId) => {
+    setMainCategory(categoryId);
+    setCurrentScreen('photoStyle');
   };
 
-  const handleStyleSelect = (style) => {
+  // 2단계: 사진 + 스타일 선택 완료 → 변환 시작
+  const handlePhotoStyleSelect = (photo, style) => {
+    setUploadedPhoto(photo);
     setSelectedStyle(style);
     setCurrentScreen('processing');
   };
 
+  // 변환 완료
   const handleProcessingComplete = (style, resultImageUrl, result) => {
     setResultImage(resultImageUrl);
     
@@ -36,25 +44,32 @@ const App = () => {
       console.log('⚠️ No aiSelectedArtist in result:', result);
     }
     
-    // 거장 선택 작품 저장 (2차 교육자료용)
     if (result && result.selected_work) {
       setAiSelectedWork(result.selected_work);
       console.log('✅ App.jsx received selected_work:', result.selected_work);
     } else {
       setAiSelectedWork(null);
-      console.log('ℹ️ No selected_work in result (not masters category)');
     }
     
     setCurrentScreen('result');
   };
 
+  // 처음으로
   const handleReset = () => {
-    setCurrentScreen('upload');
+    setCurrentScreen('category');
+    setMainCategory(null);
     setUploadedPhoto(null);
     setSelectedStyle(null);
     setResultImage(null);
     setAiSelectedArtist(null);
     setAiSelectedWork(null);
+  };
+
+  // 뒤로가기 (photoStyle → category)
+  const handleBackToCategory = () => {
+    setCurrentScreen('category');
+    setMainCategory(null);
+    setUploadedPhoto(null);
   };
 
   return (
@@ -67,177 +82,53 @@ const App = () => {
       {/* 메인 앱 */}
       {!showGallery && (
         <>
-          {currentScreen !== 'processing' && currentScreen !== 'result' && (
-            <header className="app-header">
-              <div className="header-content">
-                <h1 className="app-title">🎨 PicoArt</h1>
-                <p className="app-tagline">AI가 당신의 사진을 거장의 그림으로</p>
-                <p className="app-version">v31 - 갤러리 기능 추가</p>
-                {/* 갤러리 버튼 */}
-                <button 
-                  onClick={() => setShowGallery(true)}
-                  style={{
-                    marginTop: '12px',
-                    padding: '10px 24px',
-                    background: 'rgba(255,255,255,0.2)',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    borderRadius: '25px',
-                    color: 'white',
-                    cursor: 'pointer',
-                    fontSize: '0.95rem',
-                    fontWeight: '600',
-                  }}
-                >
-                  🖼️ 나의 갤러리
-                </button>
-              </div>
-            </header>
+          {/* 1단계: 대카테고리 선택 */}
+          {currentScreen === 'category' && (
+            <CategorySelection 
+              onSelect={handleCategorySelect}
+              onGallery={() => setShowGallery(true)}
+            />
           )}
 
-      <main className="app-main">
-        {currentScreen === 'upload' && (
-          <UploadScreen onUpload={handlePhotoUpload} />
-        )}
+          {/* 2단계: 사진 + 세부선택 통합 화면 */}
+          {currentScreen === 'photoStyle' && (
+            <PhotoStyleScreen
+              mainCategory={mainCategory}
+              onBack={handleBackToCategory}
+              onSelect={handlePhotoStyleSelect}
+            />
+          )}
 
-        {currentScreen === 'style' && (
-          <StyleSelection onSelect={handleStyleSelect} />
-        )}
+          {/* 3단계: 변환 중 */}
+          {currentScreen === 'processing' && (
+            <ProcessingScreen
+              photo={uploadedPhoto}
+              selectedStyle={selectedStyle}
+              onComplete={handleProcessingComplete}
+            />
+          )}
 
-        {currentScreen === 'processing' && (
-          <ProcessingScreen
-            photo={uploadedPhoto}
-            selectedStyle={selectedStyle}
-            onComplete={handleProcessingComplete}
-          />
-        )}
-
-        {currentScreen === 'result' && (
-          <ResultScreen
-            originalPhoto={uploadedPhoto}
-            resultImage={resultImage}
-            selectedStyle={selectedStyle}
-            aiSelectedArtist={aiSelectedArtist}
-            aiSelectedWork={aiSelectedWork}
-            onReset={handleReset}
-            onGallery={() => {
-              setCurrentScreen('upload');
-              setShowGallery(true);
-            }}
-          />
-        )}
-      </main>
-
-      {currentScreen !== 'processing' && currentScreen !== 'result' && (
-        <footer className="app-footer">
-          <div className="footer-content">
-            <p className="footer-info">
-              특허: 10-2018-0016297 (사진 분석 자동 작품 선정), 10-2018-0122600 (사진 드로잉 변환)
-            </p>
-            <p className="footer-copyright">
-              © 2025 PicoArt. All rights reserved.
-            </p>
-          </div>
-        </footer>
-      )}
+          {/* 4단계: 결과 */}
+          {currentScreen === 'result' && (
+            <ResultScreen
+              originalPhoto={uploadedPhoto}
+              resultImage={resultImage}
+              selectedStyle={selectedStyle}
+              aiSelectedArtist={aiSelectedArtist}
+              aiSelectedWork={aiSelectedWork}
+              onReset={handleReset}
+              onGallery={() => {
+                handleReset();
+                setShowGallery(true);
+              }}
+            />
+          )}
         </>
       )}
 
       <style>{`
         .app {
           min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .app-header {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 2rem;
-          text-align: center;
-        }
-
-        .header-content {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-
-        .app-title {
-          font-size: 3rem;
-          margin: 0 0 0.5rem 0;
-          font-weight: 800;
-        }
-
-        .app-tagline {
-          font-size: 1.2rem;
-          margin: 0 0 0.5rem 0;
-          opacity: 0.95;
-        }
-
-        .app-version {
-          font-size: 0.9rem;
-          opacity: 0.8;
-          margin: 0;
-          padding: 0.5rem 1rem;
-          background: rgba(255,255,255,0.2);
-          border-radius: 20px;
-          display: inline-block;
-        }
-
-        .app-main {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .app-footer {
-          background: #2d3748;
-          color: white;
-          padding: 1.5rem;
-          text-align: center;
-        }
-
-        .footer-content {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-
-        .footer-info {
-          font-size: 0.85rem;
-          margin: 0 0 0.5rem 0;
-          opacity: 0.9;
-        }
-
-        .footer-copyright {
-          font-size: 0.75rem;
-          margin: 0;
-          opacity: 0.7;
-        }
-
-        @media (max-width: 768px) {
-          .app-header {
-            padding: 1.5rem 1rem;
-          }
-
-          .app-title {
-            font-size: 2rem;
-          }
-
-          .app-tagline {
-            font-size: 1rem;
-          }
-
-          .app-version {
-            font-size: 0.8rem;
-            padding: 0.4rem 0.8rem;
-          }
-
-          .app-footer {
-            padding: 1rem;
-          }
-
-          .footer-info {
-            font-size: 0.75rem;
-          }
         }
       `}</style>
     </div>
