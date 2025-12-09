@@ -1,12 +1,14 @@
-// PicoArt v60 - ResultScreen
+// PicoArt v61 - ResultScreen
 // 거장 교육자료 통합본 사용 (1차+2차 = 42개)
-// 2025-11-28 업데이트
+// 갤러리 자동 저장 기능 추가
+// 2025-12-09 업데이트
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import BeforeAfter from './BeforeAfter';
 import { orientalEducation } from '../data/educationContent';
 import { movementsEducation, movementsOverview } from '../data/movementsEducation';
 import { mastersEducation } from '../data/mastersEducation';
+import { saveToGallery } from './GalleryScreen';
 
 
 const ResultScreen = ({ 
@@ -22,6 +24,35 @@ const ResultScreen = ({
   const [showInfo, setShowInfo] = useState(true);
   const [educationText, setEducationText] = useState('');
   const [isLoadingEducation, setIsLoadingEducation] = useState(true);
+  const [savedToGallery, setSavedToGallery] = useState(false);
+  const hasSavedRef = useRef(false);
+
+
+  // ========== 갤러리 자동 저장 ==========
+  useEffect(() => {
+    // 이미 저장했으면 스킵
+    if (hasSavedRef.current || !resultImage) return;
+    
+    // 스타일 이름 결정
+    let styleName = selectedStyle?.name || '변환 이미지';
+    if (aiSelectedArtist) {
+      styleName = aiSelectedArtist;
+    }
+    
+    // 카테고리 이름
+    const categoryName = selectedStyle?.category === 'movements' ? '미술사조' 
+      : selectedStyle?.category === 'masters' ? '거장' 
+      : selectedStyle?.category === 'oriental' ? '동양화' 
+      : '';
+    
+    // 갤러리에 저장
+    const saved = saveToGallery(resultImage, styleName, categoryName);
+    if (saved) {
+      hasSavedRef.current = true;
+      setSavedToGallery(true);
+      console.log('✅ 갤러리에 자동 저장 완료:', styleName);
+    }
+  }, [resultImage, selectedStyle, aiSelectedArtist]);
 
 
   // ========== Effects ==========

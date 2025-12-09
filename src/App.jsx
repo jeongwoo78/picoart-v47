@@ -1,13 +1,15 @@
-// PicoArt v60 - Main App (selected_work 전달 추가)
+// PicoArt v61 - Main App (갤러리 기능 추가)
 import React, { useState } from 'react';
 import UploadScreen from './components/UploadScreen';
 import StyleSelection from './components/StyleSelection';
 import ProcessingScreen from './components/ProcessingScreen';
 import ResultScreen from './components/ResultScreen';
+import GalleryScreen from './components/GalleryScreen';
 import './styles/App.css';
 
 const App = () => {
   const [currentScreen, setCurrentScreen] = useState('upload');
+  const [showGallery, setShowGallery] = useState(false);
   const [uploadedPhoto, setUploadedPhoto] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [resultImage, setResultImage] = useState(null);
@@ -57,15 +59,40 @@ const App = () => {
 
   return (
     <div className="app">
-      {currentScreen !== 'processing' && currentScreen !== 'result' && (
-        <header className="app-header">
-          <div className="header-content">
-            <h1 className="app-title">🎨 PicoArt</h1>
-            <p className="app-tagline">AI가 당신의 사진을 거장의 그림으로</p>
-            <p className="app-version">v30 - 동양화 6개 장르 지원 + AI 선택 수정</p>
-          </div>
-        </header>
+      {/* 갤러리 화면 */}
+      {showGallery && (
+        <GalleryScreen onBack={() => setShowGallery(false)} />
       )}
+
+      {/* 메인 앱 */}
+      {!showGallery && (
+        <>
+          {currentScreen !== 'processing' && currentScreen !== 'result' && (
+            <header className="app-header">
+              <div className="header-content">
+                <h1 className="app-title">🎨 PicoArt</h1>
+                <p className="app-tagline">AI가 당신의 사진을 거장의 그림으로</p>
+                <p className="app-version">v31 - 갤러리 기능 추가</p>
+                {/* 갤러리 버튼 */}
+                <button 
+                  onClick={() => setShowGallery(true)}
+                  style={{
+                    marginTop: '12px',
+                    padding: '10px 24px',
+                    background: 'rgba(255,255,255,0.2)',
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    borderRadius: '25px',
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontSize: '0.95rem',
+                    fontWeight: '600',
+                  }}
+                >
+                  🖼️ 나의 갤러리
+                </button>
+              </div>
+            </header>
+          )}
 
       <main className="app-main">
         {currentScreen === 'upload' && (
@@ -107,6 +134,8 @@ const App = () => {
             </p>
           </div>
         </footer>
+      )}
+        </>
       )}
 
       <style>{`
