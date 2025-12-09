@@ -33,25 +33,29 @@ const ResultScreen = ({
     // 이미 저장했으면 스킵
     if (hasSavedRef.current || !resultImage) return;
     
-    // 스타일 이름 결정
-    let styleName = selectedStyle?.name || '변환 이미지';
-    if (aiSelectedArtist) {
-      styleName = aiSelectedArtist;
-    }
+    const saveToGalleryAsync = async () => {
+      // 스타일 이름 결정
+      let styleName = selectedStyle?.name || '변환 이미지';
+      if (aiSelectedArtist) {
+        styleName = aiSelectedArtist;
+      }
+      
+      // 카테고리 이름
+      const categoryName = selectedStyle?.category === 'movements' ? '미술사조' 
+        : selectedStyle?.category === 'masters' ? '거장' 
+        : selectedStyle?.category === 'oriental' ? '동양화' 
+        : '';
+      
+      // 갤러리에 저장 (async)
+      const saved = await saveToGallery(resultImage, styleName, categoryName);
+      if (saved) {
+        hasSavedRef.current = true;
+        setSavedToGallery(true);
+        console.log('✅ 갤러리에 자동 저장 완료 (IndexedDB):', styleName);
+      }
+    };
     
-    // 카테고리 이름
-    const categoryName = selectedStyle?.category === 'movements' ? '미술사조' 
-      : selectedStyle?.category === 'masters' ? '거장' 
-      : selectedStyle?.category === 'oriental' ? '동양화' 
-      : '';
-    
-    // 갤러리에 저장
-    const saved = saveToGallery(resultImage, styleName, categoryName);
-    if (saved) {
-      hasSavedRef.current = true;
-      setSavedToGallery(true);
-      console.log('✅ 갤러리에 자동 저장 완료:', styleName);
-    }
+    saveToGalleryAsync();
   }, [resultImage, selectedStyle, aiSelectedArtist]);
 
 

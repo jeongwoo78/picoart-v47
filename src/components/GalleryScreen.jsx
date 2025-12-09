@@ -1,8 +1,158 @@
-// GalleryScreen.jsx - 갤러리 컴포넌트
-// 로컬 저장 + 그리드 UI + 다운로드/삭제 기능
+// GalleryScreen.jsx - 갤러리 컴포넌트 (IndexedDB 버전)
+// 대용량 이미지 저장 + 그리드 UI + 다운로드/삭제 기능
 import React, { useState, useEffect } from 'react';
 
-const GalleryScreen = ({ onBack, onSelectImage }) => {
+// ========== IndexedDB 설정 ==========
+const DB_NAME = 'PicoArtGallery';
+const DB_VERSION = 1;
+const STORE_NAME = 'images';
+
+// IndexedDB 열기
+const openDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+    };
+  });
+};
+
+// 모든 이미지 가져오기
+const getAllImages = async () => {
+  try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.getAll();
+      
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        // 최신순 정렬
+        const items = request.result.sort((a, b) => 
+          new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        resolve(items);
+      };
+    });
+  } catch (error) {
+    console.error('IndexedDB 읽기 실패:', error);
+    return [];
+  }
+};
+
+// 이미지 저장
+const saveImage = async (imageData) => {
+  try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.add(imageData);
+      
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(true);
+    });
+  } catch (error) {
+    console.error('IndexedDB 저장 실패:', error);
+    return false;
+  }
+};
+
+// 이미지 삭제
+const deleteImage = async (id) => {
+  try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.delete(id);
+      
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(true);
+    });
+  } catch (error) {
+    console.error('IndexedDB 삭제 실패:', error);
+    return false;
+  }
+};
+
+// 전체 삭제
+const clearAllImages = async () => {
+  try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.clear();
+      
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(true);
+    });
+  } catch (error) {
+    console.error('IndexedDB 전체 삭제 실패:', error);
+    return false;
+  }
+};
+
+// URL을 Base64로 변환 (이미지 영구 저장용)
+const urlToBase64 = async (url) => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error('이미지 변환 실패:', error);
+    return null;
+  }
+};
+
+
+// ========== 갤러리에 이미지 저장 (외부에서 사용) ==========
+export const saveToGallery = async (imageUrl, styleName, categoryName = '') => {
+  try {
+    // URL을 Base64로 변환
+    const base64Image = await urlToBase64(imageUrl);
+    if (!base64Image) {
+      console.error('이미지 변환 실패');
+      return false;
+    }
+    
+    const imageData = {
+      id: `gallery_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      imageData: base64Image,
+      styleName,
+      categoryName,
+      createdAt: new Date().toISOString()
+    };
+    
+    const saved = await saveImage(imageData);
+    if (saved) {
+      console.log('✅ 갤러리에 저장됨 (IndexedDB):', styleName);
+    }
+    return saved;
+  } catch (error) {
+    console.error('갤러리 저장 실패:', error);
+    return false;
+  }
+};
+
+
+// ========== 갤러리 컴포넌트 ==========
+const GalleryScreen = ({ onBack }) => {
   const [galleryItems, setGalleryItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -12,44 +162,33 @@ const GalleryScreen = ({ onBack, onSelectImage }) => {
     loadGallery();
   }, []);
 
-  const loadGallery = () => {
-    try {
-      const saved = localStorage.getItem('picoart_gallery');
-      if (saved) {
-        const items = JSON.parse(saved);
-        // 최신순 정렬
-        items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setGalleryItems(items);
-      }
-    } catch (error) {
-      console.error('갤러리 로드 실패:', error);
-    }
+  const loadGallery = async () => {
+    setIsLoading(true);
+    const items = await getAllImages();
+    setGalleryItems(items);
     setIsLoading(false);
   };
 
   // 이미지 삭제
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('이 이미지를 삭제하시겠습니까?')) {
-      const updated = galleryItems.filter(item => item.id !== id);
-      setGalleryItems(updated);
-      localStorage.setItem('picoart_gallery', JSON.stringify(updated));
-      setSelectedItem(null);
+      const success = await deleteImage(id);
+      if (success) {
+        setGalleryItems(prev => prev.filter(item => item.id !== id));
+        setSelectedItem(null);
+      }
     }
   };
 
   // 이미지 다운로드
-  const handleDownload = async (item) => {
+  const handleDownload = (item) => {
     try {
-      const response = await fetch(item.imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `picoart_${item.styleName}_${Date.now()}.png`;
+      a.href = item.imageData;
+      a.download = `picoart_${item.styleName.replace(/\s+/g, '_')}_${Date.now()}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('다운로드 실패:', error);
       alert('다운로드에 실패했습니다.');
@@ -57,10 +196,12 @@ const GalleryScreen = ({ onBack, onSelectImage }) => {
   };
 
   // 전체 삭제
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
     if (window.confirm('모든 이미지를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
-      setGalleryItems([]);
-      localStorage.removeItem('picoart_gallery');
+      const success = await clearAllImages();
+      if (success) {
+        setGalleryItems([]);
+      }
     }
   };
 
@@ -78,7 +219,11 @@ const GalleryScreen = ({ onBack, onSelectImage }) => {
   if (isLoading) {
     return (
       <div style={styles.container}>
-        <div style={styles.loading}>로딩 중...</div>
+        <div style={styles.loading}>
+          <div style={styles.spinner}></div>
+          <p>갤러리 로딩 중...</p>
+        </div>
+        <style>{animationStyle}</style>
       </div>
     );
   }
@@ -100,7 +245,8 @@ const GalleryScreen = ({ onBack, onSelectImage }) => {
 
       {/* 안내 메시지 */}
       <div style={styles.notice}>
-        <p>💡 이미지는 기기에 저장됩니다. 앱 삭제 시 함께 삭제됩니다.</p>
+        <p style={{ margin: 0 }}>💡 이미지는 기기에 저장됩니다. 브라우저 데이터 삭제 시 함께 삭제됩니다.</p>
+        <p style={styles.countText}>저장된 이미지: {galleryItems.length}개</p>
       </div>
 
       {/* 갤러리 그리드 */}
@@ -111,7 +257,7 @@ const GalleryScreen = ({ onBack, onSelectImage }) => {
           <p style={styles.emptySubtext}>사진을 변환하면 여기에 자동 저장됩니다</p>
         </div>
       ) : (
-        <div style={styles.grid}>
+        <div style={styles.grid} className="gallery-grid">
           {galleryItems.map((item) => (
             <div
               key={item.id}
@@ -119,9 +265,10 @@ const GalleryScreen = ({ onBack, onSelectImage }) => {
               onClick={() => setSelectedItem(item)}
             >
               <img
-                src={item.imageUrl}
+                src={item.imageData}
                 alt={item.styleName}
                 style={styles.thumbnail}
+                loading="lazy"
               />
               <div style={styles.itemLabel}>
                 <span style={styles.styleName}>{item.styleName}</span>
@@ -144,7 +291,7 @@ const GalleryScreen = ({ onBack, onSelectImage }) => {
             </button>
             
             <img
-              src={selectedItem.imageUrl}
+              src={selectedItem.imageData}
               alt={selectedItem.styleName}
               style={styles.modalImage}
             />
@@ -174,37 +321,43 @@ const GalleryScreen = ({ onBack, onSelectImage }) => {
           </div>
         </div>
       )}
+
+      {/* CSS 애니메이션 */}
+      <style>{animationStyle}</style>
     </div>
   );
 };
 
-// 갤러리에 이미지 저장하는 유틸 함수 (외부에서 사용)
-export const saveToGallery = (imageUrl, styleName, categoryName = '') => {
-  try {
-    const saved = localStorage.getItem('picoart_gallery');
-    const items = saved ? JSON.parse(saved) : [];
-    
-    const newItem = {
-      id: `gallery_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      imageUrl,
-      styleName,
-      categoryName,
-      createdAt: new Date().toISOString()
-    };
-    
-    items.unshift(newItem); // 최신순으로 앞에 추가
-    
-    // 최대 100개 제한 (선택사항)
-    // if (items.length > 100) items.pop();
-    
-    localStorage.setItem('picoart_gallery', JSON.stringify(items));
-    console.log('✅ 갤러리에 저장됨:', styleName);
-    return true;
-  } catch (error) {
-    console.error('갤러리 저장 실패:', error);
-    return false;
+// CSS 애니메이션 스타일
+const animationStyle = `
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
-};
+  
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  @media (min-width: 768px) {
+    .gallery-grid {
+      grid-template-columns: repeat(4, 1fr) !important;
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    .gallery-grid {
+      grid-template-columns: repeat(6, 1fr) !important;
+    }
+  }
+  
+  .gallery-grid > div:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(167, 139, 250, 0.3);
+  }
+`;
 
 // 스타일 정의
 const styles = {
@@ -255,15 +408,32 @@ const styles = {
     padding: '12px 16px',
     marginBottom: '20px',
     fontSize: '0.85rem',
-    opacity: 0.8,
+    opacity: 0.9,
+  },
+  
+  countText: {
+    margin: '8px 0 0',
+    color: '#a78bfa',
+    fontWeight: '600',
   },
   
   loading: {
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     height: '50vh',
-    fontSize: '1.2rem',
+    fontSize: '1.1rem',
+    gap: '15px',
+  },
+  
+  spinner: {
+    width: '40px',
+    height: '40px',
+    border: '3px solid rgba(255,255,255,0.2)',
+    borderTop: '3px solid #a78bfa',
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite',
   },
   
   empty: {
@@ -427,18 +597,6 @@ const styles = {
     cursor: 'pointer',
     fontSize: '1rem',
     fontWeight: '600',
-  },
-  
-  // PC 반응형 (5~6열)
-  '@media (min-width: 768px)': {
-    grid: {
-      gridTemplateColumns: 'repeat(4, 1fr)',
-    },
-  },
-  '@media (min-width: 1200px)': {
-    grid: {
-      gridTemplateColumns: 'repeat(6, 1fr)',
-    },
   },
 };
 
