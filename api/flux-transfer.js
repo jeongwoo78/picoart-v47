@@ -1905,7 +1905,7 @@ function getFauvismArtistPrompt(artistName) {
   const genderRule = 'ABSOLUTE GENDER AND ETHNICITY REQUIREMENT: If photo shows MALE - MUST have MASCULINE face with STRONG JAW, male bone structure, NO feminine features, DO NOT feminize, DO NOT soften, DO NOT make delicate, KEEP AS MAN. If photo shows FEMALE - MUST have FEMININE face with SOFT features, female bone structure, NO masculine features, DO NOT masculinize, DO NOT make rough, KEEP AS WOMAN. PRESERVE ORIGINAL ETHNICITY AND SKIN COLOR EXACTLY - DO NOT change race, DO NOT lighten or darken skin, Asian must stay Asian, Caucasian must stay Caucasian, African must stay African. ';
   const paintTexture = ' MUST look like HAND-PAINTED oil painting with VISIBLE PAINT TEXTURE, NOT photorealistic, NOT smooth digital, NOT AI-generated photo.';
   const prompts = {
-    'MATISSE': genderRule + 'painting by Henri Matisse Fauvist period: PURE BOLD UNMIXED COLORS in flat decorative areas, The Dance style simplified joyful forms, complete liberation of color from reality, saturated intense primary colors (red blue yellow green), rhythmic flowing harmonious lines, VISIBLE BRUSHSTROKES with paint texture, life-affirming energetic atmosphere, Matisse Fauvist masterpiece quality' + paintTexture,
+    'MATISSE': genderRule + 'painting by Henri Matisse Fauvist period: PURE BOLD UNMIXED COLORS in flat decorative areas, The Dance style simplified joyful forms, complete liberation of color from reality, saturated intense primary colors (red blue green), rhythmic flowing harmonious lines, VISIBLE BRUSHSTROKES with paint texture, life-affirming energetic atmosphere, Matisse Fauvist masterpiece quality' + paintTexture,
     
     'DERAIN': genderRule + 'painting by André Derain: BOLD FAUVIST LANDSCAPE colors with vivid unnatural hues, Charing Cross Bridge style vibrant scenery, strong color contrasts, energetic expressive brushwork VISIBLE, liberated pure colors, dynamic compositions, Derain Fauvist masterpiece quality' + paintTexture,
     
@@ -2034,7 +2034,7 @@ const fallbackPrompts = {
     name: '마티스',
     artist: 'Henri Matisse (1869-1954)',
     movement: '야수파 (Fauvism)',
-    prompt: 'painting by Henri Matisse Fauvist period: PURE BOLD UNMIXED COLORS in flat decorative areas, The Dance style simplified joyful forms, complete liberation of color from reality, saturated intense primary colors (red blue yellow green), rhythmic flowing harmonious lines, life-affirming energetic atmosphere, NOT photographic preserve subject identity, Matisse Fauvist masterpiece quality'
+    prompt: 'painting by Henri Matisse Fauvist period: PURE BOLD UNMIXED COLORS in flat decorative areas, The Dance style simplified joyful forms, complete liberation of color from reality, saturated intense primary colors (red blue green), rhythmic flowing harmonious lines, life-affirming energetic atmosphere, NOT photographic preserve subject identity, Matisse Fauvist masterpiece quality'
   },
   
   picasso: {
@@ -3697,7 +3697,7 @@ export default async function handler(req, res) {
             selectedArtist.includes('마티스')) {
           console.log('🎯 Matisse detected');
           if (!finalPrompt.includes('The Dance')) {
-            finalPrompt = finalPrompt + ', painting by Henri Matisse, The Dance-style with PURE UNMIXED VIBRANT COLORS at maximum intensity and saturation, flat decorative patterns with bold arabesques and flowing curves, elimination of all modeling and shading for pure color planes, joyful rhythmic compositions celebrating life movement and vitality, daring color combinations of brilliant reds blues greens yellows, complete liberation of color from reality, every area a pure saturated hue singing with chromatic joy';
+            finalPrompt = finalPrompt + ', painting by Henri Matisse, The Dance-style with PURE UNMIXED VIBRANT COLORS at maximum intensity and saturation, flat decorative patterns with bold arabesques and flowing curves, elimination of all modeling and shading for pure color planes, joyful rhythmic compositions celebrating life movement and vitality, daring color combinations of brilliant reds blues greens, complete liberation of color from reality, every area a pure saturated hue singing with chromatic joy';
             console.log('✅ Enhanced Matisse pure color added');
           } else {
             console.log('ℹ️ Matisse color already in prompt (AI included it)');
