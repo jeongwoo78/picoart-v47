@@ -119,6 +119,10 @@ const App = () => {
             aiSelectedArtist={aiSelectedArtist}
             aiSelectedWork={aiSelectedWork}
             onReset={handleReset}
+            onGallery={() => {
+              setCurrentScreen('upload');
+              setShowGallery(true);
+            }}
           />
         )}
       </main>

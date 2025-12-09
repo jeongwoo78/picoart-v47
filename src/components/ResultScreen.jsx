@@ -17,7 +17,8 @@ const ResultScreen = ({
   selectedStyle, 
   aiSelectedArtist,
   aiSelectedWork,
-  onReset 
+  onReset,
+  onGallery
 }) => {
   
   // ========== State ==========
@@ -959,11 +960,11 @@ const ResultScreen = ({
         {/* Action Buttons */}
         <div className="action-buttons">
           <button 
-            className="btn btn-download" 
-            onClick={handleDownload}
+            className="btn btn-gallery" 
+            onClick={onGallery}
           >
-            <span className="btn-icon">💾</span>
-            저장
+            <span className="btn-icon">🖼️</span>
+            갤러리
           </button>
           
           <button 
@@ -1229,15 +1230,15 @@ const ResultScreen = ({
           font-size: 1.2rem;
         }
 
-        .btn-download {
-          background: #10b981;
+        .btn-gallery {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
         }
 
-        .btn-download:hover {
-          background: #059669;
+        .btn-gallery:hover {
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
           transform: translateY(-2px);
-          box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+          box-shadow: 0 8px 16px rgba(118, 75, 162, 0.4);
         }
 
         .btn-share {
