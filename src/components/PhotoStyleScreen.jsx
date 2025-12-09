@@ -189,7 +189,7 @@ const PhotoStyleScreen = ({ mainCategory, onBack, onSelect }) => {
 
         {/* 전체 변환 버튼 */}
         <button 
-          className={`full-transform-btn ${!photo ? 'disabled' : ''}`}
+          className="full-transform-btn"
           onClick={handleFullTransform}
         >
           <span className="ft-icon">✨</span>
@@ -204,7 +204,7 @@ const PhotoStyleScreen = ({ mainCategory, onBack, onSelect }) => {
           {currentCategory.styles.map(style => (
             <button
               key={style.id}
-              className={`style-card ${!photo ? 'disabled' : ''}`}
+              className="style-card"
               onClick={() => handleStyleSelect(style)}
             >
               <span className="style-icon">{style.icon}</span>
@@ -363,14 +363,9 @@ const PhotoStyleScreen = ({ mainCategory, onBack, onSelect }) => {
           box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .full-transform-btn:hover:not(.disabled) {
+        .full-transform-btn:hover {
           transform: translateY(-3px);
           box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .full-transform-btn.disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
         }
 
         .ft-icon {
@@ -415,15 +410,10 @@ const PhotoStyleScreen = ({ mainCategory, onBack, onSelect }) => {
           gap: 0.4rem;
         }
 
-        .style-card:hover:not(.disabled) {
+        .style-card:hover {
           border-color: #667eea;
           transform: translateY(-3px);
           box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
-        }
-
-        .style-card.disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
         }
 
         .style-icon {
