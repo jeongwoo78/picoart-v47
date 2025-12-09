@@ -3108,6 +3108,53 @@ export default async function handler(req, res) {
               const originalStrength = controlStrength;
               controlStrength = Math.min(controlStrength + 0.15, 0.90);  // +0.15, 최대 0.90
               console.log(`📊 [LANDSCAPE-BOOST] control_strength: ${originalStrength} → ${controlStrength} (원본 구도 유지 강화)`);
+              
+              // 🎨 [방법 C] 풍경일 때 프롬프트에서 사람 관련 표현 제거
+              const originalPromptLength = finalPrompt.length;
+              finalPrompt = finalPrompt
+                // 들라크루아 - 사람/액션 관련
+                .replace(/Liberty Leading the People style dramatic action,?\s*/gi, '')
+                .replace(/dramatic gestures and heroic romantic intensity,?\s*/gi, 'dramatic romantic intensity, ')
+                .replace(/heroic idealized figures in classical poses,?\s*/gi, '')
+                .replace(/heroic idealized figures,?\s*/gi, '')
+                // 다비드 - 영웅적 인물
+                .replace(/heroic idealized figures in classical poses,?\s*/gi, '')
+                // 밀레 - 농민
+                .replace(/monumental peasant figures,?\s*/gi, '')
+                .replace(/DIGNIFIED RURAL LABOR with monumental peasant figures,?\s*/gi, 'DIGNIFIED RURAL SCENE, ')
+                // 마네 - 도시인물
+                .replace(/sophisticated urban café society atmosphere,?\s*/gi, 'sophisticated urban atmosphere, ')
+                .replace(/frank direct confrontational gaze,?\s*/gi, '')
+                // 고야 - 시선/인물
+                .replace(/penetrating gaze and inner truth revealed,?\s*/gi, '')
+                .replace(/La Maja Vestida style Spanish elegance for portraits,?\s*/gi, '')
+                .replace(/court painter sophistication with underlying tension,?\s*/gi, 'sophisticated composition with underlying tension, ')
+                // 르누아르 - 살결
+                .replace(/rosy pink flesh tones with pearly highlights,?\s*/gi, 'rosy pink tones with pearly highlights, ')
+                .replace(/warm flesh tones,?\s*/gi, 'warm tones, ')
+                // 로코코 - 귀족/인물
+                .replace(/aristocratic.*?gathering,?\s*/gi, 'elegant gathering, ')
+                .replace(/elegant figures in shimmering silk costumes,?\s*/gi, '')
+                .replace(/theatrical graceful poses,?\s*/gi, 'theatrical graceful composition, ')
+                // 인상주의 - 인물
+                .replace(/elegant bourgeois figures in urban settings,?\s*/gi, 'elegant urban settings, ')
+                .replace(/capturing movement and gesture,?\s*/gi, 'capturing movement, ')
+                // 바로크 - 인물
+                .replace(/intense emotional realism,?\s*/gi, 'intense emotional atmosphere, ')
+                // 르네상스 - 인물
+                .replace(/faces emerging from smoky darkness,?\s*/gi, 'forms emerging from smoky darkness, ')
+                .replace(/idealized graceful figures,?\s*/gi, 'idealized graceful forms, ')
+                .replace(/HEROIC SCULPTURAL FIGURES with powerful muscular anatomy,?\s*/gi, 'HEROIC SCULPTURAL FORMS, ')
+                .replace(/elegant elongated figures,?\s*/gi, 'elegant elongated forms, ')
+                // 야수파/표현주의 - 인물
+                .replace(/simplified joyful forms,?\s*/gi, 'joyful forms, ')
+                // 연속 쉼표/공백 정리
+                .replace(/,\s*,/g, ',')
+                .replace(/,\s*\./g, '.')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+              
+              console.log(`🎨 [LANDSCAPE-FILTER] Removed human-related expressions: ${originalPromptLength} → ${finalPrompt.length} chars`);
             } else if (identityPrompt && identityPrompt.length > 0) {
               // Vision 분석 결과 사용 (더 상세함)
               genderPrefix = `ABSOLUTE REQUIREMENT: ${identityPrompt}. `;
