@@ -2181,6 +2181,15 @@ INSTRUCTIONS:
 4. IMPORTANT: Preserve the original subject - if it's a baby, keep it as a baby; if elderly, keep elderly
 5. CRITICAL: If only 1 person in photo, add "DO NOT add extra people in background"
 
+EDUCATION_KEY MAPPING (MUST include based on selected_work):
+- Van Gogh: "The Starry Night"→"gogh-starrynight", "Sunflowers"→"gogh-sunflowers", "Self-Portrait"→"gogh-selfportrait"
+- Klimt: "The Kiss"→"klimt-kiss", "The Tree of Life"→"klimt-treeoflife", "Judith"→"klimt-judith"
+- Munch: "The Scream"→"munch-scream", "Madonna"→"munch-madonna", "The Sick Child"→"munch-sickchild"
+- Matisse: "The Dance"→"matisse-dance", "The Red Room"→"matisse-redroom", "Woman with a Hat"→"matisse-womanwithhat"
+- Picasso: "Guernica"→"picasso-guernica", "The Weeping Woman"→"picasso-weepingwoman", "Les Demoiselles d'Avignon"→"picasso-demoiselles"
+- Frida: "Me and My Parrots"→"frida-parrots", "The Broken Column"→"frida-brokencolumn", "Self-Portrait with Thorn Necklace"→"frida-thornnecklace", "Self-Portrait with Monkeys"→"frida-monkeys"
+- Warhol: "Marilyn Monroe"→"warhol-marilyn", "Campbell's Soup Cans"→"warhol-soup"
+
 Return ONLY valid JSON (no markdown):
 {
   "analysis": "brief photo analysis",
@@ -2193,6 +2202,7 @@ Return ONLY valid JSON (no markdown):
   "background_type": "simple" or "complex" or "outdoor" or "indoor" or "studio",
   "selected_artist": "${categoryName}",
   "selected_work": "exact title of the masterwork you selected",
+  "education_key": "use mapping above based on selected_work",
   "reason": "why this masterwork matches this photo",
   "prompt": "Start with 'MALE/FEMALE SUBJECT with [physical features]' if person, then 'painting by ${categoryName} in the style of [selected work title], [that work's distinctive techniques]'. If person_count=1, END with 'DO NOT add extra people, NO hallucinated figures in background'"
 }`;
@@ -2251,6 +2261,11 @@ CRITICAL INSTRUCTIONS FOR PROMPT GENERATION:
    - If text is absolutely necessary, use ONLY Korean Hangul or Chinese characters
    - NEVER use Japanese writing system
 
+EDUCATION_KEY MAPPING (MUST include):
+- "Korean Minhwa" → education_key: "korean-minhwa"
+- "Korean Pungsokdo" → education_key: "korean-genre"
+- "Korean Jingyeong Landscape" → education_key: "korean-jingyeong"
+
 Return ONLY valid JSON (no markdown):
 {
   "analysis": "brief photo description including gender if person present (1 sentence)",
@@ -2259,6 +2274,7 @@ Return ONLY valid JSON (no markdown):
   "age_range": "baby/child/teen/young_adult/adult/middle_aged/elderly" or null,
   "physical_description": "for MALE: strong jaw, angular face, short hair, broad shoulders etc. For FEMALE: soft features, delicate face etc." or null,
   "selected_artist": "Korean Minhwa" or "Korean Pungsokdo" or "Korean Jingyeong Landscape",
+  "education_key": "korean-minhwa" or "korean-genre" or "korean-jingyeong",
   "selected_style": "minhwa" or "pungsokdo" or "landscape",
   "reason": "why this style fits (1 sentence)",
   "prompt": "Start with 'MALE/FEMALE SUBJECT with [physical features]' if person, then 'Authentic Korean [style name] from Joseon Dynasty...' including: [for Minhwa: painted on ROUGH THICK HANJI PAPER with PROMINENT FIBER TEXTURE visible throughout, UNEVEN PATCHY pigment absorption, genuinely FADED WEATHERED colors like 200-year museum artifact, TREMBLING WOBBLY folk brushlines, primitive naive quality, NOT digital NOT smooth NOT bright] [for Pungsokdo: KOREAN INK PAINTING on ROUGH HANJI with visible texture, BLACK INK BRUSHWORK dominates 70-80%, then MINIMAL PALE washes 20-30% only, earth tones ONLY (pale brown grey-green faint ochre), spontaneous confident strokes, Kim Hong-do elegance, NOT colorful Chinese gongbi, simple everyday hanbok] [for Jingyeong: bold expressive monochrome ink]. CRITICAL ENDING: 'ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or any Japanese text, NO vertical Japanese writing, NO Japanese ukiyo-e elements, REMOVE all Japanese style, this is 100% PURE KOREAN TRADITIONAL ART not Japanese, NO text NO characters on painting unless Korean Hangul or Chinese only'."
@@ -2312,6 +2328,11 @@ CRITICAL INSTRUCTIONS FOR PROMPT GENERATION:
    - If text is absolutely necessary, use ONLY Chinese characters
    - NEVER use Japanese writing system
 
+EDUCATION_KEY MAPPING (MUST include):
+- "Chinese Ink Wash" → education_key: "chinese-ink"
+- "Chinese Gongbi" → education_key: "chinese-gongbi"
+- "Chinese Huaniao" → education_key: "chinese-huaniao"
+
 Return ONLY valid JSON (no markdown):
 {
   "analysis": "brief photo description including gender if person present (1 sentence)",
@@ -2320,6 +2341,7 @@ Return ONLY valid JSON (no markdown):
   "age_range": "baby/child/teen/young_adult/adult/middle_aged/elderly" or null,
   "physical_description": "for MALE: strong jaw, angular face, short hair, broad shoulders etc. For FEMALE: soft features, delicate face etc." or null,
   "selected_artist": "Chinese Ink Wash" or "Chinese Gongbi" or "Chinese Huaniao",
+  "education_key": "chinese-ink" or "chinese-gongbi" or "chinese-huaniao",
   "selected_style": "ink_wash" or "gongbi" or "huaniao",
   "reason": "why this style fits (1 sentence)",
   "prompt": "Start with 'MALE/FEMALE SUBJECT with [physical features]' if person, then 'Chinese [style name]...' with all characteristics. CRITICAL ENDING: 'ABSOLUTELY NO Japanese hiragana (ひらがな) katakana (カタカナ) or any Japanese text, NO vertical Japanese writing, NO Japanese ukiyo-e elements, REMOVE all Japanese style, this is 100% PURE CHINESE TRADITIONAL ART not Japanese, NO text NO characters on painting unless Chinese characters only'."
@@ -2333,6 +2355,7 @@ Keep it concise and accurate.`;
         return {
           success: true,
           artist: '일본 우키요에',
+          education_key: 'japanese-ukiyoe',
           reason: 'Japanese traditional ukiyo-e style',
           prompt: fallbackPrompts.japanese.prompt,
           analysis: 'Japanese ukiyo-e style applied'
@@ -2440,10 +2463,15 @@ Instructions - PRIORITY ORDER:
 5. Follow RECOMMENDATIONS (80% weight)
 6. Preserve subject identity
 
+EDUCATION_KEY MAPPING (MUST include in response):
+- "Classical Sculpture" → education_key: "ancient-greek-sculpture"
+- "Roman Mosaic" → education_key: "roman-mosaic"
+
 Return JSON only:
 {
   "analysis": "brief - note if animals/dynamic/static (1 sentence)",
   "selected_artist": "Classical Sculpture" or "Roman Mosaic",
+  "education_key": "ancient-greek-sculpture" or "roman-mosaic",
   "reason": "why this style fits, mention animals/dynamic/static (1 sentence)",
   "prompt": "Ancient Greek-Roman art in [chosen style], [style characteristics - for Sculpture mention material choice, for Mosaic mention tesserae tiles], depicting subject while preserving original facial features"
 }`;
@@ -2471,10 +2499,18 @@ Instructions:
    - For Romanesque: mention "church fresco flat solid forms, biblical narrative simplicity, stone relief aesthetic" AND "FLAT MURAL FRESCO style NOT smooth realistic painting, solid block-like forms with heavy outlines like stone carvings"
    - For other styles: include their signature techniques and visual characteristics
 
+EDUCATION_KEY MAPPING (MUST include in response):
+- "Byzantine" → education_key: "byzantine"
+- "Gothic" / "Limbourg Brothers" → education_key: "gothic"
+- "Islamic Miniature" → education_key: "islamic-miniature"
+- "Islamic Geometric" → education_key: "islamic-geometry"
+- "Romanesque" → education_key: "romanesque"
+
 Return JSON only:
 {
   "analysis": "brief (1 sentence)",
   "selected_artist": "Artist Name or Style Name",
+  "education_key": "byzantine" or "gothic" or "islamic-miniature" or "islamic-geometry" or "romanesque",
   "reason": "why (1 sentence)",
   "prompt": "Medieval art in [style name], [DETAILED style characteristics including techniques and visual features], depicting subject while preserving original features"
 }`;
@@ -2500,6 +2536,12 @@ Instructions:
 6. IMPORTANT: Start prompt with subject description if person
 7. CRITICAL: If only 1 person in photo, add "DO NOT add extra people in background, keep background clean"
 
+EDUCATION_KEY RULE (MUST include):
+- Use artist's LAST NAME in lowercase as education_key
+- Examples: "Claude Monet" → "monet", "Edgar Degas" → "degas", "Vincent van Gogh" → "gogh"
+- For "Jacques-Louis David" → "jacques-louis-david"
+- For "Keith Haring" → "keith-haring"
+
 Return JSON only:
 {
   "analysis": "brief (1 sentence)",
@@ -2511,6 +2553,7 @@ Return JSON only:
   "person_count": 1 or 2 or 3 (number of people in photo),
   "background_type": "simple" or "complex" or "outdoor" or "indoor" or "studio",
   "selected_artist": "Artist Full Name",
+  "education_key": "artist-lastname-lowercase",
   "reason": "why this artist fits (1 sentence)",
   "prompt": "Start with 'MALE/FEMALE SUBJECT with [physical features]' if person, then 'painting by [Artist], [artist's signature technique], [detailed visual characteristics]'. If person_count=1, END with 'DO NOT add extra people, NO hallucinated figures in background, keep background CLEAN'"
 }`;
@@ -2572,6 +2615,7 @@ Return JSON only:
       success: true,
       artist: result.selected_artist,
       work: result.selected_work,  // 거장 모드: 선택된 대표작
+      education_key: result.education_key,  // 교육자료 매칭용 키
       reason: result.reason,
       prompt: result.prompt,
       analysis: result.analysis,
@@ -2844,6 +2888,7 @@ export default async function handler(req, res) {
     let finalPrompt;
     let selectedArtist;
     let selectedWork;  // 거장 모드: 선택된 대표작
+    let educationKey;  // 교육자료 매칭용 키
     let selectionMethod;
     let selectionDetails = {};
     let controlStrength = 0.80; // 기본값
@@ -2979,6 +3024,7 @@ export default async function handler(req, res) {
         finalPrompt = aiResult.prompt;
         selectedArtist = aiResult.artist;
         selectedWork = aiResult.work;  // 거장 모드: 선택된 대표작
+        educationKey = aiResult.education_key;  // 교육자료 매칭용 키
         selectionMethod = 'ai_auto';
         selectionDetails = {
           analysis: aiResult.analysis,
@@ -2986,6 +3032,7 @@ export default async function handler(req, res) {
         };
         console.log('✅✅✅ [V41-TEST-SUCCESS] AI selected:', selectedArtist);
         console.log('✅✅✅ [V48] Selected work:', selectedWork);
+        console.log('✅✅✅ [V70] Education key:', educationKey);
         
         // ========================================
         // 🎯 대전제: AI 분석 후 가중치 기반 화가 재선택
@@ -4102,6 +4149,7 @@ export default async function handler(req, res) {
       ...data,
       selected_artist: selectedArtist,
       selected_work: selectedWork,  // 거장 모드: 선택된 대표작
+      education_key: educationKey,  // 교육자료 매칭용 키
       selection_method: selectionMethod,
       selection_details: selectionDetails
     });

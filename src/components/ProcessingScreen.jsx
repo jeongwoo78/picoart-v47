@@ -1,9 +1,9 @@
-// PicoArt v68 - ProcessingScreen (원클릭 순차 처리 지원)
-// 단일 변환 + 전체 변환 (원클릭) 모두 지원
-import React, { useEffect, useState } from 'react';
+// PicoArt v70 - ProcessingScreen (점 하단 + 결과 미리보기 + oneclickSecondaryEducation 매칭)
+// 변환 중에도 완료된 결과를 스와이프로 확인 가능
+import React, { useEffect, useState, useRef } from 'react';
 import { processStyleTransfer } from '../utils/styleTransferAPI';
 import { educationContent } from '../data/educationContent';
-import { oneclickPrimaryEducation } from '../data/oneclickEducation';
+import { oneclickPrimaryEducation, oneclickSecondaryEducation } from '../data/oneclickEducation';
 
 const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
   const [stage, setStage] = useState(1);
@@ -17,6 +17,13 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
   const [totalCount, setTotalCount] = useState(0);
   const [completedResults, setCompletedResults] = useState([]);
   const [currentStyleName, setCurrentStyleName] = useState('');
+  
+  // 미리보기 상태: -1 = 1차 교육 화면, 0+ = 해당 결과 인덱스
+  const [viewIndex, setViewIndex] = useState(-1);
+  
+  // 스와이프 관련
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   // 카테고리별 스타일 목록
   const fullTransformStyles = {
@@ -57,6 +64,46 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
       processImage();
     }
   }, []);
+
+  // 스와이프 핸들러
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    const threshold = 50;
+
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) {
+        // 왼쪽으로 스와이프 → 다음 (완료된 결과로 이동)
+        if (viewIndex < completedCount - 1) {
+          setViewIndex(prev => prev + 1);
+        }
+      } else {
+        // 오른쪽으로 스와이프 → 이전 (1차 교육 또는 이전 결과)
+        if (viewIndex > -1) {
+          setViewIndex(prev => prev - 1);
+        }
+      }
+    }
+  };
+
+  // 점 클릭으로 해당 결과 보기
+  const handleDotClick = (idx) => {
+    if (idx < completedCount) {
+      setViewIndex(idx);
+    }
+  };
+
+  // 1차 교육으로 돌아가기
+  const handleBackToEducation = () => {
+    setViewIndex(-1);
+  };
 
   // ========== 단일 변환 (기존 로직) ==========
   const processImage = async () => {
@@ -117,7 +164,7 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
   // ========== 원클릭 전체 변환 ==========
   const processFullTransform = async () => {
     try {
-      const category = selectedStyle.category; // 'movements', 'masters', 'oriental'
+      const category = selectedStyle.category;
       const styles = fullTransformStyles[category];
       
       if (!styles) {
@@ -152,12 +199,12 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
               resultUrl: result.resultUrl,
               aiSelectedArtist: result.aiSelectedArtist,
               selected_work: result.selected_work,
+              education_key: result.education_key,  // 교육자료 매칭용 키
               success: true
             });
             setCompletedCount(i + 1);
             setCompletedResults([...results]);
           } else {
-            // 실패해도 계속 진행
             results.push({
               style: style,
               error: result.error,
@@ -166,7 +213,6 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
             setCompletedCount(i + 1);
           }
         } catch (err) {
-          // 개별 실패 시에도 계속 진행
           console.error(`Failed to process ${style.name}:`, err);
           results.push({
             style: style,
@@ -176,7 +222,6 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
           setCompletedCount(i + 1);
         }
 
-        // 다음 변환 전 짧은 딜레이
         if (i < styles.length - 1) {
           await sleep(500);
         }
@@ -190,7 +235,6 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
       setStatusText(`완료! ${successCount}/${styles.length}개 변환 성공`);
       await sleep(1000);
 
-      // 결과 전달 (배열 형태)
       onComplete(selectedStyle, results, { 
         isFullTransform: true, 
         category,
@@ -263,28 +307,126 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
     return null;
   };
 
+  // ========== 2차 교육자료 매칭 (education_key 직접 사용) ==========
+  const getPreviewEducation = (result) => {
+    if (!result) return null;
+    
+    const educationKey = result.education_key;
+    const artistName = result.aiSelectedArtist || '';
+    const category = result.style.category;
+    const styleId = result.style.id;
+    
+    console.log('');
+    console.log('========================================');
+    console.log('🎨 ONECLICK EDUCATION MATCHING (v70):');
+    console.log('   - education_key:', educationKey);
+    console.log('   - artistName:', artistName);
+    console.log('   - category:', category);
+    console.log('   - styleId:', styleId);
+    console.log('========================================');
+    
+    // 1. education_key가 있으면 직접 사용
+    if (educationKey && oneclickSecondaryEducation[educationKey]) {
+      const edu = oneclickSecondaryEducation[educationKey];
+      console.log('✅ Found education with key:', educationKey);
+      return {
+        name: edu.name || artistName,
+        content: edu.content || edu.description
+      };
+    }
+    
+    // 2. education_key가 없으면 fallback: 화가명으로 매칭 시도
+    if (artistName) {
+      const matchedKey = findEducationKeyByArtist(artistName);
+      if (matchedKey && oneclickSecondaryEducation[matchedKey]) {
+        const edu = oneclickSecondaryEducation[matchedKey];
+        console.log('✅ Found education with fallback key:', matchedKey);
+        return {
+          name: edu.name || artistName,
+          content: edu.content || edu.description
+        };
+      }
+    }
+    
+    // 3. 최종 fallback
+    console.log('⚠️ No match found, using fallback');
+    return getFallbackEducation(styleId, category);
+  };
+
+  // 화가명으로 education_key 찾기 (fallback용)
+  const findEducationKeyByArtist = (artistName) => {
+    const cleanName = artistName
+      .replace(/\s*\([^)]*\)/g, '')
+      .trim();
+    
+    const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const words = cleanName.split(/\s+/);
+    
+    const patterns = [
+      cleanName.toLowerCase().replace(/\s+/g, ''),
+      cleanName.toLowerCase().replace(/\s+/g, '-'),
+      words.length > 1 ? words[words.length - 1].toLowerCase() : null,
+      words[0].toLowerCase(),
+      normalize(cleanName.toLowerCase().replace(/\s+/g, '')),
+      normalize(words.length > 1 ? words[words.length - 1].toLowerCase() : words[0].toLowerCase())
+    ].filter(Boolean);
+    
+    for (const pattern of patterns) {
+      if (oneclickSecondaryEducation[pattern]) {
+        return pattern;
+      }
+    }
+    return null;
+  };
+
+  // Fallback: 1차 교육 또는 스타일명 사용
+  const getFallbackEducation = (styleId, category) => {
+    // oneclickSecondaryEducation에서 styleId로 직접 찾기
+    if (oneclickSecondaryEducation[styleId]) {
+      const edu = oneclickSecondaryEducation[styleId];
+      return {
+        name: edu.name || styleId,
+        content: edu.content || edu.description
+      };
+    }
+    
+    // 카테고리별 fallback
+    const fallbackTexts = {
+      movements: '이 작품은 해당 미술 사조의 특징을 반영하여 변환되었습니다.',
+      masters: '이 작품은 선택된 거장의 화풍으로 변환되었습니다.',
+      oriental: '이 작품은 동양화의 전통 기법으로 변환되었습니다.'
+    };
+    
+    return {
+      name: styleId,
+      content: fallbackTexts[category] || '변환이 완료되었습니다.'
+    };
+  };
+
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  // 현재 미리보기 중인 결과
+  const previewResult = viewIndex >= 0 ? completedResults[viewIndex] : null;
+  const previewEducation = previewResult ? getPreviewEducation(previewResult) : null;
 
   // ========== 렌더링 ==========
   return (
-    <div className="processing-screen">
+    <div 
+      className="processing-screen"
+      onTouchStart={isFullTransform ? handleTouchStart : undefined}
+      onTouchMove={isFullTransform ? handleTouchMove : undefined}
+      onTouchEnd={isFullTransform ? handleTouchEnd : undefined}
+    >
       <div className="processing-content">
-        <h2>{isFullTransform ? '✨ 전체 변환 중' : '🎨 변환 중'}</h2>
-
-        {/* 원클릭: 점(●) 진행 UI */}
-        {isFullTransform && totalCount > 0 && (
-          <div className="dots-progress">
-            <div className="dots-container">
-              {Array.from({ length: totalCount }).map((_, idx) => (
-                <span 
-                  key={idx} 
-                  className={`dot ${idx < completedCount ? 'completed' : ''} ${idx === completedCount ? 'current' : ''}`}
-                />
-              ))}
-            </div>
-            <p className="dots-label">{completedCount} / {totalCount} 완료</p>
-          </div>
-        )}
+        {/* 헤더 */}
+        <div className="processing-header">
+          <h2>{isFullTransform ? '✨ 전체 변환 중' : '🎨 변환 중'}</h2>
+          {isFullTransform && viewIndex >= 0 && (
+            <button className="back-to-edu-btn" onClick={handleBackToEducation}>
+              ← 교육자료
+            </button>
+          )}
+        </div>
 
         {/* 단일 변환: 기존 단계 UI */}
         {!isFullTransform && (
@@ -314,13 +456,48 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
           <p className="status-text">{statusText}</p>
         </div>
 
-        {/* 원클릭: 1차 통합 교육 컨텐츠 */}
-        {isFullTransform && showEducation && getFullTransformEducation() && (
-          <div className="education-container oneclick">
-            <div className="education-card">
-              <h3>{getFullTransformEducation().title}</h3>
-              <p>{getFullTransformEducation().content}</p>
-            </div>
+        {/* ===== 원클릭: 메인 콘텐츠 영역 ===== */}
+        {isFullTransform && (
+          <div className="main-content-area">
+            {/* 1차 교육 화면 (viewIndex === -1) */}
+            {viewIndex === -1 && showEducation && getFullTransformEducation() && (
+              <div className="education-container oneclick">
+                <div className="education-card">
+                  <h3>{getFullTransformEducation().title}</h3>
+                  <p>{getFullTransformEducation().content}</p>
+                </div>
+                {completedCount > 0 && (
+                  <p className="swipe-hint">👉 스와이프하거나 점을 눌러 완료된 결과 보기</p>
+                )}
+              </div>
+            )}
+
+            {/* 결과 미리보기 화면 (viewIndex >= 0) */}
+            {viewIndex >= 0 && previewResult && (
+              <div className="preview-container">
+                <div className="preview-card">
+                  <div className="preview-badge">{previewResult.style.name}</div>
+                  <div className="preview-image-container">
+                    <img 
+                      src={previewResult.resultUrl} 
+                      alt={previewResult.style.name}
+                      className="preview-image"
+                    />
+                  </div>
+                  {previewResult.aiSelectedArtist && (
+                    <div className="preview-ai-info">
+                      🤖 AI 선택: {previewResult.aiSelectedArtist}
+                    </div>
+                  )}
+                  {previewEducation && (
+                    <div className="preview-education">
+                      <h4>{previewEducation.name || previewResult.style.name}</h4>
+                      <p>{previewEducation.content}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -343,6 +520,34 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
             </p>
           </div>
         )}
+
+        {/* ===== 원클릭: 하단 점(●) 네비게이션 ===== */}
+        {isFullTransform && totalCount > 0 && (
+          <div className="dots-nav-bottom">
+            <div className="dots-container">
+              {/* 1차 교육 점 */}
+              <button
+                className={`dot edu-dot ${viewIndex === -1 ? 'active' : ''}`}
+                onClick={handleBackToEducation}
+                title="교육자료"
+              >
+                📚
+              </button>
+              
+              {/* 결과 점들 */}
+              {Array.from({ length: totalCount }).map((_, idx) => (
+                <button 
+                  key={idx}
+                  className={`dot ${idx < completedCount ? 'completed' : ''} ${idx === completedCount ? 'current' : ''} ${viewIndex === idx ? 'active' : ''}`}
+                  onClick={() => handleDotClick(idx)}
+                  disabled={idx >= completedCount}
+                  title={fullTransformStyles[selectedStyle.category]?.[idx]?.name || ''}
+                />
+              ))}
+            </div>
+            <p className="dots-label">{completedCount} / {totalCount} 완료</p>
+          </div>
+        )}
       </div>
 
       <style>{`
@@ -357,68 +562,49 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
 
         .processing-content {
           background: white;
-          padding: 40px;
+          padding: 30px;
           border-radius: 20px;
           box-shadow: 0 20px 40px rgba(0,0,0,0.1);
           max-width: 600px;
           width: 100%;
+          display: flex;
+          flex-direction: column;
+          max-height: 90vh;
         }
 
-        .processing-content h2 {
+        .processing-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+
+        .processing-header h2 {
           text-align: center;
           color: #333;
-          margin-bottom: 30px;
-          font-size: 24px;
-        }
-
-        /* ===== 원클릭 점(●) 진행 UI ===== */
-        .dots-progress {
-          text-align: center;
-          margin-bottom: 30px;
-        }
-
-        .dots-container {
-          display: flex;
-          justify-content: center;
-          gap: 8px;
-          flex-wrap: wrap;
-          margin-bottom: 12px;
-        }
-
-        .dot {
-          width: 14px;
-          height: 14px;
-          border-radius: 50%;
-          background: #e0e0e0;
-          transition: all 0.3s ease;
-        }
-
-        .dot.completed {
-          background: #4CAF50;
-          box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
-        }
-
-        .dot.current {
-          background: #667eea;
-          animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.3); opacity: 0.7; }
-        }
-
-        .dots-label {
-          color: #666;
-          font-size: 14px;
+          font-size: 22px;
           margin: 0;
+        }
+
+        .back-to-edu-btn {
+          background: #f0f0f0;
+          border: none;
+          padding: 8px 12px;
+          border-radius: 8px;
+          font-size: 13px;
+          cursor: pointer;
+          color: #666;
+        }
+
+        .back-to-edu-btn:hover {
+          background: #e0e0e0;
         }
 
         /* ===== 기존 단계 UI ===== */
         .progress-stages {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 40px;
+          margin-bottom: 30px;
           position: relative;
         }
 
@@ -467,15 +653,12 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
           background: #4CAF50;
           border-color: #4CAF50;
           color: white;
+          font-size: 0;
         }
 
         .stage.complete .stage-number::after {
           content: '✓';
-          position: absolute;
-        }
-
-        .stage.complete .stage-number {
-          font-size: 0;
+          font-size: 16px;
         }
 
         .stage-label {
@@ -488,17 +671,17 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
           display: flex;
           align-items: center;
           justify-content: center;
-          margin: 40px 0;
+          margin: 20px 0;
         }
 
         .spinner {
-          width: 30px;
-          height: 30px;
+          width: 24px;
+          height: 24px;
           border: 3px solid #f3f3f3;
           border-top: 3px solid #667eea;
           border-radius: 50%;
           animation: spin 1s linear infinite;
-          margin-right: 15px;
+          margin-right: 12px;
         }
 
         @keyframes spin {
@@ -508,61 +691,223 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
 
         .status-text {
           color: #666;
-          font-size: 16px;
+          font-size: 14px;
+          margin: 0;
+        }
+
+        /* ===== 메인 콘텐츠 영역 ===== */
+        .main-content-area {
+          flex: 1;
+          overflow-y: auto;
+          margin-bottom: 15px;
         }
 
         /* 교육 컨텐츠 카드 */
         .education-container {
-          margin-top: 30px;
-          animation: slideUp 0.5s ease;
+          animation: slideUp 0.3s ease;
         }
 
         .education-container.oneclick {
-          max-height: 400px;
+          max-height: 350px;
           overflow-y: auto;
         }
 
         @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         .education-card {
           background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
-          padding: 1.5rem;
+          padding: 1.25rem;
           border-radius: 12px;
           border-left: 4px solid #667eea;
         }
 
         .education-card h3 {
           color: #667eea;
-          font-size: 1.1rem;
-          margin: 0 0 1rem 0;
+          font-size: 1rem;
+          margin: 0 0 0.75rem 0;
           font-weight: 600;
         }
 
         .education-card p {
           color: #333;
-          line-height: 1.8;
-          font-size: 1rem;
-          margin: 0 0 1.26em 0;
+          line-height: 1.7;
+          font-size: 0.9rem;
+          margin: 0;
           white-space: pre-line;
         }
-        
-        .education-card p:last-child {
-          margin-bottom: 0;
+
+        .swipe-hint {
+          text-align: center;
+          color: #667eea;
+          font-size: 13px;
+          margin-top: 12px;
+          animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+
+        /* ===== 결과 미리보기 ===== */
+        .preview-container {
+          animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateX(30px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+
+        .preview-card {
+          background: white;
+          border-radius: 12px;
+          border: 1px solid #eee;
+        }
+
+        .preview-badge {
+          display: inline-block;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 6px 14px;
+          border-radius: 20px;
+          font-size: 13px;
+          font-weight: bold;
+          margin-bottom: 12px;
+        }
+
+        .preview-image-container {
+          width: 100%;
+          aspect-ratio: 1;
+          border-radius: 10px;
+          overflow: hidden;
+          margin-bottom: 12px;
+          max-height: 200px;
+        }
+
+        .preview-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .preview-ai-info {
+          background: #f8f9fa;
+          padding: 8px 12px;
+          border-radius: 8px;
+          font-size: 12px;
+          color: #666;
+          margin-bottom: 12px;
+        }
+
+        .preview-education {
+          background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+          padding: 12px;
+          border-radius: 10px;
+          border-left: 3px solid #667eea;
+          max-height: 120px;
+          overflow-y: auto;
+        }
+
+        .preview-education h4 {
+          color: #667eea;
+          font-size: 13px;
+          margin: 0 0 8px 0;
+        }
+
+        .preview-education p {
+          color: #444;
+          font-size: 12px;
+          line-height: 1.6;
+          margin: 0;
+          white-space: pre-line;
+        }
+
+        /* ===== 하단 점 네비게이션 ===== */
+        .dots-nav-bottom {
+          border-top: 1px solid #eee;
+          padding-top: 15px;
+          text-align: center;
+        }
+
+        .dots-container {
+          display: flex;
+          justify-content: center;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-bottom: 8px;
+        }
+
+        .dot {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #e0e0e0;
+          border: 2px solid transparent;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          padding: 0;
+          font-size: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .dot.edu-dot {
+          width: 28px;
+          height: 28px;
+          background: #f0f4ff;
+          font-size: 14px;
+        }
+
+        .dot.edu-dot.active {
+          background: #667eea;
+          border-color: #667eea;
+        }
+
+        .dot.completed {
+          background: #4CAF50;
+          cursor: pointer;
+        }
+
+        .dot.completed:hover {
+          transform: scale(1.2);
+          box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+        }
+
+        .dot.current {
+          background: #667eea;
+          animation: dotPulse 1s infinite;
+        }
+
+        @keyframes dotPulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.3); opacity: 0.7; }
+        }
+
+        .dot.active {
+          border-color: #333;
+          transform: scale(1.3);
+        }
+
+        .dot:disabled {
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
+
+        .dots-label {
+          color: #888;
+          font-size: 12px;
+          margin: 0;
         }
 
         /* AI 선택 정보 */
         .ai-selection-info {
-          margin-top: 20px;
-          padding: 15px;
+          margin-top: 15px;
+          padding: 12px;
           background: #f8f9fa;
           border-radius: 10px;
           text-align: center;
@@ -570,25 +915,25 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
 
         .ai-info {
           color: #666;
-          font-size: 14px;
+          font-size: 13px;
           margin: 0;
         }
 
         @media (max-width: 640px) {
           .processing-content {
-            padding: 30px 20px;
+            padding: 20px 15px;
           }
 
           .stage-label {
-            font-size: 11px;
+            font-size: 10px;
           }
 
           .education-card {
-            padding: 20px;
+            padding: 15px;
           }
 
           .education-card h3 {
-            font-size: 18px;
+            font-size: 15px;
           }
 
           .education-card p {
@@ -596,12 +941,22 @@ const ProcessingScreen = ({ photo, selectedStyle, onComplete }) => {
           }
 
           .dot {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
+          }
+
+          .dot.edu-dot {
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+          }
+
+          .preview-image-container {
+            max-height: 160px;
           }
 
           .education-container.oneclick {
-            max-height: 300px;
+            max-height: 280px;
           }
         }
       `}</style>
