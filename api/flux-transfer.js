@@ -2463,6 +2463,11 @@ Instructions - PRIORITY ORDER:
 5. Follow RECOMMENDATIONS (80% weight)
 6. Preserve subject identity
 
+🚨 CRITICAL: selected_artist MUST be EXACTLY one of these two values:
+- "Classical Sculpture" (for sculpture style)
+- "Roman Mosaic" (for mosaic style)
+NO OTHER VALUES ALLOWED. Do NOT use artist names like "Myron", "Apelles", etc.
+
 EDUCATION_KEY MAPPING (MUST include in response):
 - "Classical Sculpture" → education_key: "ancient-greek-sculpture"
 - "Roman Mosaic" → education_key: "roman-mosaic"
@@ -2516,6 +2521,78 @@ Return JSON only:
 }`;
         } else {
           // 다른 사조들 (표현주의, 르네상스, 바로크 등)
+          
+          // 사조별 education_key 매핑 (구체적으로 명시)
+          const educationKeyMappings = {
+            renaissance: `
+EDUCATION_KEY MAPPING (MUST use EXACT key from this list):
+- "Leonardo da Vinci" → education_key: "leonardo"
+- "Titian" → education_key: "titian"
+- "Michelangelo" → education_key: "michelangelo"
+- "Raphael" → education_key: "raphael"
+- "Botticelli" → education_key: "botticelli"`,
+            
+            baroque: `
+EDUCATION_KEY MAPPING (MUST use EXACT key from this list):
+- "Caravaggio" → education_key: "caravaggio"
+- "Rembrandt" → education_key: "rembrandt"
+- "Vermeer" → education_key: "vermeer"`,
+            
+            rococo: `
+EDUCATION_KEY MAPPING (MUST use EXACT key from this list):
+- "Watteau" / "Antoine Watteau" → education_key: "watteau"
+- "Boucher" / "François Boucher" → education_key: "boucher"`,
+            
+            neoclassicism_vs_romanticism_vs_realism: `
+EDUCATION_KEY MAPPING (MUST use EXACT key from this list):
+- "Jacques-Louis David" → education_key: "jacques-louis-david"
+- "Ingres" / "Jean-Auguste-Dominique Ingres" → education_key: "ingres"
+- "Goya" / "Francisco Goya" → education_key: "goya"
+- "Delacroix" / "Eugène Delacroix" → education_key: "delacroix"
+- "Turner" / "J.M.W. Turner" → education_key: "turner"
+- "Manet" / "Édouard Manet" → education_key: "manet"
+- "Millet" / "Jean-François Millet" → education_key: "millet"`,
+            
+            impressionism: `
+EDUCATION_KEY MAPPING (MUST use EXACT key from this list):
+- "Monet" / "Claude Monet" → education_key: "monet"
+- "Renoir" / "Pierre-Auguste Renoir" → education_key: "renoir"
+- "Degas" / "Edgar Degas" → education_key: "degas"
+- "Caillebotte" / "Gustave Caillebotte" → education_key: "caillebotte"`,
+            
+            postImpressionism: `
+EDUCATION_KEY MAPPING (MUST use EXACT key from this list):
+- "Van Gogh" / "Vincent van Gogh" → education_key: "gogh"
+- "Cézanne" / "Paul Cézanne" → education_key: "cezanne"
+- "Gauguin" / "Paul Gauguin" → education_key: "gauguin"
+- "Signac" / "Paul Signac" → education_key: "signac"`,
+            
+            fauvism: `
+EDUCATION_KEY MAPPING (MUST use EXACT key from this list):
+- "Matisse" / "Henri Matisse" → education_key: "matisse"
+- "Derain" / "André Derain" → education_key: "derain"
+- "Vlaminck" / "Maurice de Vlaminck" → education_key: "vlaminck"`,
+            
+            expressionism: `
+EDUCATION_KEY MAPPING (MUST use EXACT key from this list):
+- "Munch" / "Edvard Munch" → education_key: "munch"
+- "Kokoschka" / "Oskar Kokoschka" → education_key: "kokoschka"
+- "Kirchner" / "Ernst Ludwig Kirchner" → education_key: "kirchner"
+- "Kandinsky" / "Wassily Kandinsky" → education_key: "kandinsky"`,
+            
+            modernism: `
+EDUCATION_KEY MAPPING (MUST use EXACT key from this list):
+- "Picasso" / "Pablo Picasso" → education_key: "picasso"
+- "Magritte" / "René Magritte" → education_key: "magritte"
+- "Miró" / "Joan Miró" → education_key: "miro"
+- "Chagall" / "Marc Chagall" → education_key: "chagall"
+- "Warhol" / "Andy Warhol" → education_key: "warhol"
+- "Lichtenstein" / "Roy Lichtenstein" → education_key: "lichtenstein"
+- "Keith Haring" → education_key: "keith-haring"`
+          };
+          
+          const educationMapping = educationKeyMappings[categoryType] || '';
+          
           promptText = `Select the BEST ${categoryName} artist for this photo.
 
 ${guidelines}
@@ -2535,12 +2612,7 @@ Instructions:
 5. Include DETAILED style characteristics in your prompt
 6. IMPORTANT: Start prompt with subject description if person
 7. CRITICAL: If only 1 person in photo, add "DO NOT add extra people in background, keep background clean"
-
-EDUCATION_KEY RULE (MUST include):
-- Use artist's LAST NAME in lowercase as education_key
-- Examples: "Claude Monet" → "monet", "Edgar Degas" → "degas", "Vincent van Gogh" → "gogh"
-- For "Jacques-Louis David" → "jacques-louis-david"
-- For "Keith Haring" → "keith-haring"
+${educationMapping}
 
 Return JSON only:
 {
@@ -2611,11 +2683,135 @@ Return JSON only:
       throw new Error('Invalid AI response format');
     }
     
+    // education_key fallback 매핑 (AI가 반환하지 않았을 경우)
+    let finalEducationKey = result.education_key;
+    if (!finalEducationKey && result.selected_artist) {
+      const artistLower = result.selected_artist.toLowerCase().trim();
+      
+      // 화가명 → education_key 매핑 테이블
+      const artistToKeyMap = {
+        // 그리스-로마
+        'classical sculpture': 'ancient-greek-sculpture',
+        'roman mosaic': 'roman-mosaic',
+        // 중세
+        'byzantine': 'byzantine',
+        'gothic': 'gothic',
+        'islamic miniature': 'islamic-miniature',
+        'islamic geometric': 'islamic-geometry',
+        'romanesque': 'romanesque',
+        // 르네상스
+        'leonardo da vinci': 'leonardo',
+        'leonardo': 'leonardo',
+        'titian': 'titian',
+        'michelangelo': 'michelangelo',
+        'raphael': 'raphael',
+        'botticelli': 'botticelli',
+        // 바로크
+        'caravaggio': 'caravaggio',
+        'rembrandt': 'rembrandt',
+        'vermeer': 'vermeer',
+        // 로코코
+        'watteau': 'watteau',
+        'antoine watteau': 'watteau',
+        'boucher': 'boucher',
+        'françois boucher': 'boucher',
+        // 신고전/낭만/사실
+        'jacques-louis david': 'jacques-louis-david',
+        'david': 'jacques-louis-david',
+        'ingres': 'ingres',
+        'goya': 'goya',
+        'francisco goya': 'goya',
+        'delacroix': 'delacroix',
+        'eugène delacroix': 'delacroix',
+        'turner': 'turner',
+        'j.m.w. turner': 'turner',
+        'manet': 'manet',
+        'édouard manet': 'manet',
+        'millet': 'millet',
+        'jean-françois millet': 'millet',
+        // 인상주의
+        'monet': 'monet',
+        'claude monet': 'monet',
+        'renoir': 'renoir',
+        'pierre-auguste renoir': 'renoir',
+        'degas': 'degas',
+        'edgar degas': 'degas',
+        'caillebotte': 'caillebotte',
+        'gustave caillebotte': 'caillebotte',
+        // 후기인상주의
+        'van gogh': 'gogh',
+        'vincent van gogh': 'gogh',
+        'cézanne': 'cezanne',
+        'paul cézanne': 'cezanne',
+        'cezanne': 'cezanne',
+        'gauguin': 'gauguin',
+        'paul gauguin': 'gauguin',
+        'signac': 'signac',
+        'paul signac': 'signac',
+        // 야수파
+        'matisse': 'matisse',
+        'henri matisse': 'matisse',
+        'derain': 'derain',
+        'andré derain': 'derain',
+        'vlaminck': 'vlaminck',
+        'maurice de vlaminck': 'vlaminck',
+        // 표현주의
+        'munch': 'munch',
+        'edvard munch': 'munch',
+        'kokoschka': 'kokoschka',
+        'oskar kokoschka': 'kokoschka',
+        'kirchner': 'kirchner',
+        'ernst ludwig kirchner': 'kirchner',
+        'kandinsky': 'kandinsky',
+        'wassily kandinsky': 'kandinsky',
+        // 모더니즘
+        'picasso': 'picasso',
+        'pablo picasso': 'picasso',
+        'magritte': 'magritte',
+        'rené magritte': 'magritte',
+        'miró': 'miro',
+        'joan miró': 'miro',
+        'miro': 'miro',
+        'chagall': 'chagall',
+        'marc chagall': 'chagall',
+        'warhol': 'warhol',
+        'andy warhol': 'warhol',
+        'lichtenstein': 'lichtenstein',
+        'roy lichtenstein': 'lichtenstein',
+        'keith haring': 'keith-haring',
+        'haring': 'keith-haring',
+        // 동양화
+        'korean minhwa': 'korean-minhwa',
+        'korean pungsokdo': 'korean-genre',
+        'korean jingyeong landscape': 'korean-jingyeong',
+        'chinese ink wash': 'chinese-ink',
+        'chinese gongbi': 'chinese-gongbi',
+        'chinese huaniao': 'chinese-huaniao',
+        '일본 우키요에': 'japanese-ukiyoe'
+      };
+      
+      finalEducationKey = artistToKeyMap[artistLower];
+      
+      // 부분 매칭 시도 (위 테이블에서 못 찾았을 경우)
+      if (!finalEducationKey) {
+        for (const [key, value] of Object.entries(artistToKeyMap)) {
+          if (artistLower.includes(key) || key.includes(artistLower)) {
+            finalEducationKey = value;
+            break;
+          }
+        }
+      }
+      
+      if (finalEducationKey) {
+        console.log(`🔄 [FALLBACK] education_key mapped: "${result.selected_artist}" → "${finalEducationKey}"`);
+      }
+    }
+    
     return {
       success: true,
       artist: result.selected_artist,
       work: result.selected_work,  // 거장 모드: 선택된 대표작
-      education_key: result.education_key,  // 교육자료 매칭용 키
+      education_key: finalEducationKey,  // 교육자료 매칭용 키 (fallback 포함)
       reason: result.reason,
       prompt: result.prompt,
       analysis: result.analysis,
